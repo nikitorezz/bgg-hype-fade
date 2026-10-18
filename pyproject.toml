@@ -21,6 +21,7 @@ bgg = "bgg.cli:main"
 
 [dependency-groups]
 dev = [
+    "playwright>=1.64.0",
     "plotly>=7.1.0",
     "pytest>=8",
     "ruff>=0.5",
@@ -43,4 +44,4 @@ select = ["E", "F", "I", "UP", "B"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src", "app"]

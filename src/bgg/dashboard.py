@@ -146,6 +146,12 @@ def curve_by_segment(cfg: Config, inp: Inputs, games: pd.DataFrame,
     return pd.concat(frames, ignore_index=True)
 
 
+def _ks_years(cfg: Config) -> list[int]:
+    """Entry years modelled in Q3 (those with enough Kaggle coverage)."""
+    cov = pd.read_csv(cfg.path("tables_dir") / "q3_coverage.csv")
+    return [int(y) for y in cov.loc[cov["modelled"], "entry_year"]]
+
+
 def _dir_size_mb(path: Path) -> float:
     return sum(f.stat().st_size for f in path.rglob("*") if f.is_file()) / 1e6
 
@@ -153,7 +159,7 @@ def _dir_size_mb(path: Path) -> float:
 def run_dashboard_data(cfg: Config, aggregates_only: bool = False) -> None:
     """Write app/data/ (games, trajectories, other games, tables, key numbers).
 
-    With ``aggregates_only`` the game-level files are skipped (and removed), for APP_MODE=aggregates.
+    With ``aggregates_only`` the game-level files are skipped and removed (APP_MODE=aggregates).
     """
     inp = load_inputs(cfg)
     kn_path = results_dir(cfg) / "key_numbers.json"
@@ -184,6 +190,18 @@ def run_dashboard_data(cfg: Config, aggregates_only: bool = False) -> None:
     shutil.copyfile(cfg.path("qc_dir") / "qc_results.csv", tdir / "qc_results.csv")
     shutil.copyfile(results_dir(cfg) / "model_q2.csv", tdir / "model_q2.csv")
     shutil.copyfile(kn_path, out / "key_numbers.json")
+    q4 = inp.acfg["q4"]
+    app_cfg = {"rule_tolerance": q4["rule_tolerance"], "rule_share": q4["rule_share"],
+               "tolerances": q4["tolerances"], "k_max": q4["k_max"],
+               "final_k": inp.acfg["horizons"][-1], "end_month": str(cfg.end_month),
+               "adjusted_ks": q4["adjusted_ks"], "train_entry_years": q4["train_entry_years"],
+               "test_entry_years": q4["test_entry_years"],
+               "speed_months": inp.acfg["speed"]["months"],
+               "main_entry_start": str(cfg.section("cohort")["main_entry_start"]),
+               "main_entry_end": str(cfg.main_entry_end),
+               "start_month": str(cfg.start_month), "kickstarter_years": _ks_years(cfg),
+               "mode_built": "aggregates" if aggregates_only else "full"}
+    (out / "app_config.json").write_text(json.dumps(app_cfg, indent=2), encoding="utf-8")
 
     size = _dir_size_mb(out)
     log.info("app/data size: %.1f MB (limit %.0f MB)", size, MAX_SIZE_MB)
