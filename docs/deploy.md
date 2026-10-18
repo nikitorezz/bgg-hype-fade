@@ -84,7 +84,7 @@ China. The intended audience is international, but the author cannot rely on it 
 ## Static page for GitHub Pages
 
 ```bash
-uv run bgg export-static        # writes reports/site/index.html (+ social_card.png), about 5 MB
+uv run bgg export-static        # reports/site/: index.html (4 KB landing page for link previews) + dashboard.html (5 MB)
 ```
 
 A single self-contained HTML file (Plotly inlined, no CDN, no lookup, no sliders). It opens offline

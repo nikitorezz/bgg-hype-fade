@@ -188,14 +188,44 @@ from BoardGameGeek" (threnjen, Kaggle, CC BY-SA 3.0).</footer>
         f'<meta name="twitter:image" content="{html.escape(image, quote=True)}">'])
     page = (f'<!DOCTYPE html><html lang="en"><head>{meta}<title>Does the Hype Fade?</title>'
             f"<style>{CSS}</style></head><body>{body}</body></html>")
-    out = cfg.root / "reports" / "site" / "index.html"
-    out.parent.mkdir(parents=True, exist_ok=True)
+    site = cfg.root / "reports" / "site"
+    site.mkdir(parents=True, exist_ok=True)
+    out = site / "dashboard.html"           # the full, self-contained page (about 5 MB)
     out.write_text(page, encoding="utf-8")
+    pub = cfg.section("publish")
+    kpi_cards = "".join(
+        f'<div class="kpi"><div class="l">{html.escape(lab)}</div><div class="v">{html.escape(val)}</div>'
+        f'<div class="c">{html.escape(cap)}</div></div>' for lab, val, cap in text.kpis(n, acfg))
+    links = ['<a class="btn" href="dashboard.html">Open the dashboard</a>']
+    if pub.get("dashboard_url"):
+        links.append(f'<a href="{html.escape(pub["dashboard_url"])}">Live interactive app</a>')
+    if pub.get("github_repo"):
+        repo = f"https://github.com/{pub['github_repo']}"
+        links += [f'<a href="{repo}/blob/main/reports/writeup.md">Write-up</a>',
+                  f'<a href="{repo}">Code</a>']
+    landing_body = f"""
+<h1>Does the Hype Fade?</h1>
+<p class="sub">Post-release rating trajectories of board games on BoardGameGeek, 2016-2026</p>
+<p>{_md(text.headline(n))}</p>
+<div class="kpis">{kpi_cards}</div>
+<p><img src="social_card.png" alt="Mean change in rating by months since entry" style="max-width:100%"></p>
+<p class="links">{" · ".join(links)}</p>
+<p class="cap">The dashboard page is a single offline-capable file (about 5 MB, Plotly inlined).</p>
+<footer>Data: BoardGameGeek ranking snapshots (beefsack/bgg-ranking-historicals). Data © BoardGameGeek;
+this project is not affiliated with BoardGameGeek.</footer>"""
+    landing_css = CSS + ".btn{background:#0072B2;color:#fff;padding:8px 16px;border-radius:6px;text-decoration:none}.links a{margin-right:6px}"
+    landing = (f'<!DOCTYPE html><html lang="en"><head>{meta}<title>Does the Hype Fade?</title>'
+               f"<style>{landing_css}</style></head><body>{landing_body}</body></html>")
+    index = site / "index.html"             # small page for link previews (LinkedIn caps pages at 3 MB)
+    index.write_text(landing, encoding="utf-8")
     card = cfg.root / "reports" / "figures" / "social_card.png"
     if card.exists():  # next to index.html, so the og:image link works once hosted
-        (out.parent / "social_card.png").write_bytes(card.read_bytes())
-    (out.parent / ".nojekyll").write_text("", encoding="utf-8")
-    log.info("wrote %s (%.1f MB)", out, out.stat().st_size / 1e6)
+        (site / "social_card.png").write_bytes(card.read_bytes())
+    (site / ".nojekyll").write_text("", encoding="utf-8")
+    log.info("wrote %s (%.1f MB) and %s (%.0f KB)", out.name, out.stat().st_size / 1e6, index.name,
+             index.stat().st_size / 1e3)
     if re.search(r"<script[^>]+src=", page):
         raise RuntimeError("static page references an external script; it must work offline")
+    if index.stat().st_size > 1_000_000:
+        raise RuntimeError("landing page too large for link-preview scrapers")
     return out

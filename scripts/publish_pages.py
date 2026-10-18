@@ -3,7 +3,8 @@
     uv run python scripts/publish_pages.py            # build reports/site/ only, print next steps
     uv run python scripts/publish_pages.py --push     # also force-push one orphan commit to origin/gh-pages
 
-The pushed branch holds only index.html, social_card.png and .nojekyll (about 5 MB) as a single
+The pushed branch holds index.html (small landing page for link previews), dashboard.html (about 5 MB),
+social_card.png and .nojekyll as a single
 commit, so the main repository history never grows with the Plotly bundle. Aggregate data only.
 """
 
@@ -19,7 +20,7 @@ from pathlib import Path
 from bgg.config import load_config
 from bgg.static_export import run_export_static
 
-FILES = ("index.html", "social_card.png", ".nojekyll")
+FILES = ("index.html", "dashboard.html", "social_card.png", ".nojekyll")
 
 
 def git(*args: str, cwd: Path) -> str:
