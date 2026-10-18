@@ -1,8 +1,17 @@
 [project]
 name = "bgg"
 version = "0.1.0"
-description = "Does the Hype Fade? BGG post-release rating trajectories: data pipeline"
+description = "Does the Hype Fade? Post-release rating trajectories of board games on BoardGameGeek: pipeline, analysis and dashboard"
+readme = "README.md"
 requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Резниченко Никита", email = "nikitorezz@gmail.com" }]
+keywords = ["data-analytics", "duckdb", "panel-data", "board-games", "streamlit"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
 dependencies = [
     "duckdb>=1.1",
     "requests>=2.31",
@@ -15,6 +24,12 @@ dependencies = [
     "linearmodels>=7.1",
     "pyarrow>=26.0.0",
 ]
+
+[project.urls]
+# Placeholders until the GitHub repository exists (see docs/deploy.md); update after publishing.
+Homepage = "https://github.com/OWNER/bgg-hype-fade"
+Repository = "https://github.com/OWNER/bgg-hype-fade"
+Issues = "https://github.com/OWNER/bgg-hype-fade/issues"
 
 [project.scripts]
 bgg = "bgg.cli:main"
