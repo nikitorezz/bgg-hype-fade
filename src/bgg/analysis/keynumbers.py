@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from bgg.analysis.io import md_table, results_dir, write_table
+from bgg.analysis.io import entry, md_table, results_dir, write_table
 from bgg.config import PROJECT_ROOT, Config
 
 log = logging.getLogger(__name__)
@@ -67,6 +67,34 @@ def _git_commit() -> str:
                               capture_output=True, text=True, check=True).stdout.strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return "n/a"
+
+
+def pipeline_facts(cfg: Config) -> dict[str, dict]:
+    """Pipeline-level counts (snapshots, rows, QC results) so docs never type them by hand."""
+    manifest = pd.read_csv(cfg.path("manifest"))
+    qc = pd.read_csv(cfg.path("qc_dir") / "qc_results.csv")
+    wf = pd.read_csv(cfg.path("tables_dir") / "sample_waterfall.csv").set_index("step_no")["n_games"]
+    counts = qc["status"].value_counts()
+    src = "pipeline outputs"
+    return {
+        "n_snapshots": entry(len(manifest), "manifest", "monthly snapshot files used"),
+        "n_snapshot_rows": entry(int(manifest["rows"].sum()), "manifest",
+                                 "data rows over all monthly snapshots"),
+        "download_mb": entry(float(manifest["bytes"].sum()) / 1e6, "manifest",
+                             "size of the monthly snapshot CSVs in MB"),
+        "n_games_ever_ranked": entry(int(wf[1]), "sample_waterfall", "distinct games ever ranked"),
+        "n_new_releases": entry(int(wf[4]), "sample_waterfall", "games classed as new releases"),
+        "n_qc_pass": entry(int(counts.get("PASS", 0)), "qc_results", "QC checks with status PASS"),
+        "n_qc_warn": entry(int(counts.get("WARN", 0)), "qc_results", "QC checks with status WARN"),
+        "n_qc_fail": entry(int(counts.get("FAIL", 0)), "qc_results", "QC checks with status FAIL"),
+        "n_dup_rows_removed": entry(_dup_rows(cfg, qc), src, "duplicate rows removed in load"),
+    }
+
+
+def _dup_rows(cfg: Config, qc: pd.DataFrame) -> int:
+    """Parse the load-stage duplicate count from QC check 05 ('721 rows in 16 files')."""
+    value = qc.loc[qc["check_id"].astype(str).str.zfill(2) == "05", "value"].iloc[0]
+    return int(str(value).split()[0])
 
 
 def merge_fragments(cfg: Config) -> dict[str, dict]:
@@ -148,6 +176,7 @@ def write_summary(cfg: Config, numbers: dict[str, dict], sanity: pd.DataFrame) -
 
 def run_keynumbers(cfg: Config) -> None:
     numbers = merge_fragments(cfg)
+    numbers.update(pipeline_facts(cfg))
     problems = validate(numbers)
     if problems:
         for p in problems:

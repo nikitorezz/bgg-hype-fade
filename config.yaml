@@ -206,3 +206,10 @@ analysis:
       avg_rank100: 7.93
       avg_rank1000: 7.30
     loose_tolerance: {gap_k36_by_hype_q1: 0.02, ks_gap_within_bands: 0.02, spec_b_hype: 0.02, n_main_sample: 0, n_balanced_sample: 0, n_control_games: 0}   # spec says B = 0.00 +/- 0.02; counts exact
+
+# Publication details. Empty strings = not published yet; README renders without the dead links/badges.
+publish:
+  author: "Резниченко Никита"          # name on the MIT licence and in pyproject (confirm before publishing)
+  github_repo: ""                      # "owner/bgg-hype-fade" once the repository exists
+  dashboard_url: ""                    # Streamlit Community Cloud app URL
+  pages_url: ""                        # GitHub Pages URL of the offline dashboard

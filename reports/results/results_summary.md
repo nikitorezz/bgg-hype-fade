@@ -108,6 +108,7 @@ Not done: daily-vs-monthly snapshot robustness (needs a multi-GB download).
 - [q4_accuracy_by_k.csv](../tables/q4_accuracy_by_k.csv)
 - [q4_adjusted_predictor.csv](../tables/q4_adjusted_predictor.csv)
 - [sample_waterfall.csv](../tables/sample_waterfall.csv)
+- [segment_change.csv](../tables/segment_change.csv)
 - [segments.csv](../tables/segments.csv)
 - [speed_not_size.csv](../tables/speed_not_size.csv)
 - [table1_sample.csv](../tables/table1_sample.csv)

@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated": "2026-10-18T19:58:00+08:00",
+    "generated": "2026-10-18T20:02:14+08:00",
     "end_month": "2026-10-01",
-    "git_commit": "7586209"
+    "git_commit": "2696f92"
   },
   "numbers": {
     "q3_status": {
@@ -1644,6 +1644,78 @@
       "n": 3365,
       "source": "robustness_gap",
       "definition": "mean gap at config thresholds (matches Fig 2)"
+    },
+    "n_snapshots": {
+      "value": 121.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "manifest",
+      "definition": "monthly snapshot files used"
+    },
+    "n_snapshot_rows": {
+      "value": 2611791.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "manifest",
+      "definition": "data rows over all monthly snapshots"
+    },
+    "download_mb": {
+      "value": 541.498463,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "manifest",
+      "definition": "size of the monthly snapshot CSVs in MB"
+    },
+    "n_games_ever_ranked": {
+      "value": 31676.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "sample_waterfall",
+      "definition": "distinct games ever ranked"
+    },
+    "n_new_releases": {
+      "value": 11020.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "sample_waterfall",
+      "definition": "games classed as new releases"
+    },
+    "n_qc_pass": {
+      "value": 36.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "qc_results",
+      "definition": "QC checks with status PASS"
+    },
+    "n_qc_warn": {
+      "value": 0.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "qc_results",
+      "definition": "QC checks with status WARN"
+    },
+    "n_qc_fail": {
+      "value": 0.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "qc_results",
+      "definition": "QC checks with status FAIL"
+    },
+    "n_dup_rows_removed": {
+      "value": 721.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "pipeline outputs",
+      "definition": "duplicate rows removed in load"
     }
   }
 }
