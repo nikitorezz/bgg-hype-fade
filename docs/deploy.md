@@ -11,51 +11,17 @@ Streamlit Cloud account; see the checklist below).
 - [x] `.gitignore` keeps all game-level files out: `app/data/*.parquet`, `data/external/`,
   `reports/tables/examples.csv`, `reports/figures/app_lookup*.png`.
 - [x] Without `games.parquet` the app switches to aggregates mode by itself (tested).
-- [ ] **Before the first push: purge game-level files from git history** (see "History" below).
+- [x] History purged (2026-10-18): `data/external/`, `reports/tables/examples.csv` and the lookup
+  screenshots were removed from every commit (see "History").
 - [ ] Create the GitHub repository, push, then deploy on Streamlit Community Cloud (steps below).
 
 ### History
 
 `data/external/kaggle_bgg/*` (including `user_ratings.csv` with usernames) and a few game-level
-files were committed locally before they were ignored (first in commit `3b9e761`). The repository
-has no remote yet, so nothing has been published, but the history must be rewritten (for example
-`git filter-repo --invert-paths --path data/external --path reports/tables/examples.csv`) **before**
-pushing. That changes commit hashes, including the `5faf5e1` cited in `docs/findings.md`.
-
-## D0: what may be published? (decision needed)
-
-The source archive (`beefsack/bgg-ranking-historicals`) has **no licence file**, so by default no
-reuse rights are granted (`docs/data_notes.md` §9). Three options:
-
-1. **Ask the archive owner, then deploy the full app.** Open an issue (draft below). Deploy only
-   after a yes. Until then use option 3.
-2. **Deploy an aggregates-only app** (`APP_MODE=aggregates`). It ships only curve, segment and
-   model tables plus `key_numbers.json`: no game names, no per-game numbers, no "Look up a game"
-   tab, and the trust-month sliders are limited to the precomputed tolerances.
-3. **Local only.** Keep the app on your machine and publish screenshots / the static page.
-
-Note: `reports/tables/*.csv`, `reports/results/` and `reports/figures/` (all aggregates) are already
-committed to the local git history. If the repository goes public, those aggregates are public
-whichever option is chosen. `app/data/` (which contains game-level data) is git-ignored until D0.
-
-### Drafted GitHub issue (for `beefsack/bgg-ranking-historicals`)
-
-> **Title:** Licence / permission to use the data in a non-commercial analytics project
->
-> Hi, thanks for maintaining this archive. I'm using the daily ranking snapshots for a
-> non-commercial data-analytics portfolio project on how board-game ratings change after launch
-> (monthly snapshots, 2016-2026). The repository has no LICENSE file, so I wanted to ask before
-> publishing anything derived from it.
->
-> 1. Could you add a licence, or tell me the terms you'd like people to follow?
-> 2. Would it be OK for me to publish **aggregate** statistics (curves, regression tables) and
->    an interactive dashboard showing **per-game rating trajectories** (game name, rating and
->    number of raters by month)? I would not redistribute the raw CSV files, I'd cite this
->    repository and BoardGameGeek, and I'd state that the data are © BoardGameGeek and not
->    affiliated with them.
->
-> The code downloads the files from your repository itself rather than copying them. Happy to
-> adjust to whatever you prefer. Thanks!
+files had been committed locally before they were ignored (first in commit `3b9e761`). Before any
+push, history was rewritten with `git filter-branch` to drop them from every commit; the largest
+blob left in the repository is under 1 MB. Commits before the Analysis steps 1-2 commit keep their
+hashes; later ones changed (for example `3b9e761` -> `100ce64`, and `5faf5e1` -> `6b913b5`).
 
 ## Build the app data
 
