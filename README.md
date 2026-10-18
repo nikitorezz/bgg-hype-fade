@@ -2,7 +2,7 @@
 
 **Post-release rating trajectories of board games on BoardGameGeek, 2016–2026**
 
-![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![Code licence: MIT](https://img.shields.io/badge/code%20licence-MIT-green) ![Data: not redistributed](https://img.shields.io/badge/data-not%20redistributed-lightgrey)
+[![CI](https://github.com/nikitorezz/bgg-hype-fade/actions/workflows/ci.yml/badge.svg)](https://github.com/nikitorezz/bgg-hype-fade/actions/workflows/ci.yml) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue) ![Code licence: MIT](https://img.shields.io/badge/code%20licence-MIT-green) ![Data: not redistributed](https://img.shields.io/badge/data-not%20redistributed-lightgrey)
 
 <p align="center"><img src="reports/figures/social_card.png" width="720" alt="New games lose 0.40 rating points in 3 years, 61% of it in year one"></p>
 
@@ -15,7 +15,7 @@
 
 ## Links
 
-**[Full write-up](reports/writeup.md)** · [Method notes and data traps](docs/data_notes.md) · [Findings review](docs/findings.md)
+**[Live dashboard](https://bgg-hype-fade.streamlit.app/)** · **[Offline dashboard (static page)](https://nikitorezz.github.io/bgg-hype-fade/)** · **[Full write-up](reports/writeup.md)** · [Method notes and data traps](docs/data_notes.md) · [Findings review](docs/findings.md)
 
 Run the dashboard locally in one command (see [Reproduce](#reproduce)): `uv run streamlit run app/streamlit_app.py`.
 

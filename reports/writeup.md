@@ -96,7 +96,7 @@ The same playbook applies anywhere a running average meets a self-selected launc
 
 ## How it's built
 
-Python + DuckDB. The SQL pipeline (download → load → cohort → panel → QC) is driven by a single config file. The models are a game fixed-effects event study (`linearmodels`), cross-sectional OLS with robust SEs, game-level bootstrap CIs, a robustness grid with eight variants, and an out-of-sample predictive check. Interactive dashboard (aggregate data only): *[Streamlit link]*; offline version: *[GitHub Pages link]*. Code: *[repo link]*.
+Python + DuckDB. The SQL pipeline (download → load → cohort → panel → QC) is driven by a single config file. The models are a game fixed-effects event study (`linearmodels`), cross-sectional OLS with robust SEs, game-level bootstrap CIs, a robustness grid with eight variants, and an out-of-sample predictive check. Interactive dashboard (aggregate data only): [live dashboard](https://bgg-hype-fade.streamlit.app/); offline version: [static page](https://nikitorezz.github.io/bgg-hype-fade/). Code: [github.com/nikitorezz/bgg-hype-fade](https://github.com/nikitorezz/bgg-hype-fade).
 
 *Data: daily BGG ranking snapshots from beefsack/bgg-ranking-historicals; data © BoardGameGeek. Metadata: "Board Game Database from BoardGameGeek" (threnjen, Kaggle, CC BY-SA 3.0).*
 

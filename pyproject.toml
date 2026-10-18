@@ -26,10 +26,9 @@ dependencies = [
 ]
 
 [project.urls]
-# Placeholders until the GitHub repository exists (see docs/deploy.md); update after publishing.
-Homepage = "https://github.com/OWNER/bgg-hype-fade"
-Repository = "https://github.com/OWNER/bgg-hype-fade"
-Issues = "https://github.com/OWNER/bgg-hype-fade/issues"
+Homepage = "https://github.com/nikitorezz/bgg-hype-fade"
+Repository = "https://github.com/nikitorezz/bgg-hype-fade"
+Issues = "https://github.com/nikitorezz/bgg-hype-fade/issues"
 
 [project.scripts]
 bgg = "bgg.cli:main"

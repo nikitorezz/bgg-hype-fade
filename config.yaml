@@ -210,6 +210,6 @@ analysis:
 # Publication details. Empty strings = not published yet; README renders without the dead links/badges.
 publish:
   author: "Nikita Reznichenko"          # name on the MIT licence and in pyproject
-  github_repo: ""                      # "owner/bgg-hype-fade" once the repository exists
-  dashboard_url: ""                    # Streamlit Community Cloud app URL
-  pages_url: ""                        # GitHub Pages URL of the offline dashboard
+  github_repo: "nikitorezz/bgg-hype-fade"                      # "owner/bgg-hype-fade" once the repository exists
+  dashboard_url: "https://bgg-hype-fade.streamlit.app/"                    # Streamlit Community Cloud app URL
+  pages_url: "https://nikitorezz.github.io/bgg-hype-fade/"                        # GitHub Pages URL of the offline dashboard
