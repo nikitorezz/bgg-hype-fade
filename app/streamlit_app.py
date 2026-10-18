@@ -18,6 +18,7 @@ import streamlit as st
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib import charts, loaders, logic, text  # noqa: E402
+from lib.fmt import fmt  # noqa: E402
 
 DEFAULT_GAME_ID = 342942  # Ark Nova (a spot-check game from the pipeline QC)
 REPO_URL = os.environ.get("BGG_REPO_URL", "")
@@ -44,21 +45,21 @@ def show(fig) -> None:
 def section_overview(n: dict, mode: str) -> None:
     kn = logic.kn
     cfg = loaders.app_config()
-    st.subheader("Does the hype fade?")
     st.markdown(text.headline(n))
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("3-year change", text.signed(kn(n, "change_36")),
               help=f"95% CI {logic.ci_text(n, 'change_36', 2)}; n = {n['change_36']['n']:,}")
     c1.caption("Average fall in a new game's displayed rating")
-    c2.metric("Fall happening in year one", f"{100 * kn(n, 'share_of_decline_by_12'):.0f}%",
-              help=f"95% CI {100 * n['share_of_decline_by_12']['ci_low']:.0f}-"
-                   f"{100 * n['share_of_decline_by_12']['ci_high']:.0f}%")
+    c2.metric("Fall happening in year one", f"{fmt(100 * kn(n, 'share_of_decline_by_12'), '.0f')}%",
+              help=f"95% CI {fmt(100 * n['share_of_decline_by_12']['ci_low'], '.0f')}-"
+                   f"{fmt(100 * n['share_of_decline_by_12']['ci_high'], '.0f')}%")
     c2.caption("Share of the 3-year fall reached by month 12")
-    c3.metric("Games that decline", f"{100 * kn(n, 'share_declining'):.0f}%")
+    c3.metric("Games that decline", f"{fmt(100 * kn(n, 'share_declining'), '.0f')}%")
     c3.caption("End lower than they started (month 36)")
-    c4.metric("Trust point", f"Month {kn(n, 'q4_rule_month'):.0f}",
-              help=f"95% CI {n['q4_rule_month']['ci_low']:.0f}-{n['q4_rule_month']['ci_high']:.0f}")
-    c4.caption(f"{100 * cfg['rule_share']:.0f}% of games are within ±{cfg['rule_tolerance']} "
+    c4.metric("Trust point", f"Month {fmt(kn(n, 'q4_rule_month'), '.0f')}",
+              help=f"95% CI {fmt(n['q4_rule_month']['ci_low'], '.0f')}-"
+                   f"{fmt(n['q4_rule_month']['ci_high'], '.0f')}")
+    c4.caption(f"{fmt(100 * cfg['rule_share'], '.0f')}% of games are within ±{cfg['rule_tolerance']} "
                "of their 3-year rating")
 
     st.markdown("#### How ratings move after a game enters the ranking")
@@ -127,33 +128,28 @@ def section_hype(n: dict) -> None:
 def section_trust(n: dict, mode: str) -> None:
     cfg = loaders.app_config()
     st.subheader("When can you trust a new game's rating?")
-    if mode == "full":
-        c1, c2 = st.columns(2)
-        tol = round(c1.slider("Tolerance (± rating points)", 0.10, 0.50, cfg["rule_tolerance"],
-                              0.05), 2)
-        target = c2.slider("Target share of games (%)", 60, 95, int(100 * cfg["rule_share"]),
-                           5) / 100
+    c1, c2 = st.columns(2)
+    # Both sliders work in both modes: the tolerance snaps to the precomputed steps.
+    tol = c1.select_slider("Tolerance (± rating points)", cfg["tolerances"],
+                           value=cfg["rule_tolerance"], format_func=lambda v: fmt(v, ".2f"))
+    target = c2.slider("Target share of games (%)", 60, 95, int(100 * cfg["rule_share"]), 5) / 100
+    if mode == "full":  # live from the game-level extract (identical to the precomputed table)
         err, obs = loaders.trust_matrix()
         curve = logic.trust_curve(err, obs, tol)
     else:
         acc = loaders.table("q4_accuracy_by_k")
-        tol = st.select_slider("Tolerance (± rating points)", cfg["tolerances"],
-                               value=cfg["rule_tolerance"])
-        target = st.slider("Target share of games (%)", 60, 95, int(100 * cfg["rule_share"]),
-                           5) / 100
         a = acc[acc["tolerance"] == tol].sort_values("k")
         curve = pd.DataFrame({"k": a["k"].to_numpy(), "share": a["share_within"].to_numpy(),
                               "n": a["n"].to_numpy()})
-        st.caption("Aggregates mode: only the precomputed tolerances are available.")
     k_rule = logic.trust_month(curve, target)
     default = tol == cfg["rule_tolerance"] and target == cfg["rule_share"]
     left, right = st.columns([1, 3])
-    left.metric("Trust month", "never" if np.isnan(k_rule) else f"Month {k_rule:.0f}")
+    left.metric("Trust month", "never" if np.isnan(k_rule) else f"Month {fmt(k_rule, '.0f')}")
     left.caption(
-        f"First month when at least {100 * target:.0f}% of new games are within ±{tol:.2f} of "
+        f"First month when at least {fmt(100 * target, '.0f')}% of new games are within ±{fmt(tol, '.2f')} of "
         f"their month-{cfg['final_k']} rating."
-        + (f" Bootstrap 95% CI for the default: {n['q4_rule_month']['ci_low']:.0f}-"
-           f"{n['q4_rule_month']['ci_high']:.0f}." if default else ""))
+        + (f" Bootstrap 95% CI for the default: {fmt(n['q4_rule_month']['ci_low'], '.0f')}-"
+           f"{fmt(n['q4_rule_month']['ci_high'], '.0f')}." if default else ""))
     with right:
         show(charts.fig_trust(curve, tol, target, k_rule))
     st.caption("Agreement at later months is partly mechanical: the running average at month 24 "
@@ -162,6 +158,52 @@ def section_trust(n: dict, mode: str) -> None:
     bars = logic.adjusted_vs_raw(loaders.table("q4_adjusted_predictor"), cfg["rule_tolerance"])
     show(charts.fig_adjusted(bars, cfg["rule_tolerance"]))
     st.caption(text.adjusted_caption(n, cfg))
+
+
+SEGMENT_TYPES = {"Launch year": "launch_year", "Hype quartile": "hype_quartile",
+                 "Starting-rating decile": "start_decile", "Popularity (top 10% vs rest)": "popularity",
+                 "Kickstarted": "kickstarted"}
+
+
+def section_explore(n: dict) -> None:
+    """Aggregates-only exploration: segment curves against the overall curve, plus a table."""
+    cfg = loaders.app_config()
+    st.subheader("Explore segments")
+    st.markdown("Pick a way to split the new releases and compare each group's rating path with the "
+                "overall path. Only group averages are shown, never individual games.")
+    c1, c2 = st.columns([2, 1])
+    label = c1.selectbox("Split by", list(SEGMENT_TYPES))
+    adjust = c2.toggle("Adjust for site-wide drift", value=False, key="explore_adjust")
+    gt = SEGMENT_TYPES[label]
+    curves = loaders.table("curve_by_segment")
+    adj = int(adjust)
+    seg = curves[(curves["group_type"] == gt) & (curves["adjusted"] == adj)]
+    overall = curves[(curves["group_type"] == "none") & (curves["adjusted"] == adj)]
+    show(charts.fig_explore(seg, overall, gt))
+    table = loaders.table("segment_change")
+    t = table[table["group_type"] == gt].pivot_table(
+        index="group_value", columns="metric", values=["mean", "ci_low", "ci_high", "n"])
+    view = pd.DataFrame({
+        "Group": t.index,
+        "Games": [f"{int(v):,}" for v in t[("n", "change_36")]],
+        "Change by month 12": [f"{fmt(m, '+.2f', minus=True)} [{fmt(lo, '+.2f', minus=True)}, "
+                               f"{fmt(hi, '+.2f', minus=True)}]" for m, lo, hi in zip(
+                                   t[("mean", "change_12")], t[("ci_low", "change_12")],
+                                   t[("ci_high", "change_12")], strict=True)],
+        "Change by month 36": [f"{fmt(m, '+.2f', minus=True)} [{fmt(lo, '+.2f', minus=True)}, "
+                               f"{fmt(hi, '+.2f', minus=True)}]" for m, lo, hi in zip(
+                                   t[("mean", "change_36")], t[("ci_low", "change_36")],
+                                   t[("ci_high", "change_36")], strict=True)]})
+    st.dataframe(view, hide_index=True, width="stretch")
+    if gt == "kickstarted":
+        yrs = cfg["kickstarter_years"]
+        st.caption(f"Only games entering {yrs[0]}-{yrs[-1]} can be matched to the Kaggle metadata; the "
+                   "flag comes from a 2022 snapshot. Descriptive only.")
+    if gt == "start_decile":
+        st.caption("D01 = lowest starting average, D10 = highest. Part of the larger fall for high "
+                   "starters is regression to the mean.")
+    st.caption(f"Main sample ({int(logic.kn(n, 'n_main_sample')):,} games). Values are mean change in the "
+               "displayed rating since entry with 95% confidence intervals.")
 
 
 def _lookup_other(query: str) -> None:
@@ -202,10 +244,10 @@ def section_lookup(n: dict) -> None:
     frac = logic.share_fallen_further(now - start, dist)
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Entered the ranking", pd.Timestamp(row["entry_month"]).strftime("%b %Y"))
-    c2.metric(f"Rating: start to month {int(last['k'])}", f"{start:.2f} → {now:.2f}",
+    c2.metric(f"Rating: start to month {int(last['k'])}", f"{fmt(start, '.2f')} → {fmt(now, '.2f')}",
               text.signed(now - start))
     c3.metric(f"Fell further than (of {int(row['entry_year'])} launches)",
-              f"{100 * frac:.0f}%" if frac == frac else "n/a",
+              f"{fmt(100 * frac, '.0f')}%" if frac == frac else "n/a",
               help=f"Share of games launched in {int(row['entry_year'])} whose rating fell by "
                    "less over the same number of months.")
     q = row["hype_quartile"]
@@ -216,12 +258,12 @@ def section_lookup(n: dict) -> None:
     if adj == adj and adj is not None:
         train = cfg["train_entry_years"]
         in_sample = train[0] <= row["entry_year"] <= train[1]
-        c5.metric("Adjusted launch rating", f"{adj:.2f}",
+        c5.metric("Adjusted launch rating", f"{fmt(adj, '.2f')}",
                   help="What the Q4 model would show at entry instead of the raw average."
                        + (" This game is in the model's training years, so the fit is "
                           "in-sample." if in_sample else " Out-of-sample for this game."))
-        c5.caption(f"Displayed at entry: {start:.2f}. Actual by month {int(last['k'])}: "
-                   f"{now:.2f}" + (" (in-sample)" if in_sample else ""))
+        c5.caption(f"Displayed at entry: {fmt(start, '.2f')}. Actual by month {int(last['k'])}: "
+                   f"{fmt(now, '.2f')}" + (" (in-sample)" if in_sample else ""))
     r0, r1 = row["rank_m0"], last["rank"]
     c6.metric("Rank", f"{int(r0):,} → {int(r1):,}" if r0 == r0 and r1 == r1 else "n/a",
               help="Rank is based on a Bayes average, so it often improves while the raw average "
@@ -252,9 +294,10 @@ def section_method(n: dict) -> None:
         "predictive check.")
     wf = loaders.table("sample_waterfall")
     st.markdown("**Sample waterfall**")
-    st.dataframe(wf.rename(columns={"step_no": "#", "step": "Step", "n_games": "Games",
-                                    "removed": "Removed"}), hide_index=True,
-                 width="stretch")
+    wf_view = pd.DataFrame({
+        "Step": wf["step"], "Games": wf["n_games"].map("{:,}".format),
+        "Removed": wf["removed"].map(lambda v: "–" if pd.isna(v) else f"{int(v):,}")})
+    st.dataframe(wf_view, hide_index=True, width="stretch")
     qc = loaders.table("qc_results")
     counts = qc["status"].value_counts()
     st.markdown(f"**Data-quality checks.** {int(counts.get('PASS', 0))} of "
@@ -293,11 +336,13 @@ def main() -> None:
     st.caption("Post-release rating trajectories of board games on BoardGameGeek, 2016-2026")
     names = ["Overview", "New raters vs displayed", "Hype: speed, not size",
              "When can you trust a rating?"]
-    names += ["Look up a game"] if mode == "full" else []
+    names += ["Explore segments"]
+    names += ["Look up a game (local)"] if mode == "full" else []
     names += ["Method & data"]
     tabs = st.tabs(names)
     sections = [lambda: section_overview(n, mode), lambda: section_gap(n),
                 lambda: section_hype(n), lambda: section_trust(n, mode)]
+    sections += [lambda: section_explore(n)]
     sections += [lambda: section_lookup(n)] if mode == "full" else []
     sections += [lambda: section_method(n)]
     for tab, fn in zip(tabs, sections, strict=True):

@@ -47,12 +47,13 @@ def _md(s: str) -> str:
     return re.sub(r"`(.+?)`", r"<code>\1</code>", s)
 
 
-def _table_html(df: pd.DataFrame, formats: dict[str, str] | None = None) -> str:
+def _table_html(df: pd.DataFrame, formats: dict | None = None) -> str:
+    """HTML table; ``formats`` maps a column to a callable formatting its values."""
     formats = formats or {}
     head = "".join(f"<th>{html.escape(str(c))}</th>" for c in df.columns)
     rows = []
     for _, r in df.iterrows():
-        cells = "".join(f"<td>{formats.get(c, '{}').format(r[c])}</td>" for c in df.columns)
+        cells = "".join(f"<td>{formats.get(c, str)(r[c])}</td>" for c in df.columns)
         rows.append(f"<tr>{cells}</tr>")
     return f"<table><tr>{head}</tr>{''.join(rows)}</table>"
 
@@ -60,6 +61,7 @@ def _table_html(df: pd.DataFrame, formats: dict[str, str] | None = None) -> str:
 def run_export_static(cfg: Config) -> Path:
     """Write reports/site/index.html and return its path."""
     charts, logic, text = _import_app_lib(cfg)
+    from lib.fmt import fmt, pct  # noqa: PLC0415
     data = cfg.root / "app" / "data"
     if not (data / "key_numbers.json").exists():
         raise FileNotFoundError("app/data is missing; run `bgg dashboard-data` first")
@@ -140,12 +142,13 @@ least 10 ratings were added, the rounding-error bound is at most 0.5 and the val
 <p class="cap">{_md(text.kickstarter_caption(n))}</p>
 
 <h2>When can you trust a new game's rating?</h2>
-<p>At the default setting (at least {100 * acfg["rule_share"]:.0f}% of games within
+<p>At the default setting (at least {fmt(100 * acfg["rule_share"], '.0f')}% of games within
 ±{acfg["rule_tolerance"]} of their {acfg["final_k"]}-month rating) the answer is
-<b>month {rule_k:.0f}</b> (bootstrap 95% CI {n["q4_rule_month"]["ci_low"]:.0f}-
-{n["q4_rule_month"]["ci_high"]:.0f}).</p>
+<b>month {fmt(rule_k, '.0f')}</b> (bootstrap 95% CI {fmt(n["q4_rule_month"]["ci_low"], '.0f')}-
+{fmt(n["q4_rule_month"]["ci_high"], '.0f')}).</p>
 {plot(charts.fig_trust(trust_curve, acfg["rule_tolerance"], acfg["rule_share"], rule_k))}
-{_table_html(share_tbl, {"Month": "{:.0f}", **{c: "{:.1%}" for c in share_tbl.columns[1:]}})}
+{_table_html(share_tbl, {"Month": lambda v: fmt(v, ".0f"),
+                         **{c: (lambda v: pct(v, 1)) for c in share_tbl.columns[1:]}})}
 <p class="cap">{_md(text.trust_footnote())}</p>
 <h3>A platform could show an adjusted launch rating</h3>
 {plot(charts.fig_adjusted(bars, acfg["rule_tolerance"]))}

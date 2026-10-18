@@ -5,9 +5,15 @@ from __future__ import annotations
 import re
 
 from bgg.config import Config
+from bgg.fmt import fmt
 
 _PLACEHOLDER = re.compile(r"\{(\w+)((?:\|\w+)*)(?::([^}]*))?\}")
 _TRANSFORMS = {"abs": abs, "pct": lambda v: 100 * v}
+
+
+def fmt_value(value: float, spec: str) -> str:
+    """Half-up formatting for float specs, standard formatting for anything else."""
+    return fmt(value, spec) if spec else str(value)
 
 
 def fill(template: str, numbers: dict[str, dict]) -> str:
@@ -17,13 +23,13 @@ def fill(template: str, numbers: dict[str, dict]) -> str:
     never silently show a stale or invented number.
     """
     def sub(m: re.Match[str]) -> str:
-        key, transforms, fmt = m.group(1), m.group(2), m.group(3) or ""
+        key, transforms, spec = m.group(1), m.group(2), m.group(3) or ""
         if key not in numbers:
             raise KeyError(f"title placeholder {key!r} has no key number")
         value = numbers[key]["value"]
         for t in filter(None, transforms.split("|")):
             value = _TRANSFORMS[t](value)
-        return format(value, fmt)
+        return fmt_value(value, spec)
 
     return _PLACEHOLDER.sub(sub, template)
 

@@ -1,0 +1,53 @@
+group_type,group_value,metric,mean,ci_low,ci_high,n
+none,All new games,change_12,-0.2445,-0.252689,-0.236311,6920
+none,All new games,change_36,-0.401237,-0.411708,-0.390766,6927
+launch_year,2017,change_12,-0.264761,-0.285213,-0.24431,1027
+launch_year,2017,change_36,-0.42107,-0.446428,-0.395712,1028
+launch_year,2018,change_12,-0.262033,-0.283282,-0.240784,1038
+launch_year,2018,change_36,-0.409047,-0.436495,-0.381599,1039
+launch_year,2019,change_12,-0.211573,-0.231183,-0.191962,1062
+launch_year,2019,change_36,-0.373578,-0.398117,-0.349039,1062
+launch_year,2020,change_12,-0.254532,-0.277341,-0.231724,909
+launch_year,2020,change_36,-0.442802,-0.47131,-0.414294,910
+launch_year,2021,change_12,-0.272047,-0.294598,-0.249497,972
+launch_year,2021,change_36,-0.44,-0.468922,-0.411078,972
+launch_year,2022,change_12,-0.224406,-0.245887,-0.202925,1044
+launch_year,2022,change_36,-0.366313,-0.395689,-0.336938,1047
+launch_year,2023,change_12,-0.222661,-0.246426,-0.198897,868
+launch_year,2023,change_36,-0.357434,-0.386912,-0.327956,869
+hype_quartile,Q1,change_12,-0.181591,-0.195901,-0.16728,1729
+hype_quartile,Q1,change_36,-0.364616,-0.388536,-0.340696,1731
+hype_quartile,Q2,change_12,-0.240647,-0.256233,-0.225062,1730
+hype_quartile,Q2,change_36,-0.39659,-0.41607,-0.377109,1730
+hype_quartile,Q3,change_12,-0.287051,-0.302314,-0.271787,1719
+hype_quartile,Q3,change_36,-0.434491,-0.453052,-0.41593,1719
+hype_quartile,Q4,change_12,-0.268973,-0.288333,-0.249614,1734
+hype_quartile,Q4,change_36,-0.409198,-0.430336,-0.388061,1734
+start_decile,D01,change_12,-0.0241488,-0.0549353,0.00663777,699
+start_decile,D01,change_36,-0.0458571,-0.0856019,-0.00611237,700
+start_decile,D02,change_12,-0.123251,-0.142232,-0.104271,689
+start_decile,D02,change_36,-0.21238,-0.235619,-0.189142,689
+start_decile,D03,change_12,-0.142164,-0.163498,-0.12083,707
+start_decile,D03,change_36,-0.251088,-0.276743,-0.225432,708
+start_decile,D04,change_12,-0.191784,-0.214334,-0.169233,684
+start_decile,D04,change_36,-0.332295,-0.357757,-0.306833,684
+start_decile,D05,change_12,-0.227468,-0.248054,-0.206883,711
+start_decile,D05,change_36,-0.383797,-0.409493,-0.358102,711
+start_decile,D06,change_12,-0.277893,-0.300322,-0.255464,674
+start_decile,D06,change_36,-0.444985,-0.472548,-0.417422,674
+start_decile,D07,change_12,-0.303931,-0.324592,-0.283271,697
+start_decile,D07,change_36,-0.469986,-0.493531,-0.44644,699
+start_decile,D08,change_12,-0.328211,-0.351974,-0.304447,693
+start_decile,D08,change_36,-0.518701,-0.546388,-0.491014,693
+start_decile,D09,change_12,-0.385504,-0.411651,-0.359358,674
+start_decile,D09,change_36,-0.604763,-0.638941,-0.570586,676
+start_decile,D10,change_12,-0.44841,-0.480214,-0.416607,692
+start_decile,D10,change_36,-0.759423,-0.798639,-0.720206,693
+popularity,Other games,change_12,-0.252816,-0.260974,-0.244658,6226
+popularity,Other games,change_36,-0.41369,-0.424326,-0.403054,6233
+popularity,Top 10% by raters,change_12,-0.169899,-0.205648,-0.134151,694
+popularity,Top 10% by raters,change_36,-0.289395,-0.330897,-0.247893,694
+kickstarted,Kickstarted,change_12,-0.330513,-0.34929,-0.311737,1558
+kickstarted,Kickstarted,change_36,-0.53641,-0.560203,-0.512617,1560
+kickstarted,Not Kickstarted,change_12,-0.220988,-0.231669,-0.210308,3380
+kickstarted,Not Kickstarted,change_36,-0.360506,-0.373337,-0.347674,3381

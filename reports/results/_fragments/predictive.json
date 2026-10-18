@@ -15,6 +15,30 @@
     "source": "q4_accuracy_by_k",
     "definition": "share within tolerance at the rule month"
   },
+  "q4_within_010_k0": {
+    "value": 0.12703912227515518,
+    "ci_low": 0.11919671106758895,
+    "ci_high": 0.13488153348272142,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.1"
+  },
+  "q4_within_015_k0": {
+    "value": 0.18175256243684135,
+    "ci_low": 0.17267088493345892,
+    "ci_high": 0.19083423994022378,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.15"
+  },
+  "q4_within_020_k0": {
+    "value": 0.2415186949617439,
+    "ci_low": 0.23143937354301303,
+    "ci_high": 0.2515980163804748,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.2"
+  },
   "q4_within_025_k0": {
     "value": 0.3151436408257543,
     "ci_low": 0.3042031325764409,
@@ -22,6 +46,38 @@
     "n": 6927,
     "source": "q4_accuracy_by_k",
     "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.25"
+  },
+  "q4_within_030_k0": {
+    "value": 0.37664212501804534,
+    "ci_low": 0.3652313104356597,
+    "ci_high": 0.38805293960043097,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.3"
+  },
+  "q4_within_035_k0": {
+    "value": 0.4397285982387758,
+    "ci_low": 0.4280396600853797,
+    "ci_high": 0.4514175363921719,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.35"
+  },
+  "q4_within_040_k0": {
+    "value": 0.4963187527067995,
+    "ci_low": 0.484544273399293,
+    "ci_high": 0.508093232014306,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.4"
+  },
+  "q4_within_045_k0": {
+    "value": 0.5573841489822434,
+    "ci_low": 0.545687155013565,
+    "ci_high": 0.5690811429509218,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.45"
   },
   "q4_within_050_k0": {
     "value": 0.6252345892882922,
@@ -39,6 +95,30 @@
     "source": "q4_accuracy_by_k",
     "definition": "mean absolute error of avg at k=0 vs month-36 avg"
   },
+  "q4_within_010_k3": {
+    "value": 0.15745296671490594,
+    "ci_low": 0.14886501589887505,
+    "ci_high": 0.16604091753093683,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.1"
+  },
+  "q4_within_015_k3": {
+    "value": 0.24196816208393632,
+    "ci_low": 0.2318700570439797,
+    "ci_high": 0.25206626712389296,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.15"
+  },
+  "q4_within_020_k3": {
+    "value": 0.326917510853835,
+    "ci_low": 0.3158571248106955,
+    "ci_high": 0.33797789689697455,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.2"
+  },
   "q4_within_025_k3": {
     "value": 0.4389290882778582,
     "ci_low": 0.4272280848667246,
@@ -46,6 +126,38 @@
     "n": 6910,
     "source": "q4_accuracy_by_k",
     "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.25"
+  },
+  "q4_within_030_k3": {
+    "value": 0.5256150506512302,
+    "ci_low": 0.5138412576835625,
+    "ci_high": 0.5373888436188978,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.3"
+  },
+  "q4_within_035_k3": {
+    "value": 0.6065123010130246,
+    "ci_low": 0.5949936284081124,
+    "ci_high": 0.6180309736179367,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.35"
+  },
+  "q4_within_040_k3": {
+    "value": 0.6800289435600579,
+    "ci_low": 0.6690303768297731,
+    "ci_high": 0.6910275102903428,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.4"
+  },
+  "q4_within_045_k3": {
+    "value": 0.7416787264833574,
+    "ci_low": 0.7313581241272271,
+    "ci_high": 0.7519993288394877,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.45"
   },
   "q4_within_050_k3": {
     "value": 0.8065123010130246,
@@ -63,6 +175,30 @@
     "source": "q4_accuracy_by_k",
     "definition": "mean absolute error of avg at k=3 vs month-36 avg"
   },
+  "q4_within_010_k6": {
+    "value": 0.20364477870986405,
+    "ci_low": 0.19415226048815123,
+    "ci_high": 0.21313729693157688,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.1"
+  },
+  "q4_within_015_k6": {
+    "value": 0.3122649696268441,
+    "ci_low": 0.3013414249227074,
+    "ci_high": 0.3231885143309808,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.15"
+  },
+  "q4_within_020_k6": {
+    "value": 0.41842638125542375,
+    "ci_low": 0.40679842840986485,
+    "ci_high": 0.43005433410098265,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.2"
+  },
   "q4_within_025_k6": {
     "value": 0.5535146080416546,
     "ci_low": 0.541796444511798,
@@ -70,6 +206,38 @@
     "n": 6914,
     "source": "q4_accuracy_by_k",
     "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.25"
+  },
+  "q4_within_030_k6": {
+    "value": 0.647092855076656,
+    "ci_low": 0.6358285368387582,
+    "ci_high": 0.6583571733145539,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.3"
+  },
+  "q4_within_035_k6": {
+    "value": 0.7340179346253978,
+    "ci_low": 0.7236026559053699,
+    "ci_high": 0.7444332133454257,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.35"
+  },
+  "q4_within_040_k6": {
+    "value": 0.795776684986983,
+    "ci_low": 0.7862741462225024,
+    "ci_high": 0.8052792237514635,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.4"
+  },
+  "q4_within_045_k6": {
+    "value": 0.8456754411339311,
+    "ci_low": 0.8371599291360586,
+    "ci_high": 0.8541909531318036,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.45"
   },
   "q4_within_050_k6": {
     "value": 0.8890656638704079,
@@ -87,6 +255,30 @@
     "source": "q4_accuracy_by_k",
     "definition": "mean absolute error of avg at k=6 vs month-36 avg"
   },
+  "q4_within_010_k12": {
+    "value": 0.3184971098265896,
+    "ci_low": 0.3075199592148941,
+    "ci_high": 0.32947426043828504,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.1"
+  },
+  "q4_within_015_k12": {
+    "value": 0.4841040462427746,
+    "ci_low": 0.47232924889818995,
+    "ci_high": 0.49587884358735923,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.15"
+  },
+  "q4_within_020_k12": {
+    "value": 0.6359826589595375,
+    "ci_low": 0.6246459578232544,
+    "ci_high": 0.6473193600958207,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.2"
+  },
   "q4_within_025_k12": {
     "value": 0.7721098265895954,
     "ci_low": 0.7622264495521468,
@@ -94,6 +286,38 @@
     "n": 6920,
     "source": "q4_accuracy_by_k",
     "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.25"
+  },
+  "q4_within_030_k12": {
+    "value": 0.8459537572254335,
+    "ci_low": 0.8374482172305366,
+    "ci_high": 0.8544592972203304,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.3"
+  },
+  "q4_within_035_k12": {
+    "value": 0.8936416184971099,
+    "ci_low": 0.8863777064454134,
+    "ci_high": 0.9009055305488064,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.35"
+  },
+  "q4_within_040_k12": {
+    "value": 0.9245664739884393,
+    "ci_low": 0.9183441259509639,
+    "ci_high": 0.9307888220259146,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.4"
+  },
+  "q4_within_045_k12": {
+    "value": 0.9429190751445087,
+    "ci_low": 0.9374528724049115,
+    "ci_high": 0.9483852778841059,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.45"
   },
   "q4_within_050_k12": {
     "value": 0.9585260115606936,
@@ -111,6 +335,30 @@
     "source": "q4_accuracy_by_k",
     "definition": "mean absolute error of avg at k=12 vs month-36 avg"
   },
+  "q4_within_010_k18": {
+    "value": 0.5048417401358578,
+    "ci_low": 0.4930606888229195,
+    "ci_high": 0.5166227914487962,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.1"
+  },
+  "q4_within_015_k18": {
+    "value": 0.7011128775834659,
+    "ci_low": 0.6903263420129323,
+    "ci_high": 0.7118994131539994,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.15"
+  },
+  "q4_within_020_k18": {
+    "value": 0.8323457146986559,
+    "ci_low": 0.8235434665193258,
+    "ci_high": 0.8411479628779861,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.2"
+  },
   "q4_within_025_k18": {
     "value": 0.9122705593293828,
     "ci_low": 0.9056045039688002,
@@ -118,6 +366,38 @@
     "n": 6919,
     "source": "q4_accuracy_by_k",
     "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.25"
+  },
+  "q4_within_030_k18": {
+    "value": 0.9439225321578263,
+    "ci_low": 0.9385013153001472,
+    "ci_high": 0.9493437490155053,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.3"
+  },
+  "q4_within_035_k18": {
+    "value": 0.9625668449197861,
+    "ci_low": 0.9580940594122472,
+    "ci_high": 0.9670396304273249,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.35"
+  },
+  "q4_within_040_k18": {
+    "value": 0.9731175025292672,
+    "ci_low": 0.9693063892752823,
+    "ci_high": 0.9769286157832521,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.4"
+  },
+  "q4_within_045_k18": {
+    "value": 0.9804885099002746,
+    "ci_low": 0.9772293859383454,
+    "ci_high": 0.9837476338622038,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.45"
   },
   "q4_within_050_k18": {
     "value": 0.9838126896950427,
@@ -135,6 +415,30 @@
     "source": "q4_accuracy_by_k",
     "definition": "mean absolute error of avg at k=18 vs month-36 avg"
   },
+  "q4_within_010_k24": {
+    "value": 0.7326689774696707,
+    "ci_low": 0.7222444561208302,
+    "ci_high": 0.7430934988185113,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.1"
+  },
+  "q4_within_015_k24": {
+    "value": 0.8856152512998267,
+    "ci_low": 0.878118309377642,
+    "ci_high": 0.8931121932220113,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.15"
+  },
+  "q4_within_020_k24": {
+    "value": 0.9423743500866552,
+    "ci_low": 0.9368853000665258,
+    "ci_high": 0.9478634001067845,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.2"
+  },
   "q4_within_025_k24": {
     "value": 0.9709705372616985,
     "ci_low": 0.9670159599818389,
@@ -142,6 +446,38 @@
     "n": 6924,
     "source": "q4_accuracy_by_k",
     "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.25"
+  },
+  "q4_within_030_k24": {
+    "value": 0.9806470248411323,
+    "ci_low": 0.9774020766378106,
+    "ci_high": 0.983891973044454,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.3"
+  },
+  "q4_within_035_k24": {
+    "value": 0.9877238590410168,
+    "ci_low": 0.9851301201900255,
+    "ci_high": 0.990317597892008,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.35"
+  },
+  "q4_within_040_k24": {
+    "value": 0.9896013864818024,
+    "ci_low": 0.9872119504527013,
+    "ci_high": 0.9919908225109035,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.4"
+  },
+  "q4_within_045_k24": {
+    "value": 0.9914789139225881,
+    "ci_low": 0.9893138697618103,
+    "ci_high": 0.9936439580833659,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.45"
   },
   "q4_within_050_k24": {
     "value": 0.9935008665511266,

@@ -128,7 +128,7 @@
     "definition": "mean of (new_avg_3 - avg_rating) at k=36, usable rows, equal weight per row"
   },
   "control_drift_36": {
-    "value": -0.015813471578991937,
+    "value": -0.0158134715789919,
     "ci_low": null,
     "ci_high": null,
     "n": 6927,

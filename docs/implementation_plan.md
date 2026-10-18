@@ -270,11 +270,11 @@ Suggested pacing from 19 Oct: M1–M2 by early Nov, M3–M4 by mid/late Nov, M6�
 ## 11. Open decisions
 
 - [x] Python only (`linearmodels`/`statsmodels`) for models (decided 2026-10-18)
-- [ ] Write-up home: README only, a blog (Medium/personal site), or both?
+- [ ] Write-up home: README front page + full `reports/writeup.md` in the repo (task 04 default); blog/LinkedIn optional
 - [x] Q3 (crowdfunding) included: Kaggle data provided, descriptive result (decided 2026-10-18)
 - [x] Include Q4 (predictive rule) + an adjusted-predictor mini model (decided 2026-10-18)
 - [x] Dashboard: Streamlit + static HTML fallback (decided 2026-10-18)
-- [ ] May derived data (panel/game_summary) be published for the dashboard, given the source repo has no licence?
+- [x] Data publication: aggregates only (D0, decided 2026-10-18); game-level data never published
 
 ---
 
@@ -301,3 +301,4 @@ Suggested pacing from 19 Oct: M1–M2 by early Nov, M3–M4 by mid/late Nov, M6�
 | 2026-10-18 | Analysis M3-M5 | `uv run bgg analysis` runs descriptives, event study, Q2 specs A-D, Q4 rule and adjusted predictor, robustness grid, Q3 (Kaggle data present) and key_numbers.json (117 numbers). All 20 data_notes section 11 sanity values reproduced. H2 not supported (hype coefficients A +0.049, B -0.004). Skipped: daily-vs-monthly robustness, walkthrough notebook. See data_notes section 12. |
 | 2026-10-18 | Analysis review + dashboard handoff | Analysis validated (all 20 sanity values, consistent robustness). New insight: hype changes the *speed* of the fade, not its size (dilution of entry ratings); Kickstarter games fade more even at equal start. Written: `docs/findings.md`, draft `reports/writeup.md`, task 03 spec `docs/handoff/04_TASK_dashboard.md` |
 | 2026-10-18 | Task 03 (dashboard) | Part A: new key numbers (163 total, 34/34 sanity values), figs 9-10, action titles from key_numbers, social card. Part B: `bgg dashboard-data` (app/data, 3.7 MB). Part C: Streamlit app (6 sections, APP_MODE full/aggregates). Part D: `bgg export-static`, `docs/deploy.md`; **not deployed**, pending D0. |
+| 2026-10-18 | Dashboard review + publish handoff | Task 03 verified (34/34 sanity values, figures and app checked). Fixes queued: aggregate tolerance grid for sliders, consistent rounding, explore-segments view. Write-up → draft v2. Task 04 spec: `docs/handoff/06_TASK_publish.md` |

@@ -18,7 +18,7 @@ import pandas as pd
 from bgg.analysis.crowdfunding import load_kaggle
 from bgg.analysis.data import Inputs, control_series, load_inputs
 from bgg.analysis.io import results_dir, write_table
-from bgg.analysis.stats import group_mean_ci
+from bgg.analysis.stats import group_mean_ci, mean_ci
 from bgg.config import Config
 
 log = logging.getLogger(__name__)
@@ -26,6 +26,7 @@ log = logging.getLogger(__name__)
 APP_DIR_NAME = "app"
 COPY_TABLES = [
     "curve_overall", "curve_by_entry_year", "curve_by_hype_quartile", "curve_by_segment",
+    "segment_change",
     "control_series", "control_curve_by_age", "gap_new_vs_displayed", "segments",
     "speed_not_size", "kickstarter_by_band", "q4_accuracy_by_k", "q4_adjusted_predictor",
     "sample_waterfall", "cohort_sizes", "table1_sample",
@@ -117,11 +118,39 @@ def build_other_games(cfg: Config) -> pd.DataFrame:
     return df
 
 
+def _start_deciles(games: pd.DataFrame, n_bins: int = 10) -> pd.Series:
+    """Decile label (D01 lowest starting average ... D10 highest) per main-sample game."""
+    m = games[games["main_sample"]].set_index("game_id")["avg_m0"]
+    return ("D" + (pd.qcut(m, n_bins, labels=False, duplicates="drop") + 1).astype(str).str.zfill(2))
+
+
+def segment_change_table(inp: Inputs, games: pd.DataFrame) -> pd.DataFrame:
+    """change_12 / change_36 by segment (mean, 95% CI, n) for the 'Explore segments' view."""
+    m = games[games["main_sample"]].copy()
+    m["entry_year_s"] = m["entry_year"].astype(str)
+    m["hype_s"] = m["hype_quartile"].map(lambda v: f"Q{int(v)}" if v == v else None)
+    m["decile"] = m["game_id"].map(_start_deciles(games, inp.acfg["segments"]["avg0_deciles"]))
+    m["popularity"] = np.where(m["popular_top"], "Top 10% by raters", "Other games")
+    m["ks"] = m["kickstarted"].map({1: "Kickstarted", 0: "Not Kickstarted"})
+    rows = []
+    for gtype, col in (("none", None), ("launch_year", "entry_year_s"), ("hype_quartile", "hype_s"),
+                       ("start_decile", "decile"), ("popularity", "popularity"),
+                       ("kickstarted", "ks")):
+        groups = [("All new games", m)] if col is None else list(m.dropna(subset=[col]).groupby(col))
+        for val, g in groups:
+            for metric in ("change_12", "change_36"):
+                st = mean_ci(g[metric], inp.z)
+                rows.append({"group_type": gtype, "group_value": val, "metric": metric,
+                             "mean": st["mean"], "ci_low": st["ci_low"], "ci_high": st["ci_high"],
+                             "n": st["n"]})
+    return pd.DataFrame(rows)
+
+
 def curve_by_segment(cfg: Config, inp: Inputs, games: pd.DataFrame,
                      series: pd.DataFrame) -> pd.DataFrame:
     """Mean change curves for every 'compare by' option, raw and drift-adjusted (long format)."""
     p = inp.panel[inp.panel["game_id"].isin(inp.main_ids)].merge(
-        games[["game_id", "popular_top", "kickstarted"]], on="game_id")
+        games[["game_id", "popular_top", "kickstarted", "avg_m0"]], on="game_id")
     ctrl = series.set_index("snap_month")["mean_avg"]
     drift = (p["snap_month"].map(ctrl) - p["entry_month"].map(ctrl)).to_numpy()
     p["d_adjusted"] = p["d_rating"] - drift
@@ -131,8 +160,9 @@ def curve_by_segment(cfg: Config, inp: Inputs, games: pd.DataFrame,
     p["hype_s"] = p["hype_quartile"].map(lambda v: f"Q{int(v)}" if v == v else None)
     p["popularity"] = np.where(p["popular_top"], "Top 10% by raters", "Other games")
     p["ks"] = p["kickstarted"].map({1: "Kickstarted", 0: "Not Kickstarted"})
+    p["decile"] = p["game_id"].map(_start_deciles(games))
     specs = [("none", "all"), ("launch_year", "entry_year_s"), ("hype_quartile", "hype_s"),
-             ("popularity", "popularity"), ("kickstarted", "ks")]
+             ("start_decile", "decile"), ("popularity", "popularity"), ("kickstarted", "ks")]
     z = inp.z
     frames = []
     for gtype, col in specs:
@@ -182,6 +212,7 @@ def run_dashboard_data(cfg: Config, aggregates_only: bool = False) -> None:
 
     seg = curve_by_segment(cfg, inp, games, series)
     write_table(cfg, seg, "curve_by_segment")
+    write_table(cfg, segment_change_table(inp, games), "segment_change")
 
     tdir = out / "tables"
     tdir.mkdir(exist_ok=True)

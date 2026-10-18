@@ -98,6 +98,7 @@ Not done: daily-vs-monthly snapshot robustness (needs a multi-GB download).
 - [control_series.csv](../tables/control_series.csv)
 - [curve_by_entry_year.csv](../tables/curve_by_entry_year.csv)
 - [curve_by_hype_quartile.csv](../tables/curve_by_hype_quartile.csv)
+- [curve_by_segment.csv](../tables/curve_by_segment.csv)
 - [curve_overall.csv](../tables/curve_overall.csv)
 - [examples.csv](../tables/examples.csv)
 - [gap_new_vs_displayed.csv](../tables/gap_new_vs_displayed.csv)

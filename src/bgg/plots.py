@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.figure import Figure
 
+from bgg.fmt import fmt
 from bgg.style import CYCLE, PALETTE, SEQ4
 
 log = logging.getLogger(__name__)
@@ -59,11 +60,11 @@ def fig01_rating_change(curve: pd.DataFrame, share: dict[str, float]) -> Figure:
     for k in (12, 24, 36):
         r = curve[curve["k"] == k].iloc[0]
         ax.plot([k], [r["mean"]], "o", color=PALETTE["blue"])
-        ax.annotate(f"{r['mean']:+.3f}", (k, r["mean"]), textcoords="offset points",
+        ax.annotate(f"{fmt(r['mean'], '+.3f')}", (k, r["mean"]), textcoords="offset points",
                     xytext=(0, -14), ha="center", fontsize=9)
     ax.text(0.98, 0.95,
-            f"{100 * share['value']:.0f}% of the 3-year decline happens in year 1\n"
-            f"(95% CI {100 * share['ci_low']:.0f}-{100 * share['ci_high']:.0f}%)",
+            f"{fmt(100 * share['value'], '.0f')}% of the 3-year decline happens in year 1\n"
+            f"(95% CI {fmt(100 * share['ci_low'], '.0f')}-{fmt(100 * share['ci_high'], '.0f')}%)",
             transform=ax.transAxes, ha="right", va="top", fontsize=9)
     ax.set_xlabel("Months since entering the ranking")
     ax.set_ylabel("Change in displayed average rating")
@@ -101,8 +102,8 @@ def fig03_cohorts_control(by_year: pd.DataFrame, control_curve: pd.DataFrame,
     b.axhline(0, color="black", lw=0.8)
     b.set_ylabel("Mean average, rebased to 2016-10")
     b.set_title(f"Zoomed scale: drift of {int(control['n_games'].iloc[0]):,} mature games")
-    b.text(0.97, 0.95, f"Raw 36-month change {adjusted['raw']:+.3f}\ncontrol drift "
-           f"{adjusted['drift']:+.3f}\nadjusted {adjusted['adjusted']:+.3f}",
+    b.text(0.97, 0.95, f"Raw 36-month change {fmt(adjusted['raw'], '+.3f')}\ncontrol drift "
+           f"{fmt(adjusted['drift'], '+.3f')}\nadjusted {fmt(adjusted['adjusted'], '+.3f')}",
            transform=b.transAxes, fontsize=9, ha="right", va="top")
     return fig
 
@@ -116,7 +117,7 @@ def fig04_distribution(change36: pd.Series, deciles: pd.DataFrame, share_declini
     a.hist(c, bins=60, range=x_range, color=PALETTE["blue"], alpha=0.85)
     a.axvline(0, color="black", lw=0.8)
     a.axvline(median, color=PALETTE["red"], lw=1.4, ls="--")
-    a.text(0.97, 0.95, f"{100 * share_declining:.1f}% decline\nmedian {median:+.2f}",
+    a.text(0.97, 0.95, f"{fmt(100 * share_declining, '.1f')}% decline\nmedian {fmt(median, '+.2f')}",
            transform=a.transAxes, ha="right", va="top")
     a.text(0.97, 0.80, f"{n_out} games outside the range", transform=a.transAxes, ha="right",
            va="top", fontsize=8, color="#555555")
@@ -127,7 +128,7 @@ def fig04_distribution(change36: pd.Series, deciles: pd.DataFrame, share_declini
     b.errorbar(x, deciles["mean"], yerr=[deciles["mean"] - deciles["ci_low"],
                                          deciles["ci_high"] - deciles["mean"]],
                fmt="o-", color=PALETTE["blue"], capsize=3)
-    b.set_xticks(x, [f"{v:.1f}" for v in deciles["avg_m0_mean"]])
+    b.set_xticks(x, [f"{fmt(v, '.1f')}" for v in deciles["avg_m0_mean"]])
     b.set_xlabel("Average rating at entry (decile mean)")
     b.set_ylabel("Mean change to month 36")
     b.set_title("High starters fall most (partly regression to the mean)")
@@ -188,8 +189,8 @@ def fig08_when_to_trust(acc: pd.DataFrame, rule: dict[str, float], tol: float,
     ax.axhline(100 * share, color=PALETTE["grey"], ls="--", lw=1)
     if not np.isnan(rule["k"]):
         ax.axvline(rule["k"], color=PALETTE["red"], lw=1.2)
-        ax.text(rule["k"] + 0.4, 5, f"month {int(rule['k'])}\n(95% CI {rule['ci_low']:.0f}-"
-                f"{rule['ci_high']:.0f})", color=PALETTE["red"], fontsize=9)
+        ax.text(rule["k"] + 0.4, 5, f"month {int(rule['k'])}\n(95% CI {fmt(rule['ci_low'], '.0f')}-"
+                f"{fmt(rule['ci_high'], '.0f')})", color=PALETTE["red"], fontsize=9)
     ax.set_xlabel("Months since entering the ranking")
     ax.set_ylabel(f"% of games within ±{tol} of their month-36 rating")
     ax.set_ylim(0, 100)
@@ -232,7 +233,7 @@ def fig10_kickstarter(bands: pd.DataFrame, raw: dict[str, float]) -> Figure:
                                                            d["ci_high"] - d["mean"]],
                     fmt="o-", color=color, capsize=3, label=label)
     ax.axhline(0, color="black", lw=0.8)
-    ax.text(0.02, 0.05, f"Raw means: Kickstarted {raw['ks']:+.2f}, other {raw['other']:+.2f}\n"
+    ax.text(0.02, 0.05, f"Raw means: Kickstarted {fmt(raw['ks'], '+.2f')}, other {fmt(raw['other'], '+.2f')}\n"
             "(Kickstarted games also start higher)", transform=ax.transAxes, fontsize=9)
     ax.set_xlabel("Average rating at entry (0.5-wide bands)")
     ax.set_ylabel("Mean change to month 36")

@@ -5,12 +5,14 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
+from lib.fmt import fmt
 from plotly.subplots import make_subplots
 
 BLUE, ORANGE, GREEN, RED = "#0072B2", "#E69F00", "#009E73", "#D55E00"
 PURPLE, SKY, GREY = "#CC79A7", "#56B4E9", "#666666"
 CYCLE = [BLUE, ORANGE, GREEN, RED, PURPLE, SKY, GREY]
 SEQ4 = ["#9ECAE1", "#4292C6", "#2171B5", "#08306B"]
+MILESTONES = (12, 24, 36)
 FONT = dict(family="Arial, sans-serif", size=13, color="#222222")
 
 
@@ -59,11 +61,45 @@ def fig_overview(curves: pd.DataFrame, group_type: str) -> go.Figure:
         if group_type == "hype_quartile":
             label = {"Q1": "Q1 (least hyped)", "Q4": "Q4 (most hyped)"}.get(g, g)
         _band_trace(fig, curves[curves["group_value"] == g].sort_values("k"), color, label)
+    if group_type == "none":  # label the headline points, as in the static Fig 1
+        d = curves[curves["k"].isin(MILESTONES)].sort_values("k")
+        fig.add_trace(go.Scatter(
+            x=d["k"], y=d["mean"], mode="markers+text", showlegend=False, hoverinfo="skip",
+            marker=dict(color=BLUE, size=9), text=[fmt(v, "+.2f", minus=True) for v in d["mean"]],
+            textposition="bottom center", textfont=dict(color=BLUE, size=12)))
     fig.add_hline(y=0, line_color="black", line_width=1)
     fig.update_xaxes(title="Months since entering the ranking")
     fig.update_yaxes(title="Change in displayed rating")
     fig.update_layout(showlegend=group_type != "none")
     return base_layout(fig)
+
+
+def fig_explore(seg: pd.DataFrame, overall: pd.DataFrame, group_type: str) -> go.Figure:
+    """Segment curves (colour) against the overall curve (dashed grey), with CI bands."""
+    fig = go.Figure()
+    groups = sorted(seg["group_value"].unique())
+    n_groups = len(groups)
+    for i, g in enumerate(groups):
+        if group_type in ("hype_quartile", "start_decile"):
+            shade = i / max(n_groups - 1, 1)
+            color = _blend("#9ECAE1", "#08306B", shade)
+        else:
+            color = CYCLE[i % len(CYCLE)]
+        _band_trace(fig, seg[seg["group_value"] == g].sort_values("k"), color, str(g))
+    o = overall.sort_values("k")
+    fig.add_trace(go.Scatter(x=o["k"], y=o["mean"], mode="lines", name="All new games",
+                             line=dict(color="#444444", dash="dash", width=2.2), hoverinfo="skip"))
+    fig.add_hline(y=0, line_color="black", line_width=1)
+    fig.update_xaxes(title="Months since entering the ranking")
+    fig.update_yaxes(title="Change in displayed rating")
+    return base_layout(fig, height=440)
+
+
+def _blend(c0: str, c1: str, t: float) -> str:
+    """Linear blend between two hex colours (t = 0 -> c0, t = 1 -> c1)."""
+    a = [int(c0[i:i + 2], 16) for i in (1, 3, 5)]
+    b = [int(c1[i:i + 2], 16) for i in (1, 3, 5)]
+    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(a, b, strict=True))
 
 
 def fig_gap(gap: pd.DataFrame) -> go.Figure:

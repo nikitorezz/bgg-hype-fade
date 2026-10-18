@@ -15,11 +15,13 @@ The audience is hiring managers and analytics leads, so code quality, readable S
 
 ## Current scope
 
-- ✅ **Done:** pipeline steps 1–5 (task 01) and analysis M3–M5 (task 02, reviewed: `docs/findings.md`).
-- 🔨 **Now:** task 03 (`docs/handoff/04_TASK_dashboard.md`): analysis polish (new key numbers, figs 9–10, action titles) + Streamlit dashboard + deployment prep. **Don't deploy** before the user answers the data-publication question (D0).
-- ⏭ **Not yet:** final README rewrite and write-up polish (task 04), slide deck, daily-snapshot robustness.
+- ✅ **Done:** pipeline (task 01), analysis (task 02, reviewed in `docs/findings.md`), dashboard (task 03, reviewed; D0 = aggregates only).
+- 🔨 **Now:** task 04 (`docs/handoff/06_TASK_publish.md`): dashboard fixes, README as portfolio front page, LICENSE + CI + hygiene, publish prep. **Ask before creating the GitHub repo or pushing.**
+- ⏭ Optional (ask first): walkthrough notebook, daily-vs-monthly robustness.
 
-Treat the pipeline and the reviewed analysis as stable. Change them only to fix a real bug, rerun the affected stages afterwards, and note the change. `docs/findings.md` and `reports/writeup.md` are the user's documents: report contradictions, don't edit them silently.
+**Publication rule (D0):** no game-level data (per-game rows, `app/data/*.parquet`, `data/external/`, `examples.csv`, lookup screenshots) may enter git or any deployment. Game names in static figures and the write-up are fine.
+
+Treat the pipeline and analysis as stable. `docs/findings.md` and `reports/writeup.md` are the user's documents: fill link placeholders only, and report anything else.
 
 ## Environment
 

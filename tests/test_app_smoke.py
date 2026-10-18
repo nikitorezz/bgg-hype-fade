@@ -101,3 +101,31 @@ def test_aggregates_mode_works_without_game_level_files(monkeypatch, tmp_path):
     assert not at.exception, [e.value for e in at.exception]
     assert "Look up a game" not in [t.label for t in at.tabs]
     importlib.reload(loaders)
+
+
+@needs_data
+def test_trust_sliders_work_in_aggregates_mode(monkeypatch):
+    at = _run("aggregates", monkeypatch)
+    nums = json.loads((DATA / "key_numbers.json").read_text(encoding="utf-8"))["numbers"]
+    month = lambda: next(m.value for m in at.metric if m.label == "Trust month")  # noqa: E731
+    assert month() == f"Month {nums['q4_rule_month']['value']:.0f}"       # default: +-0.25 / 80%
+    tol = next(s for s in at.select_slider if s.label.startswith("Tolerance"))
+    tol.set_value(0.5).run()
+    assert month() == "Month 3"                                           # looser tolerance, earlier
+    tol = next(s for s in at.select_slider if s.label.startswith("Tolerance"))
+    tol.set_value(0.1).run()
+    assert month() == "Month 26"
+    assert not at.exception
+
+
+@needs_data
+def test_explore_segments_renders_for_every_split(monkeypatch):
+    at = _run("aggregates", monkeypatch)
+    box = next(b for b in at.selectbox if b.label == "Split by")
+    for label in list(box.options):
+        box.set_value(label).run()
+        assert not at.exception, (label, [e.value for e in at.exception])
+        box = next(b for b in at.selectbox if b.label == "Split by")
+    # no per-game content anywhere on the page
+    page = " ".join(m.value for m in at.markdown)
+    assert "Ark Nova" not in page and "Wingspan" not in page

@@ -105,7 +105,7 @@ analysis:
     n_typical: 2
   q4:
     k_max: 30
-    tolerances: [0.25, 0.5]
+    tolerances: [0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50]   # dashboard slider steps
     rule_tolerance: 0.25
     rule_share: 0.80
     adjusted_ks: [0, 3, 6, 12]
