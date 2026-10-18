@@ -100,7 +100,6 @@ Not done: daily-vs-monthly snapshot robustness (needs a multi-GB download).
 - [curve_by_hype_quartile.csv](../tables/curve_by_hype_quartile.csv)
 - [curve_by_segment.csv](../tables/curve_by_segment.csv)
 - [curve_overall.csv](../tables/curve_overall.csv)
-- [examples.csv](../tables/examples.csv)
 - [gap_new_vs_displayed.csv](../tables/gap_new_vs_displayed.csv)
 - [kickstarter_by_band.csv](../tables/kickstarter_by_band.csv)
 - [q3_change_by_kickstarted.csv](../tables/q3_change_by_kickstarted.csv)
@@ -115,7 +114,6 @@ Not done: daily-vs-monthly snapshot robustness (needs a multi-GB download).
 
 ## Model and robustness outputs
 
-- [.gitkeep](.gitkeep)
 - [model_event_study.csv](model_event_study.csv)
 - [model_event_study.md](model_event_study.md)
 - [model_q2.csv](model_q2.csv)

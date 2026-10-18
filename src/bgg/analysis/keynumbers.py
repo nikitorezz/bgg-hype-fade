@@ -156,8 +156,11 @@ def write_summary(cfg: Config, numbers: dict[str, dict], sanity: pd.DataFrame) -
                           "n": numbers[k]["n"] if numbers[k]["n"] is not None else "-"}
                          for k, label in HEADLINE if k in numbers])
     figs = sorted(p.name for p in cfg.path("figures_dir").glob("fig*.png"))
-    tables = sorted(p.name for p in cfg.path("tables_dir").glob("*.csv"))
+    private = {"examples.csv"}  # game-level, git-ignored: never link it from a published report
+    tables = sorted(p.name for p in cfg.path("tables_dir").glob("*.csv")
+                    if p.name not in private)
     res = sorted(p.name for p in results_dir(cfg).glob("*") if p.is_file()
+                 and not p.name.startswith(".")
                  and p.name not in ("key_numbers.json", "results_summary.md"))
     text = (
         "# Results summary (auto-generated, facts only)\n\n"

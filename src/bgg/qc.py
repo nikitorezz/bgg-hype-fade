@@ -89,7 +89,7 @@ def _write_report(cfg: Config, con: duckdb.DuckDBPyConnection, header: list[str]
                   rows: list[tuple]) -> Counter:
     counts = Counter(r[header.index("status")] for r in rows)
     parts = [
-        "# QC report",
+        "# Data-quality report",
         "",
         f"- Run: {datetime.now().astimezone().isoformat(timespec='seconds')}",
         f"- Config end_month: {cfg.end_month}",

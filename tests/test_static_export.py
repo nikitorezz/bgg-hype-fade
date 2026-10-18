@@ -20,7 +20,7 @@ def test_dashboard_page_is_self_contained_and_matches_key_numbers():
     n = json.loads((DATA / "key_numbers.json").read_text(encoding="utf-8"))["numbers"]
     assert f"Month {n['q4_rule_month']['value']:.0f}" in page
     assert f"{100 * n['share_declining']['value']:.0f}%" in page
-    assert f"{abs(n['change_36']['value']):.2f} points" in page
+    assert f"{abs(n['change_36']['value']):.2f} rating points" in page
     assert "Look up" not in page            # no game-level content in the static page
     assert path.stat().st_size < 12e6
 

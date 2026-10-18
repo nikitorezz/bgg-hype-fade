@@ -1,13 +1,17 @@
-# Documentation index
+# Documentation
 
-| File | What it is |
+| Document | What it covers |
 |---|---|
-| [`data_notes.md`](data_notes.md) | Verified facts about the data and its traps (truncated files, duplicates, rounding), pipeline and analysis sanity values. Read before writing SQL. |
-| [`findings.md`](findings.md) | Review of the analysis: validation verdict, the interpreted findings F1-F9, the story and the caveats. |
-| [`deploy.md`](deploy.md) | Dashboard deployment: the data-publication decision (aggregates only), the Streamlit Cloud checklist, the static fallback. |
-| [`implementation_plan.md`](implementation_plan.md) | Original plan, pipeline and analysis design, and the progress log. |
-| [`proposal.md`](proposal.md) | The research proposal. |
-| [`handoff/`](handoff/) | How the project was built: the task specifications and kick-off prompts given to the coding assistant, in order. Kept for transparency. |
+| [Write-up](../reports/writeup.md) | The article: question, data, findings, what a platform could do, limitations. Start here. |
+| [Technical findings](findings.md) | Every finding with estimates and intervals, the model specifications, validation and caveats. |
+| [Data notes](data_notes.md) | The source data, its quality problems and fixes, sample construction, metric definitions and analysis traps. |
+| [Deployment](deploy.md) | Where the results are published, what is (and isn't) published, and how to update it. |
+| [Project history](project-history/) | The original proposal, the plan and the build specifications, kept for transparency. |
 
-The write-up itself is [`../reports/writeup.md`](../reports/writeup.md); all of its numbers come from
-[`../reports/results/key_numbers.json`](../reports/results/key_numbers.json).
+Generated reports:
+
+- [`reports/results/results_summary.md`](../reports/results/results_summary.md): every headline number with its interval and source
+- [`reports/results/`](../reports/results/): model tables (event study, hype regressions, crowdfunding, robustness)
+- [`reports/qc/qc_report.md`](../reports/qc/qc_report.md): the 36 automated data-quality checks
+
+All numbers in the documentation come from [`reports/results/key_numbers.json`](../reports/results/key_numbers.json).

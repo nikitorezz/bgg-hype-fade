@@ -1,5 +1,7 @@
 # Task: Build pipeline steps 1–5 from scratch
 
+> **Archived build specification** given to an AI coding assistant (Claude Code) during the project; see [`../README.md`](../README.md) for context. Section references to `docs/data_notes.md` point to an earlier version of that file.
+
 **Goal:** a reproducible pipeline that turns the GitHub archive of daily BGG ranking snapshots into a clean monthly panel of newly released games, plus a quality-check report, run with one command (`uv run bgg all`).
 
 Read first: `CLAUDE.md` (conventions), `docs/data_notes.md` (verified data facts; **most acceptance numbers below come from there**), and `config.yaml` (all parameters, already filled in).

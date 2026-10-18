@@ -1,4 +1,13 @@
-"""Plotly chart builders for the dashboard (no Streamlit import; reused by the static export)."""
+"""Plotly chart builders for the dashboard (no Streamlit import; reused by the static export).
+
+Design rules (kept deliberately few):
+- horizontal grid only, very light; no axis lines except the zero baseline
+- confidence bands only on single-series charts; multi-series charts show CIs on hover
+- lines are labelled at their right end instead of a legend wherever possible
+- ordered groups (launch year, hype quartile, decile) use one blue ramp, light to dark;
+  two-group splits use blue vs amber; "new raters" is plum; context lines are dashed grey
+Palette validated with the dataviz skill's validator (colour-blind separation and contrast).
+"""
 
 from __future__ import annotations
 
@@ -6,93 +15,26 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from lib.fmt import fmt
-from plotly.subplots import make_subplots
 
-BLUE, ORANGE, GREEN, RED = "#0072B2", "#E69F00", "#009E73", "#D55E00"
-PURPLE, SKY, GREY = "#CC79A7", "#56B4E9", "#666666"
-CYCLE = [BLUE, ORANGE, GREEN, RED, PURPLE, SKY, GREY]
-SEQ4 = ["#9ECAE1", "#4292C6", "#2171B5", "#08306B"]
+# --- tokens ------------------------------------------------------------------------------------
+INK, INK_2, INK_3 = "#1D2533", "#4A5466", "#6B7585"
+GRID, BASELINE = "#E9EDF2", "#1D2533"
+BLUE, PLUM, AMBER, GREY = "#2167B0", "#B23F68", "#B3770A", "#7A8494"
+RAMP_LIGHT, RAMP_DARK = "#93B8E0", "#0D3462"
+FONT_FAMILY = "IBM Plex Sans, Segoe UI, Helvetica Neue, Arial, sans-serif"
 MILESTONES = (12, 24, 36)
-FONT = dict(family="Arial, sans-serif", size=13, color="#222222")
+X_TITLE = "Months since entering the ranking"
+
+# kept for backwards compatibility with older imports
+RED, GREEN, SKY = PLUM, "#2E8B57", RAMP_LIGHT
+SEQ4 = ["#93B8E0", "#5A8FCB", "#2E66A8", "#0D3462"]
+CYCLE = [BLUE, AMBER, PLUM, GREY]
 
 
 def _rgba(hex_color: str, alpha: float) -> str:
     h = hex_color.lstrip("#")
     r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
     return f"rgba({r},{g},{b},{alpha})"
-
-
-def base_layout(fig: go.Figure, height: int = 420, legend_below: bool = True) -> go.Figure:
-    """Shared look: white background, light grid, compact margins, legend below (phone-friendly)."""
-    fig.update_layout(
-        font=FONT, height=height, margin=dict(l=55, r=15, t=15, b=50), plot_bgcolor="white",
-        hovermode="closest",
-        legend=(dict(orientation="h", y=-0.22, x=0) if legend_below else None))
-    fig.update_xaxes(gridcolor="#E5E5E5", zeroline=False, linecolor="#999999")
-    fig.update_yaxes(gridcolor="#E5E5E5", zeroline=False, linecolor="#999999")
-    return fig
-
-
-def _band_trace(fig, df, color, name, row=None, col=None, dash=None):
-    """Mean line plus CI band with a hover showing mean, CI and n."""
-    hover = ("<b>" + name + "</b><br>Month %{x}<br>Mean change %{y:+.3f}"
-             "<br>95% CI [%{customdata[0]:+.3f}, %{customdata[1]:+.3f}]<br>n = %{customdata[2]:,}"
-             "<extra></extra>")
-    kw = dict(row=row, col=col) if row else {}
-    fig.add_trace(go.Scatter(x=df["k"], y=df["ci_high"], mode="lines", line=dict(width=0),
-                             hoverinfo="skip", showlegend=False), **kw)
-    fig.add_trace(go.Scatter(x=df["k"], y=df["ci_low"], mode="lines", line=dict(width=0),
-                             fill="tonexty", fillcolor=_rgba(color, 0.18), hoverinfo="skip",
-                             showlegend=False), **kw)
-    fig.add_trace(go.Scatter(x=df["k"], y=df["mean"], mode="lines", name=name,
-                             line=dict(color=color, width=2.4, dash=dash),
-                             customdata=np.stack([df["ci_low"], df["ci_high"], df["n"]], axis=1),
-                             hovertemplate=hover), **kw)
-
-
-def fig_overview(curves: pd.DataFrame, group_type: str) -> go.Figure:
-    """Fig 1: mean change by months since entry, one line per group in the chosen comparison."""
-    fig = go.Figure()
-    groups = sorted(curves["group_value"].unique())
-    for i, g in enumerate(groups):
-        color = (SEQ4[int(g[1]) - 1] if group_type == "hype_quartile"
-                 else BLUE if group_type == "none" else CYCLE[i % len(CYCLE)])
-        label = g
-        if group_type == "hype_quartile":
-            label = {"Q1": "Q1 (least hyped)", "Q4": "Q4 (most hyped)"}.get(g, g)
-        _band_trace(fig, curves[curves["group_value"] == g].sort_values("k"), color, label)
-    if group_type == "none":  # label the headline points, as in the static Fig 1
-        d = curves[curves["k"].isin(MILESTONES)].sort_values("k")
-        fig.add_trace(go.Scatter(
-            x=d["k"], y=d["mean"], mode="markers+text", showlegend=False, hoverinfo="skip",
-            marker=dict(color=BLUE, size=9), text=[fmt(v, "+.2f", minus=True) for v in d["mean"]],
-            textposition="bottom center", textfont=dict(color=BLUE, size=12)))
-    fig.add_hline(y=0, line_color="black", line_width=1)
-    fig.update_xaxes(title="Months since entering the ranking")
-    fig.update_yaxes(title="Change in displayed rating")
-    fig.update_layout(showlegend=group_type != "none")
-    return base_layout(fig)
-
-
-def fig_explore(seg: pd.DataFrame, overall: pd.DataFrame, group_type: str) -> go.Figure:
-    """Segment curves (colour) against the overall curve (dashed grey), with CI bands."""
-    fig = go.Figure()
-    groups = sorted(seg["group_value"].unique())
-    n_groups = len(groups)
-    for i, g in enumerate(groups):
-        if group_type in ("hype_quartile", "start_decile"):
-            shade = i / max(n_groups - 1, 1)
-            color = _blend("#9ECAE1", "#08306B", shade)
-        else:
-            color = CYCLE[i % len(CYCLE)]
-        _band_trace(fig, seg[seg["group_value"] == g].sort_values("k"), color, str(g))
-    o = overall.sort_values("k")
-    fig.add_trace(go.Scatter(x=o["k"], y=o["mean"], mode="lines", name="All new games",
-                             line=dict(color="#444444", dash="dash", width=2.2), hoverinfo="skip"))
-    fig.add_hline(y=0, line_color="black", line_width=1)
-    fig.update_xaxes(title="Months since entering the ranking")
-    fig.update_yaxes(title="Change in displayed rating")
-    return base_layout(fig, height=440)
 
 
 def _blend(c0: str, c1: str, t: float) -> str:
@@ -102,60 +44,235 @@ def _blend(c0: str, c1: str, t: float) -> str:
     return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(a, b, strict=True))
 
 
+def ramp(n: int) -> list[str]:
+    """n steps of the blue ramp, light to dark."""
+    return [_blend(RAMP_LIGHT, RAMP_DARK, i / max(n - 1, 1)) for i in range(n)]
+
+
+def base_layout(fig: go.Figure, height: int = 400, legend: bool = False,
+                unified: bool = True, right_margin: int = 24,
+                top: int | None = None) -> go.Figure:
+    """Shared look: quiet axes, light horizontal grid, compact margins, transparent background."""
+    fig.update_layout(
+        font=dict(family=FONT_FAMILY, size=13, color=INK),
+        height=height, margin=dict(l=8, r=right_margin, t=top if top is not None else (36 if legend else 12), b=8),
+        plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+        hovermode="x unified" if unified else "closest",
+        hoverlabel=dict(bgcolor="white", bordercolor=GRID, font=dict(family=FONT_FAMILY,
+                                                                      size=12, color=INK)),
+        showlegend=legend,
+        legend=dict(orientation="h", x=0, y=1.02, yanchor="bottom", title=None,
+                    font=dict(size=12, color=INK_2), itemclick=False, itemdoubleclick=False),
+    )
+    fig.update_xaxes(showgrid=False, zeroline=False, showline=False, ticks="",
+                     tickfont=dict(color=INK_3, size=12), title_font=dict(color=INK_3, size=12),
+                     automargin=True)
+    fig.update_yaxes(gridcolor=GRID, zeroline=False, showline=False, ticks="",
+                     tickfont=dict(color=INK_3, size=12), title_font=dict(color=INK_3, size=12),
+                     automargin=True)
+    return fig
+
+
+def _baseline(fig: go.Figure, horizontal: bool = True) -> None:
+    if horizontal:
+        fig.add_hline(y=0, line_color=BASELINE, line_width=1, opacity=0.6)
+    else:
+        fig.add_vline(x=0, line_color=BASELINE, line_width=1, opacity=0.6)
+
+
+def _end_labels(fig: go.Figure, items: list[tuple[str, float, float, str]],
+                min_gap: float) -> None:
+    """Label lines at their right end: (text, x, y, colour). Labels are nudged apart vertically.
+
+    Text stays in ink; a coloured dot beside it carries the series identity.
+    """
+    if not items:
+        return
+    items = sorted(items, key=lambda t: t[2], reverse=True)
+    ys = [it[2] for it in items]
+    for i in range(1, len(ys)):  # push down so labels never overlap
+        ys[i] = min(ys[i], ys[i - 1] - min_gap)
+    shift = (np.mean([it[2] for it in items]) - np.mean(ys))  # re-centre the stack
+    for (label, x, _, color), y in zip(items, ys, strict=True):
+        fig.add_annotation(
+            x=x, y=y + shift, xanchor="left", yanchor="middle", showarrow=False, xshift=8,
+            text=f"<span style='color:{color}'>●</span> {label}",
+            font=dict(size=12, color=INK_2))
+
+
+def _line(fig: go.Figure, df: pd.DataFrame, color: str, name: str, band: bool,
+          width: float = 2.4, dash: str | None = None) -> None:
+    """Mean line, optional CI band; hover shows mean and CI."""
+    if band:
+        fig.add_trace(go.Scatter(x=df["k"], y=df["ci_high"], mode="lines", line=dict(width=0),
+                                 hoverinfo="skip", showlegend=False))
+        fig.add_trace(go.Scatter(x=df["k"], y=df["ci_low"], mode="lines", line=dict(width=0),
+                                 fill="tonexty", fillcolor=_rgba(color, 0.14), hoverinfo="skip",
+                                 showlegend=False))
+    fig.add_trace(go.Scatter(
+        x=df["k"], y=df["mean"], mode="lines", name=name,
+        line=dict(color=color, width=width, dash=dash),
+        customdata=np.stack([df["ci_low"], df["ci_high"]], axis=1),
+        hovertemplate=f"{name}: %{{y:+.2f}} <span style='color:{INK_3}'>"
+                      "[%{customdata[0]:+.2f}, %{customdata[1]:+.2f}]</span><extra></extra>"))
+
+
+def _group_colors(groups: list[str], group_type: str) -> dict[str, str]:
+    if group_type in ("hype_quartile", "start_decile", "launch_year"):
+        return dict(zip(groups, ramp(len(groups)), strict=True))
+    if group_type == "popularity":
+        return {g: (BLUE if "Top" in g else AMBER) for g in groups}
+    if group_type == "kickstarted":
+        return {g: (AMBER if g == "Kickstarted" else BLUE) for g in groups}
+    return {g: BLUE for g in groups}
+
+
+def _label_for(g: str, group_type: str) -> str:
+    if group_type == "hype_quartile":
+        return {"Q1": "Q1 least hyped", "Q4": "Q4 most hyped"}.get(g, g)
+    if group_type == "start_decile":
+        return {"D01": "Lowest start", "D10": "Highest start"}.get(g, g)
+    if group_type == "popularity":
+        return {"Top 10% by raters": "Top 10% popular", "Other games": "Others"}.get(g, g)
+    return str(g)
+
+
+def _x_axis(fig: go.Figure, k_max: int = 36) -> None:
+    fig.update_xaxes(title=X_TITLE, tickvals=[0, 6, 12, 18, 24, 30, 36],
+                     range=[-0.5, k_max + 0.5])
+
+
+def fig_overview(curves: pd.DataFrame, group_type: str, height: int = 400,
+                 highlight: str | None = None) -> go.Figure:
+    """The fade: mean change by months since entry.
+
+    Up to four groups are drawn in colour with end labels. With more groups (launch years,
+    deciles) every group is a thin grey context line and only ``highlight`` is drawn in colour.
+    """
+    fig = go.Figure()
+    groups = sorted(curves["group_value"].unique())
+    single = len(groups) == 1
+    many = len(groups) > 4
+    colors = _group_colors(groups, group_type)
+    labels = []
+    if many:
+        highlight = highlight if highlight in groups else groups[-1]
+        for g in groups:
+            if g == highlight:
+                continue
+            d = curves[curves["group_value"] == g].sort_values("k")
+            fig.add_trace(go.Scatter(x=d["k"], y=d["mean"], mode="lines", name=str(g),
+                                     line=dict(color="#CDD4DE", width=1.3),
+                                     hovertemplate=f"{_label_for(g, group_type)}: %{{y:+.2f}}"
+                                                   "<extra></extra>"))
+        d = curves[curves["group_value"] == highlight].sort_values("k")
+        name = _label_for(highlight, group_type)
+        _line(fig, d, BLUE, name, band=True, width=2.8)
+        last = d.iloc[-1]
+        labels.append((name, float(last["k"]), float(last["mean"]), BLUE))
+    else:
+        for g in groups:
+            d = curves[curves["group_value"] == g].sort_values("k")
+            name = _label_for(g, group_type)
+            _line(fig, d, colors[g], "All new games" if single else name, band=single)
+            if not single:
+                last = d.iloc[-1]
+                labels.append((name, float(last["k"]), float(last["mean"]), colors[g]))
+    if single:
+        d = curves[curves["k"].isin(MILESTONES)].sort_values("k")
+        fig.add_trace(go.Scatter(
+            x=d["k"], y=d["mean"], mode="markers+text", showlegend=False, hoverinfo="skip",
+            marker=dict(color=BLUE, size=8, line=dict(color="white", width=2)),
+            text=[fmt(v, "+.2f", minus=True) for v in d["mean"]],
+            textposition="bottom center", textfont=dict(color=INK, size=13), cliponaxis=False))
+    _baseline(fig)
+    _x_axis(fig)
+    fig.update_yaxes(title="Change in displayed rating", tickformat=".1f", dtick=0.1)
+    _end_labels(fig, labels, min_gap=0.024)
+    return base_layout(fig, height=height, right_margin=44 if single else 130)
+
+
+def fig_explore(seg: pd.DataFrame, overall: pd.DataFrame, group_type: str,
+                highlight: str | None = None) -> go.Figure:
+    """Segment curves against the overall curve (dashed grey)."""
+    fig = fig_overview(seg, group_type, height=440, highlight=highlight)
+    o = overall.sort_values("k")
+    fig.add_trace(go.Scatter(x=o["k"], y=o["mean"], mode="lines", name="All new games",
+                             line=dict(color=GREY, dash="dash", width=1.8),
+                             hovertemplate="All new games: %{y:+.2f}<extra></extra>"))
+    last = o.iloc[-1]
+    fig.add_annotation(x=float(last["k"]), y=float(last["mean"]), xanchor="left", xshift=8,
+                       yshift=-14, showarrow=False, text="All games (dashed)",
+                       font=dict(size=11, color=INK_3))
+    return fig
+
+
 def fig_gap(gap: pd.DataFrame) -> go.Figure:
-    """Fig 2: new raters' average minus displayed average (top) and usable share (bottom)."""
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.72, 0.28],
-                        vertical_spacing=0.06)
-    g = gap.rename(columns={"mean": "mean", "ci_low": "ci_low", "ci_high": "ci_high"})
-    _band_trace(fig, g, RED, "New raters minus displayed", row=1, col=1)
-    fig.add_hline(y=0, line_color="black", line_width=1, row=1, col=1)
-    fig.add_trace(go.Scatter(x=gap["k"], y=100 * gap["share_usable"], mode="lines",
-                             line=dict(color=GREY, width=2), name="Usable share",
-                             hovertemplate="Month %{x}: %{y:.0f}% of game-months usable"
-                                           "<extra></extra>"), row=2, col=1)
-    fig.update_yaxes(title_text="New-rater avg minus displayed", row=1, col=1)
-    fig.update_yaxes(title_text="% usable", row=2, col=1)
-    fig.update_xaxes(title_text="Months since entering the ranking", row=2, col=1)
-    fig.update_layout(showlegend=False)
-    return base_layout(fig, height=480, legend_below=False)
+    """New raters' average minus the displayed average, by month (usable share in the hover)."""
+    fig = go.Figure()
+    g = gap.sort_values("k")
+    fig.add_trace(go.Scatter(x=g["k"], y=g["ci_high"], mode="lines", line=dict(width=0),
+                             hoverinfo="skip", showlegend=False))
+    fig.add_trace(go.Scatter(x=g["k"], y=g["ci_low"], mode="lines", line=dict(width=0),
+                             fill="tonexty", fillcolor=_rgba(PLUM, 0.14), hoverinfo="skip",
+                             showlegend=False))
+    fig.add_trace(go.Scatter(
+        x=g["k"], y=g["mean"], mode="lines", line=dict(color=PLUM, width=2.4),
+        customdata=np.stack([g["ci_low"], g["ci_high"], 100 * g["share_usable"]], axis=1),
+        hovertemplate="New raters vs displayed: %{y:+.2f}"
+                      f"<span style='color:{INK_3}'> [%{{customdata[0]:+.2f}}, "
+                      "%{customdata[1]:+.2f}]<br>estimate available for %{customdata[2]:.0f}% "
+                      "of games</span><extra></extra>", name=""))
+    for k in (3, 36):
+        row = g[g["k"] == k]
+        if not row.empty:
+            v = float(row["mean"].iloc[0])
+            fig.add_trace(go.Scatter(x=[k], y=[v], mode="markers+text", hoverinfo="skip",
+                                     marker=dict(color=PLUM, size=8,
+                                                 line=dict(color="white", width=2)),
+                                     text=[fmt(v, "+.2f", minus=True)],
+                                     textposition="bottom center",
+                                     textfont=dict(color=INK, size=13), showlegend=False,
+                                     cliponaxis=False))
+    _baseline(fig)
+    _x_axis(fig)
+    fig.update_xaxes(range=[1.5, 36.8], tickvals=[3, 6, 12, 18, 24, 30, 36])
+    lo = min(-0.3, float(g["ci_low"].min()) - 0.03)
+    fig.update_yaxes(title="New-rater average minus displayed", range=[lo, 0.03],
+                     tickformat=".1f", dtick=0.1)
+    fig.add_annotation(x=36, y=0, yshift=10, xanchor="right", showarrow=False,
+                       text="Displayed average", font=dict(size=12, color=INK_3))
+    return base_layout(fig, height=380, right_margin=44)
 
 
 def fig_speed(speed: pd.DataFrame, months: tuple[int, int]) -> go.Figure:
-    """Fig 9: dumbbell per hype quartile, mean change at the two months with CIs."""
+    """Dumbbell per hype quartile: mean change at month `first` and at month `last`."""
     first, last = months
     fig = go.Figure()
-    labels = []
-    for _, r in speed.iterrows():
-        q = int(r["hype_quartile"])
-        labels.append(f"Q{q}" + (" (least hyped)" if q == 1 else " (most hyped)" if q == 4 else ""))
-    y = labels
-    fig.add_trace(go.Scatter(
-        x=speed[f"change_{last}"], y=y, mode="markers", name=f"Month {last}",
-        marker=dict(color=SEQ4[3], size=13),
-        error_x=dict(type="data", symmetric=False, color=SEQ4[3], thickness=2,
-                     array=speed[f"change_{last}_ci_high"] - speed[f"change_{last}"],
-                     arrayminus=speed[f"change_{last}"] - speed[f"change_{last}_ci_low"]),
-        hovertemplate=f"%{{y}}<br>Month {last}: %{{x:+.3f}}<extra></extra>"))
-    fig.add_trace(go.Scatter(
-        x=speed[f"change_{first}"], y=y, mode="markers", name=f"Month {first}",
-        marker=dict(color=SEQ4[0], size=13, line=dict(color=SEQ4[1], width=1)),
-        error_x=dict(type="data", symmetric=False, color=SEQ4[1], thickness=2,
-                     array=speed[f"change_{first}_ci_high"] - speed[f"change_{first}"],
-                     arrayminus=speed[f"change_{first}"] - speed[f"change_{first}_ci_low"]),
-        hovertemplate=f"%{{y}}<br>Month {first}: %{{x:+.3f}}<extra></extra>"))
+    labels = [f"Q{int(q)}" + (" least hyped" if q == 1 else " most hyped" if q == 4 else "")
+              for q in speed["hype_quartile"]]
     for lab, a, b in zip(labels, speed[f"change_{first}"], speed[f"change_{last}"], strict=True):
         fig.add_shape(type="line", x0=a, x1=b, y0=lab, y1=lab, layer="below",
-                      line=dict(color="#BBBBBB", width=4))
-    fig.add_vline(x=0, line_color="black", line_width=1)
-    fig.update_xaxes(title="Mean change in displayed rating since entry")
-    fig.update_yaxes(autorange="reversed")
-    return base_layout(fig, height=330)
+                      line=dict(color="#D3DAE3", width=6))
+    for m, color, size in ((first, RAMP_LIGHT, 14), (last, RAMP_DARK, 14)):
+        fig.add_trace(go.Scatter(
+            x=speed[f"change_{m}"], y=labels, mode="markers", name=f"Month {m}",
+            marker=dict(color=color, size=size, line=dict(color="white", width=2)),
+            customdata=np.stack([speed[f"change_{m}_ci_low"], speed[f"change_{m}_ci_high"]],
+                                axis=1),
+            hovertemplate=f"%{{y}}, month {m}: %{{x:+.2f}} <span style='color:{INK_3}'>"
+                          "[%{customdata[0]:+.2f}, %{customdata[1]:+.2f}]</span><extra></extra>"))
+    _baseline(fig, horizontal=False)
+    fig.update_xaxes(title="Mean change in displayed rating since entry", tickformat=".1f",
+                     dtick=0.1, showgrid=True, gridcolor=GRID)
+    fig.update_yaxes(autorange="reversed", showgrid=False)
+    return base_layout(fig, height=300, legend=True, unified=False)
 
 
 def fig_specs(numbers: dict[str, dict]) -> go.Figure:
-    """Hype coefficient for Specs A-D with 95% CI; the region H2 predicts is shaded."""
-    labels = {"a": "A: change_36, controls", "b": "B: change after month 6",
-              "c": "C: reach (log raters m6)", "d": "D: no controls"}
+    """Hype coefficient for the four model specifications with 95% CI."""
+    labels = {"a": "With controls", "b": "Change after month 6",
+              "c": "Reach instead of growth", "d": "No controls"}
     xs, lo, hi, ys = [], [], [], []
     for s, lab in labels.items():
         e = numbers[f"spec_{s}_hype"]
@@ -164,104 +281,116 @@ def fig_specs(numbers: dict[str, dict]) -> go.Figure:
         hi.append(e["ci_high"] - e["value"])
         ys.append(lab)
     fig = go.Figure()
-    fig.add_vrect(x0=-1, x1=0, fillcolor="#D55E00", opacity=0.07, line_width=0, layer="below")
-    fig.add_annotation(x=0, y=1.08, yref="paper", xanchor="right", showarrow=False,
-                       text="H2 predicts a negative coefficient", font=dict(color=RED, size=11))
-    fig.add_trace(go.Scatter(x=xs, y=ys, mode="markers", marker=dict(color=BLUE, size=12),
+    span = max(abs(v) for v in [x + h for x, h in zip(xs, hi, strict=True)]
+               + [x - low for x, low in zip(xs, lo, strict=True)]) * 1.25
+    fig.add_vrect(x0=-span, x1=0, fillcolor=PLUM, opacity=0.05, line_width=0, layer="below")
+    fig.add_annotation(x=-span, y=1.0, yref="paper", xanchor="left", yanchor="bottom",
+                       showarrow=False, text="Hyped games fade more",
+                       font=dict(color=PLUM, size=11))
+    fig.add_annotation(x=span, y=1.0, yref="paper", xanchor="right", yanchor="bottom",
+                       showarrow=False, text="Hyped games fade less",
+                       font=dict(color=INK_3, size=11))
+    fig.add_trace(go.Scatter(x=xs, y=ys, mode="markers",
+                             marker=dict(color=BLUE, size=11, line=dict(color="white", width=2)),
                              error_x=dict(type="data", symmetric=False, array=hi, arrayminus=lo,
-                                          color=BLUE, thickness=2),
-                             hovertemplate="%{y}<br>coefficient %{x:+.3f}<extra></extra>"))
-    fig.add_vline(x=0, line_color="black", line_width=1)
-    span = max(abs(v) for v in xs + [x + h for x, h in zip(xs, hi, strict=True)]
-               + [x - low for x, low in zip(xs, lo, strict=True)]) * 1.15
-    fig.update_xaxes(title="Hype coefficient (per log-unit), 95% CI", range=[-span, span])
-    fig.update_yaxes(autorange="reversed")
-    fig.update_layout(showlegend=False)
-    return base_layout(fig, height=300, legend_below=False)
+                                          color=BLUE, thickness=1.6, width=0),
+                             hovertemplate="%{y}: %{x:+.3f}<extra></extra>"))
+    _baseline(fig, horizontal=False)
+    fig.update_xaxes(title="Effect of hype on the 3-year change (95% CI)", range=[-span, span],
+                     showgrid=True, gridcolor=GRID, tickformat="+.2f")
+    fig.update_yaxes(autorange="reversed", showgrid=False)
+    return base_layout(fig, height=290, unified=False, top=30)
 
 
 def fig_kickstarter(bands: pd.DataFrame) -> go.Figure:
-    """Fig 10: change to month 36 by starting band, Kickstarted vs not, with CIs."""
+    """Change to month 36 by starting-rating band, Kickstarted vs not, with CIs."""
     fig = go.Figure()
-    for flag, color, name, off in ((0, BLUE, "Not Kickstarted", -0.03),
-                                   (1, RED, "Kickstarted", 0.03)):
-        d = bands[bands["kickstarted"] == flag]
+    labels = []
+    for flag, color, name, off in ((0, BLUE, "Not Kickstarted", -0.025),
+                                   (1, AMBER, "Kickstarted", 0.025)):
+        d = bands[bands["kickstarted"] == flag].sort_values("band_mid")
         fig.add_trace(go.Scatter(
             x=d["band_mid"] + off, y=d["mean"], mode="lines+markers", name=name,
-            line=dict(color=color), marker=dict(size=9),
+            line=dict(color=color, width=2), marker=dict(size=8, line=dict(color="white",
+                                                                            width=1.5)),
             error_y=dict(type="data", symmetric=False, array=d["ci_high"] - d["mean"],
-                         arrayminus=d["mean"] - d["ci_low"], color=color),
+                         arrayminus=d["mean"] - d["ci_low"], color=_rgba(color, 0.6),
+                         thickness=1.4, width=0),
             customdata=np.stack([d["band_low"], d["band_high"], d["n"]], axis=1),
-            hovertemplate=name + "<br>Start %{customdata[0]:.1f}-%{customdata[1]:.1f}"
-                                 "<br>Mean change %{y:+.3f}<br>n = %{customdata[2]:,}"
-                                 "<extra></extra>"))
-    fig.add_hline(y=0, line_color="black", line_width=1)
-    fig.update_xaxes(title="Average rating at entry (0.5-wide bands)")
-    fig.update_yaxes(title="Mean change to month 36")
-    return base_layout(fig, height=380)
+            hovertemplate=name + ", start %{customdata[0]:.1f}–%{customdata[1]:.1f}: "
+                                 "%{y:+.2f} (n = %{customdata[2]:,})<extra></extra>"))
+        last = d.iloc[-1]
+        labels.append((name, float(last["band_mid"] + off), float(last["mean"]), color))
+    _baseline(fig)
+    fig.update_xaxes(title="Average rating at entry", dtick=0.5)
+    fig.update_yaxes(title="Change to month 36", tickformat=".1f", dtick=0.2)
+    _end_labels(fig, labels, min_gap=0.06)
+    return base_layout(fig, height=360, unified=False, right_margin=130)
 
 
 def fig_trust(curve: pd.DataFrame, tolerance: float, target: float, rule_k: float) -> go.Figure:
-    """Fig 8: share within tolerance by month, with the target line and the trust month."""
+    """Share of games within the tolerance of their 3-year rating, by month."""
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=curve["k"], y=100 * curve["share"], mode="lines",
-                             line=dict(color=BLUE, width=2.6), name="Share of games",
-                             customdata=curve["n"],
-                             hovertemplate="Month %{x}: %{y:.1f}% within the tolerance"
-                                           "<br>n = %{customdata:,}<extra></extra>"))
-    fig.add_hline(y=100 * target, line_dash="dash", line_color=GREY)
+    fig.add_trace(go.Scatter(
+        x=curve["k"], y=100 * curve["share"], mode="lines",
+        line=dict(color=BLUE, width=2.6),
+        hovertemplate="Month %{x}: %{y:.0f}% of games within the tolerance<extra></extra>"))
+    fig.add_hline(y=100 * target, line_dash="dot", line_color=GREY, line_width=1.2)
+    fig.add_annotation(x=0, y=100 * target, yshift=10, xanchor="left", showarrow=False,
+                       text=f"Target {fmt(100 * target, '.0f')}%",
+                       font=dict(size=12, color=INK_3))
     if not np.isnan(rule_k):
-        fig.add_vline(x=rule_k, line_color=RED, line_width=1.5)
-        fig.add_annotation(x=rule_k, y=8, text=f"month {int(rule_k)}", showarrow=False,
-                           xanchor="left", font=dict(color=RED, size=13))
-    fig.update_xaxes(title="Months since entering the ranking")
-    fig.update_yaxes(title=f"% of games within ±{tolerance:.2f} of final rating", range=[0, 100])
-    fig.update_layout(showlegend=False)
-    return base_layout(fig, height=380, legend_below=False)
+        y = float(100 * curve.loc[curve["k"] == rule_k, "share"].iloc[0])
+        fig.add_trace(go.Scatter(x=[rule_k], y=[y], mode="markers", hoverinfo="skip",
+                                 marker=dict(color=BLUE, size=11,
+                                             line=dict(color="white", width=2))))
+        fig.add_annotation(x=rule_k, y=y, ax=40, ay=40, showarrow=True, arrowhead=0,
+                           arrowcolor=INK_3, arrowwidth=1, text=f"<b>Month {int(rule_k)}</b>",
+                           font=dict(size=13, color=INK), xanchor="left")
+    fig.update_xaxes(title=X_TITLE, tickvals=[0, 6, 12, 18, 24, 30])
+    fig.update_yaxes(title=f"Games within ±{tolerance:.2f} of final rating", range=[0, 102],
+                     ticksuffix="%", dtick=20)
+    return base_layout(fig, height=360, unified=False)
 
 
 def fig_adjusted(bars: pd.DataFrame, tol: float) -> go.Figure:
-    """Grouped bars: share within tolerance at each launch age, displayed vs adjusted rating."""
+    """Share within tolerance at each age: displayed rating vs adjusted launch rating."""
     fig = go.Figure()
-    for pred, color in (("Displayed rating", GREY), ("Adjusted launch rating", BLUE)):
+    for pred, color in (("Displayed rating", "#B8C2CF"), ("Adjusted launch rating", BLUE)):
         d = bars[bars["predictor"] == pred]
         fig.add_trace(go.Bar(
             x=[f"Month {k}" for k in d["k"]], y=100 * d["share_within"], name=pred,
-            marker_color=color, text=[f"{100 * v:.0f}%" for v in d["share_within"]],
-            textposition="outside", customdata=np.stack([d["mae"], d["n"]], axis=1),
-            hovertemplate=pred + "<br>%{y:.1f}% within the tolerance<br>MAE %{customdata[0]:.3f}"
-                                 "<br>test n = %{customdata[1]:,}<extra></extra>"))
-    fig.update_layout(barmode="group")
-    fig.update_yaxes(title=f"% of test games within ±{tol} of final", range=[0, 105])
-    return base_layout(fig, height=360)
+            marker=dict(color=color, line=dict(width=0), cornerradius=4),
+            text=[f"{fmt(100 * v, '.0f')}%" for v in d["share_within"]],
+            textposition="outside", textfont=dict(color=INK_2, size=12), cliponaxis=False,
+            customdata=np.stack([d["mae"], d["n"]], axis=1),
+            hovertemplate=pred + ": %{y:.0f}% within ±" + f"{tol}"
+                          " (mean error %{customdata[0]:.2f})<extra></extra>"))
+    fig.update_layout(barmode="group", bargap=0.35, bargroupgap=0.08)
+    fig.update_yaxes(range=[0, 108], showticklabels=False, showgrid=False)
+    fig.update_xaxes(title=None)
+    return base_layout(fig, height=320, legend=True, unified=False)
 
 
 def fig_lookup(game: dict, traj: pd.DataFrame, cohort_curve: pd.DataFrame,
                new_col: str) -> go.Figure:
-    """Game trajectory: displayed average, new-rater dots, cohort reference and raters panel."""
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True, row_heights=[0.72, 0.28],
-                        vertical_spacing=0.06)
+    """One game's displayed average, new-rater dots and its launch-year cohort path (local only)."""
+    fig = go.Figure()
     t = traj.sort_values("k")
-    fig.add_trace(go.Scatter(x=t["k"], y=t["avg_rating"], mode="lines+markers", name="Displayed",
-                             line=dict(color=BLUE, width=2.6), marker=dict(size=4),
-                             hovertemplate="Month %{x}: %{y:.2f}<extra>Displayed average</extra>"),
-                  row=1, col=1)
-    ok = t.dropna(subset=[new_col])
-    fig.add_trace(go.Scatter(x=ok["k"], y=ok[new_col], mode="markers", name="New raters (3-month)",
-                             marker=dict(color=RED, size=7),
-                             hovertemplate="Month %{x}: %{y:.2f}<extra>New raters</extra>"),
-                  row=1, col=1)
     ref = cohort_curve[cohort_curve["k"] <= t["k"].max()]
     fig.add_trace(go.Scatter(x=ref["k"], y=game["avg_m0"] + ref["mean"], mode="lines",
-                             name="Launch-year cohort (avg path)",
-                             line=dict(color=GREY, dash="dash", width=2),
-                             hovertemplate="Month %{x}: %{y:.2f}<extra>Cohort path</extra>"),
-                  row=1, col=1)
-    fig.add_trace(go.Scatter(x=t["k"], y=t["n_raters"], mode="lines", name="Raters",
-                             line=dict(color=GREEN, width=2), showlegend=False,
-                             hovertemplate="Month %{x}: %{y:,} raters<extra></extra>"),
-                  row=2, col=1)
-    fig.update_yaxes(title_text="Rating", row=1, col=1)
-    fig.update_yaxes(title_text="Raters (log)", type="log", row=2, col=1)
-    fig.update_xaxes(title_text="Months since entering the ranking", row=2, col=1)
-    return base_layout(fig, height=520)
+                             name="Typical path for its launch year",
+                             line=dict(color=GREY, dash="dash", width=1.8),
+                             hovertemplate="Typical path: %{y:.2f}<extra></extra>"))
+    fig.add_trace(go.Scatter(x=t["k"], y=t["avg_rating"], mode="lines", name="Displayed average",
+                             line=dict(color=BLUE, width=2.6),
+                             customdata=t["n_raters"],
+                             hovertemplate="Displayed: %{y:.2f} (%{customdata:,} raters)"
+                                           "<extra></extra>"))
+    ok = t.dropna(subset=[new_col])
+    fig.add_trace(go.Scatter(x=ok["k"], y=ok[new_col], mode="markers", name="New raters",
+                             marker=dict(color=PLUM, size=7),
+                             hovertemplate="New raters: %{y:.2f}<extra></extra>"))
+    _x_axis(fig, int(max(36, t["k"].max())))
+    fig.update_yaxes(title="Average rating")
+    return base_layout(fig, height=420, legend=True)

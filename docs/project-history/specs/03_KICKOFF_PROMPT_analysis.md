@@ -1,5 +1,7 @@
 # Kickoff prompt for Claude Code: task 02 (analysis)
 
+> **Archived build specification** given to an AI coding assistant (Claude Code) during the project; see [`../README.md`](../README.md) for context. Section references to `docs/data_notes.md` point to an earlier version of that file.
+
 Open Claude Code in the project folder (plan mode recommended, Shift+Tab) and paste:
 
 ```text
@@ -8,7 +10,7 @@ The pipeline (task 01) is done and committed. Next is the analysis: milestones M
 Read these first, in this order:
 1. CLAUDE.md (scope has been updated; note the new research rule about specifications)
 2. docs/data_notes.md, especially §10 (pipeline facts) and §11 (analysis pre-checks with sanity values)
-3. docs/handoff/02_TASK_analysis.md: the full spec with fixed definitions, model specs, outputs and acceptance values
+3. docs/project-history/specs/02_TASK_analysis.md: the full spec with fixed definitions, model specs, outputs and acceptance values
 4. config.yaml (add an `analysis:` section for every new parameter)
 
 Then:

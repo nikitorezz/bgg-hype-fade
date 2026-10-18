@@ -1,5 +1,7 @@
 # Task 03: Analysis polish + interactive dashboard (milestone M6)
 
+> **Archived build specification** given to an AI coding assistant (Claude Code) during the project; see [`../README.md`](../README.md) for context. Section references to `docs/data_notes.md` point to an earlier version of that file.
+
 **Goal:** (A) close the gaps found in the analysis review, (B) give the static figures portfolio-grade "action" titles, (C) build a Streamlit dashboard that tells the story and lets visitors look up any game, (D) prepare deployment, but **don't deploy** until the user confirms the data-publication decision (step D0).
 
 Read first: `CLAUDE.md`; `docs/findings.md` (**the review: verdict, interpreted findings F1–F9, story, caveats, and the items for this task**); `reports/writeup.md` (draft article; the dashboard text must agree with it); `reports/results/key_numbers.json`.

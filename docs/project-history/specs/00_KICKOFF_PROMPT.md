@@ -1,5 +1,7 @@
 # Kickoff prompt for Claude Code
 
+> **Archived build specification** given to an AI coding assistant (Claude Code) during the project; see [`../README.md`](../README.md) for context. Section references to `docs/data_notes.md` point to an earlier version of that file.
+
 Open Claude Code in the project folder:
 
 ```
@@ -17,7 +19,7 @@ You're building the data pipeline for my portfolio project "Does the Hype Fade?"
 Read these files before doing anything else, in this order:
 1. CLAUDE.md: project context, environment (Windows, path with spaces, no make), conventions, research rules you must not change
 2. docs/data_notes.md: verified facts about the data, including the traps (truncated snapshot files, duplicate rows, 2-decimal rounding)
-3. docs/handoff/01_TASK_pipeline_steps_1-5.md: the full spec with acceptance criteria
+3. docs/project-history/specs/01_TASK_pipeline_steps_1-5.md: the full spec with acceptance criteria
 4. config.yaml: all parameters (already filled in; don't hard-code values from it)
 
 Scope: pipeline steps 1–5 only (download → load → cohorts → panel → quality checks). Build everything from scratch; the folder has only docs and config so far.

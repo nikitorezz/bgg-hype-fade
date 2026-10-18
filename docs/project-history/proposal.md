@@ -1,6 +1,6 @@
 # Original research proposal (unused)
 
-*Kept for reference. The portfolio plan is in implementation_plan.md.*
+> **Archived.** The original research proposal this project grew out of. The final analysis is described in the [write-up](../../reports/writeup.md).
 
 B. Does the hype fade? Post-release rating trajectories on BoardGameGeek
 Topic proposal

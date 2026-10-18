@@ -1,5 +1,7 @@
 # Kickoff prompt for Claude Code: task 04 (polish + publish)
 
+> **Archived build specification** given to an AI coding assistant (Claude Code) during the project; see [`../README.md`](../README.md) for context. Section references to `docs/data_notes.md` point to an earlier version of that file.
+
 Open Claude Code in the project folder and paste:
 
 ```text
@@ -7,7 +9,7 @@ Task 03 (dashboard) has been reviewed. It's good, with a few fixes. Last task: t
 
 Read first:
 1. CLAUDE.md
-2. docs/handoff/06_TASK_publish.md: the spec (Parts A–E)
+2. docs/project-history/specs/06_TASK_publish.md: the spec (Parts A–E)
 3. reports/writeup.md: now draft v2 (edited by my reviewer)
 4. docs/deploy.md
 

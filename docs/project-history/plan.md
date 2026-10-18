@@ -1,6 +1,8 @@
 # Does the Hype Fade? — Portfolio Implementation Plan
 
-*Living document. Source: unused research proposal "Does the Hype Fade? Post-Release Rating Trajectories of Board Games on BoardGameGeek, 2016–2026". Last edited: 18 Oct 2026.*
+> **Archived planning document.** This is the plan as it evolved during the build, including its progress log. Numbers in it are planning-stage estimates; the final results are in [`../findings.md`](../findings.md).
+
+*Source: unused research proposal "Does the Hype Fade? Post-Release Rating Trajectories of Board Games on BoardGameGeek, 2016–2026". Last edited: 18 Oct 2026.*
 
 ---
 
@@ -108,7 +110,7 @@ bgg-hype-fade/
 
 ## 5. Pipeline
 
-> **Build spec for steps 1–5:** `docs/handoff/01_TASK_pipeline_steps_1-5.md` is authoritative where it differs from the sketch below (truncated-file validation, dedup, rounding-error bound, 3-month window, manifest-driven loading).
+> **Build spec for steps 1–5:** `docs/project-history/specs/01_TASK_pipeline_steps_1-5.md` is authoritative where it differs from the sketch below (truncated-file validation, dedup, rounding-error bound, 3-month window, manifest-driven loading).
 
 ### Step 1 — Download (monthly subset first)
 - Get the file list via the GitHub trees API (`/repos/beefsack/bgg-ranking-historicals/git/trees/<branch>?recursive=1`; <100k entries, so not truncated).
@@ -295,11 +297,11 @@ Suggested pacing from 19 Oct: M1–M2 by early Nov, M3–M4 by mid/late Nov, M6�
 | Date | Milestone | Notes |
 |---|---|---|
 | 2026-10-18 | Plan | Plan created from proposal |
-| 2026-10-18 | Pilot + handoff | Monthly files checked in DuckDB; data traps documented (`docs/data_notes.md`); Claude Code spec for steps 1–5 written (`docs/handoff/`) |
+| 2026-10-18 | Pilot + handoff | Monthly files checked in DuckDB; data traps documented (`docs/data_notes.md`); Claude Code spec for steps 1–5 written (`docs/project-history/specs/`) |
 | 2026-10-18 | Pipeline steps 1-5 | `uv run bgg all` runs download, load, cohorts, panel and qc end to end and is idempotent. 121 months, 2.61M rows, 11,020 new releases, 335,973 panel rows. QC: 36 PASS, 0 WARN, 0 FAIL (+7 INFO). Deviations from spec: first-month window fallback; 2021 cohort is 977, not 978 (junk pub year 3000, see data_notes section 10). |
-| 2026-10-18 | Analysis handoff | Pre-checks on processed data (data_notes §11): fade −0.40 at 36 m, ~61% in year 1, 87% decline; site drift only −0.016; H2 looks unsupported (hype coef +0.05 with controls). Task 02 spec written (`docs/handoff/02_TASK_analysis.md`) |
+| 2026-10-18 | Analysis handoff | Pre-checks on processed data (data_notes §11): fade −0.40 at 36 m, ~61% in year 1, 87% decline; site drift only −0.016; H2 looks unsupported (hype coef +0.05 with controls). Task 02 spec written (`docs/project-history/specs/02_TASK_analysis.md`) |
 | 2026-10-18 | Analysis M3-M5 | `uv run bgg analysis` runs descriptives, event study, Q2 specs A-D, Q4 rule and adjusted predictor, robustness grid, Q3 (Kaggle data present) and key_numbers.json (117 numbers). All 20 data_notes section 11 sanity values reproduced. H2 not supported (hype coefficients A +0.049, B -0.004). Skipped: daily-vs-monthly robustness, walkthrough notebook. See data_notes section 12. |
-| 2026-10-18 | Analysis review + dashboard handoff | Analysis validated (all 20 sanity values, consistent robustness). New insight: hype changes the *speed* of the fade, not its size (dilution of entry ratings); Kickstarter games fade more even at equal start. Written: `docs/findings.md`, draft `reports/writeup.md`, task 03 spec `docs/handoff/04_TASK_dashboard.md` |
+| 2026-10-18 | Analysis review + dashboard handoff | Analysis validated (all 20 sanity values, consistent robustness). New insight: hype changes the *speed* of the fade, not its size (dilution of entry ratings); Kickstarter games fade more even at equal start. Written: `docs/findings.md`, draft `reports/writeup.md`, task 03 spec `docs/project-history/specs/04_TASK_dashboard.md` |
 | 2026-10-18 | Task 03 (dashboard) | Part A: new key numbers (163 total, 34/34 sanity values), figs 9-10, action titles from key_numbers, social card. Part B: `bgg dashboard-data` (app/data, 3.7 MB). Part C: Streamlit app (6 sections, APP_MODE full/aggregates). Part D: `bgg export-static`, `docs/deploy.md`; **not deployed**, pending D0. |
-| 2026-10-18 | Dashboard review + publish handoff | Task 03 verified (34/34 sanity values, figures and app checked). Fixes queued: aggregate tolerance grid for sliders, consistent rounding, explore-segments view. Write-up → draft v2. Task 04 spec: `docs/handoff/06_TASK_publish.md` |
+| 2026-10-18 | Dashboard review + publish handoff | Task 03 verified (34/34 sanity values, figures and app checked). Fixes queued: aggregate tolerance grid for sliders, consistent rounding, explore-segments view. Write-up → draft v2. Task 04 spec: `docs/project-history/specs/06_TASK_publish.md` |
 | 2026-10-18 | Task 04 (publish prep) | Dashboard fixes (sliders in both modes, one half-up rounding helper, Explore segments), README rendered from a template and key_numbers, MIT licence (code only), CI, pyproject metadata, docs index, Pages publisher with social tags. PII/secret scan clean. Not pushed: waiting for the author (repo, Streamlit, URLs). |

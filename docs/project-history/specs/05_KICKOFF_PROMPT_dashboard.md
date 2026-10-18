@@ -1,5 +1,7 @@
 # Kickoff prompt for Claude Code: task 03 (analysis polish + dashboard)
 
+> **Archived build specification** given to an AI coding assistant (Claude Code) during the project; see [`../README.md`](../README.md) for context. Section references to `docs/data_notes.md` point to an earlier version of that file.
+
 Open Claude Code in the project folder (plan mode recommended) and paste:
 
 ```text
@@ -9,7 +11,7 @@ Read these first, in this order:
 1. CLAUDE.md (scope updated)
 2. docs/findings.md: the review of your analysis (verdict, interpreted findings F1–F9, the story, caveats, items for this task)
 3. reports/writeup.md: the draft article; dashboard text must agree with it
-4. docs/handoff/04_TASK_dashboard.md: the full spec (Parts A–D) with acceptance criteria
+4. docs/project-history/specs/04_TASK_dashboard.md: the full spec (Parts A–D) with acceptance criteria
 
 Then:
 - Give me a short plan and flag anything in the spec you think is wrong or ambiguous before writing code.

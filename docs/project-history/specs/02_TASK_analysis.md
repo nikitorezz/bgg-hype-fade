@@ -1,5 +1,7 @@
 # Task 02: Analysis (milestones M3–M5): figures, models, predictive rule, robustness
 
+> **Archived build specification** given to an AI coding assistant (Claude Code) during the project; see [`../README.md`](../README.md) for context. Section references to `docs/data_notes.md` point to an earlier version of that file.
+
 **Goal:** turn `data/processed/{panel,game_summary}.parquet` (+ `data/interim/snapshots_monthly.parquet` for the control group) into publication-ready figures, model tables and one machine-readable file of key numbers. The write-up and the Streamlit dashboard will be built from these later, so **every figure must be backed by a tidy CSV table** the dashboard can reuse.
 
 Read first: `CLAUDE.md`, `docs/data_notes.md` (§10 = final pipeline facts, **§11 = analysis pre-checks with sanity values for this task**), `docs/implementation_plan.md` §1 (questions) and §6 (analysis).

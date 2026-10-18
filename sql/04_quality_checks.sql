@@ -194,7 +194,7 @@ SELECT * FROM (
     SELECT '05', 'Duplicate rows removed in load (files affected in expected)',
            sum(dup_pairs_removed)::VARCHAR || ' rows in '
                || count(*) FILTER (WHERE dup_pairs_removed > 0)::VARCHAR || ' files',
-           'report (pilot: 721 in 16 files)', 'INFO'
+           'report (reference: 721 in 16 files)', 'INFO'
     FROM load_log
     UNION ALL
     -- 06
@@ -214,7 +214,7 @@ SELECT * FROM (
     -- 07
     SELECT '07', 'Publication year at entry: unknown (0) / junk (cleaned to NULL) / changes over time',
            n_zero::VARCHAR || ' / ' || n_junk::VARCHAR || ' / ' || n_changing::VARCHAR,
-           'report (pilot: 432 zero ever, 1,592 changing)', 'INFO'
+           'report (reference: 432 zero ever, 1,592 changing)', 'INFO'
     FROM c07
     UNION ALL
     -- 08
@@ -241,13 +241,13 @@ SELECT * FROM (
     SELECT '11', 'One-month steps where n_raters decreased (deleted ratings)',
            n_dec::VARCHAR || ' of ' || n_steps::VARCHAR || ' ('
                || round(100.0 * n_dec / n_steps, 2)::VARCHAR || '%)',
-           'report (pilot ~1.5%)', 'INFO'
+           'report (reference ~1.5%)', 'INFO'
     FROM c11
     UNION ALL
     SELECT '11b', 'One-month steps with unchanged n_raters',
            n_flat::VARCHAR || ' of ' || n_steps::VARCHAR || ' ('
                || round(100.0 * n_flat / n_steps, 1)::VARCHAR || '%)',
-           'report (pilot ~14%)', 'INFO'
+           'report (reference ~14%)', 'INFO'
     FROM c11
     UNION ALL
     -- 12
@@ -260,7 +260,7 @@ SELECT * FROM (
     -- 13
     SELECT '13', 'new_avg outside valid range: all / among err <= max_error_bound (1-month window)',
            oor_w1::VARCHAR || ' of ' || n_w1::VARCHAR || ' / ' || oor_err_ok_w1::VARCHAR,
-           'report (pilot: 3,439 / 1,255)', 'INFO'
+           'report (reference: 3,439 / 1,255)', 'INFO'
     FROM c13
     UNION ALL
     SELECT '13b', 'new_avg outside valid range: all / among err <= max_error_bound (3-month window)',

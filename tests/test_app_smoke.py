@@ -33,18 +33,30 @@ def test_every_section_renders_in_both_modes(mode, monkeypatch):
     assert not at.exception, [e.value for e in at.exception]
     labels = [t.label for t in at.tabs]
     assert ("Look up a game" in labels) == (mode == "full")
-    assert "Overview" in labels and "Method & data" in labels
+    assert labels[0] == "The fade" and labels[-1] == "Method"
+
+
+def _page_text(at: AppTest) -> str:
+    return " ".join(m.value for m in at.markdown)
+
+
+def _trust_month(at: AppTest) -> str:
+    import re
+
+    m = re.search(r'class="trust-num">([^<]+)<', _page_text(at))
+    return m.group(1) if m else ""
 
 
 @needs_data
-def test_kpi_tiles_match_key_numbers(monkeypatch):
+def test_headline_numbers_match_key_numbers(monkeypatch):
     at = _run("aggregates", monkeypatch)
     nums = json.loads((DATA / "key_numbers.json").read_text(encoding="utf-8"))["numbers"]
-    vals = [m.value for m in at.metric]
-    assert f"{100 * nums['share_of_decline_by_12']['value']:.0f}%" in vals
-    assert f"{100 * nums['share_declining']['value']:.0f}%" in vals
-    assert f"Month {nums['q4_rule_month']['value']:.0f}" in vals
-    assert f"{nums['change_36']['value']:+.2f}".replace("-", "−") in vals
+    page = _page_text(at)
+    for v in (f"{100 * nums['share_of_decline_by_12']['value']:.0f}%",
+              f"{100 * nums['share_declining']['value']:.0f}%",
+              f"Month {nums['q4_rule_month']['value']:.0f}",
+              f"{nums['change_36']['value']:+.2f}".replace("-", "−")):
+        assert f'<div class="v">{v}</div>' in page, v
 
 
 @needs_games
@@ -70,7 +82,7 @@ def test_lookup_works_for_every_spot_check_game(monkeypatch):
     for s in CFG.section("qc")["spot_checks"]:
         if not s["in_cohort"]:
             continue
-        box = next(b for b in at.selectbox if b.label.startswith("Search the"))
+        box = next(b for b in at.selectbox if b.label.startswith("Search"))
         box.set_value(by_id[s["id"]]).run()
         assert not at.exception, (s["name"], [e.value for e in at.exception])
     # an established game is handled gracefully
@@ -107,14 +119,13 @@ def test_aggregates_mode_works_without_game_level_files(monkeypatch, tmp_path):
 def test_trust_sliders_work_in_aggregates_mode(monkeypatch):
     at = _run("aggregates", monkeypatch)
     nums = json.loads((DATA / "key_numbers.json").read_text(encoding="utf-8"))["numbers"]
-    month = lambda: next(m.value for m in at.metric if m.label == "Trust month")  # noqa: E731
-    assert month() == f"Month {nums['q4_rule_month']['value']:.0f}"       # default: +-0.25 / 80%
-    tol = next(s for s in at.select_slider if s.label.startswith("Tolerance"))
+    assert _trust_month(at) == f"Month {nums['q4_rule_month']['value']:.0f}"  # +-0.25 / 80%
+    tol = next(s for s in at.select_slider if s.label.startswith("Close means"))
     tol.set_value(0.5).run()
-    assert month() == "Month 3"                                           # looser tolerance, earlier
-    tol = next(s for s in at.select_slider if s.label.startswith("Tolerance"))
+    assert _trust_month(at) == "Month 3"                                   # looser, earlier
+    tol = next(s for s in at.select_slider if s.label.startswith("Close means"))
     tol.set_value(0.1).run()
-    assert month() == "Month 26"
+    assert _trust_month(at) == "Month 26"
     assert not at.exception
 
 
@@ -127,5 +138,5 @@ def test_explore_segments_renders_for_every_split(monkeypatch):
         assert not at.exception, (label, [e.value for e in at.exception])
         box = next(b for b in at.selectbox if b.label == "Split by")
     # no per-game content anywhere on the page
-    page = " ".join(m.value for m in at.markdown)
+    page = _page_text(at)
     assert "Ark Nova" not in page and "Wingspan" not in page

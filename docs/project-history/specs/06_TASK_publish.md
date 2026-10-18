@@ -1,5 +1,7 @@
 # Task 04: Final polish and publish (milestone M7)
 
+> **Archived build specification** given to an AI coding assistant (Claude Code) during the project; see [`../README.md`](../README.md) for context. Section references to `docs/data_notes.md` point to an earlier version of that file.
+
 **Goal:** turn the finished project into a public portfolio piece. A recruiter landing on the GitHub repo should get the finding in 2 minutes, click through to a live dashboard, and see a clean, tested, reproducible codebase.
 
 Read first: `CLAUDE.md`, `docs/findings.md`, `reports/writeup.md` (**now draft v2**, edited by the user's reviewer), `docs/deploy.md`.
