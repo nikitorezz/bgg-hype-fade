@@ -1,0 +1,1313 @@
+{
+  "meta": {
+    "generated": "2026-10-18T19:23:23+08:00",
+    "end_month": "2026-10-01",
+    "git_commit": "5faf5e1"
+  },
+  "numbers": {
+    "q3_status": {
+      "value": "ran on entry years [2017, 2018, 2019, 2020, 2021]",
+      "ci_low": null,
+      "ci_high": null,
+      "n": 4902,
+      "source": "q3_coverage",
+      "definition": "whether the optional Q3 analysis ran"
+    },
+    "q3_share_kickstarted": {
+      "value": 0.31558547531619746,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 4902,
+      "source": "q3_coverage",
+      "definition": "share of covered main-sample games flagged Kickstarted (modelled entry years)"
+    },
+    "q3_kickstarted_coef": {
+      "value": -0.07870285201526295,
+      "ci_low": -0.10402096611895201,
+      "ci_high": -0.05338473791157388,
+      "n": 4902,
+      "source": "model_q3",
+      "definition": "Spec A + kickstarted: coefficient on flag"
+    },
+    "q3_kickstarted_coef_p": {
+      "value": 1.1104717302586586e-09,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 4902,
+      "source": "model_q3",
+      "definition": "p-value: Spec A + kickstarted: coefficient on flag"
+    },
+    "q3_hype_coef_with_kickstarted": {
+      "value": 0.04885453317810065,
+      "ci_low": 0.029301000816612258,
+      "ci_high": 0.06840806553958904,
+      "n": 4902,
+      "source": "model_q3",
+      "definition": "Spec A + kickstarted: hype coefficient"
+    },
+    "q3_hype_coef_with_kickstarted_p": {
+      "value": 9.732406571362428e-07,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 4902,
+      "source": "model_q3",
+      "definition": "p-value: Spec A + kickstarted: hype coefficient"
+    },
+    "q3_interaction_coef": {
+      "value": 0.004863651340751458,
+      "ci_low": -0.03312812424231937,
+      "ci_high": 0.042855426923822285,
+      "n": 4902,
+      "source": "model_q3",
+      "definition": "interaction hype_log x kickstarted"
+    },
+    "q3_interaction_coef_p": {
+      "value": 0.8018823689949267,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 4902,
+      "source": "model_q3",
+      "definition": "p-value: interaction hype_log x kickstarted"
+    },
+    "q3_change_36_kickstarted_0": {
+      "value": -0.36119225037257824,
+      "ci_low": -0.3740781333674625,
+      "ci_high": -0.348306367377694,
+      "n": 3355,
+      "source": "q3_change_by_kickstarted",
+      "definition": "mean change_36 where Kickstarted = 0"
+    },
+    "q3_change_36_kickstarted_1": {
+      "value": -0.5351454427925016,
+      "ci_low": -0.5589690496937669,
+      "ci_high": -0.5113218358912364,
+      "n": 1547,
+      "source": "q3_change_by_kickstarted",
+      "definition": "mean change_36 where Kickstarted = 1"
+    },
+    "ks_avg_m0": {
+      "value": 7.616670976082741,
+      "ci_low": 7.5747345701781015,
+      "ci_high": 7.65860738198738,
+      "n": 1547,
+      "source": "model_q3",
+      "definition": "mean starting average, Kickstarted = 1 (Q3 sample)"
+    },
+    "nonks_avg_m0": {
+      "value": 7.225800298062593,
+      "ci_low": 7.198525459463705,
+      "ci_high": 7.25307513666148,
+      "n": 3355,
+      "source": "model_q3",
+      "definition": "mean starting average, Kickstarted = 0 (Q3 sample)"
+    },
+    "ks_gap_within_bands": {
+      "value": -0.07616647206742383,
+      "ci_low": -0.10057815232837661,
+      "ci_high": -0.05175479180647105,
+      "n": 4154,
+      "source": "kickstarter_by_band",
+      "definition": "mean of (Kickstarted - other) change_36 across 0.5-wide starting-average bands, weighted by band size"
+    },
+    "ks_gap_band_min": {
+      "value": -0.16297511867736125,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "kickstarter_by_band",
+      "definition": "smallest per-band gap among bands with >= 30 games in each group"
+    },
+    "ks_gap_band_max": {
+      "value": -0.05731311356864588,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "kickstarter_by_band",
+      "definition": "largest per-band gap (same bands)"
+    },
+    "n_main_sample": {
+      "value": 6927.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6927,
+      "source": "game_summary",
+      "definition": "in_main_sample AND observed_m36"
+    },
+    "n_balanced_sample": {
+      "value": 6918.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6918,
+      "source": "game_summary",
+      "definition": "main sample also observed at k=12 and k=24"
+    },
+    "n_control_games": {
+      "value": 2428.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 2428,
+      "source": "control_series",
+      "definition": "ranked 2016-10 with >=500 raters, present in every snapshot"
+    },
+    "change_12": {
+      "value": -0.24450419196299508,
+      "ci_low": -0.2526950228843556,
+      "ci_high": -0.23631336104163458,
+      "n": 6918,
+      "source": "game_summary (balanced)",
+      "definition": "mean change in displayed average from entry to month 12"
+    },
+    "change_24": {
+      "value": -0.3408904307603353,
+      "ci_low": -0.350753749782259,
+      "ci_high": -0.33102711173841165,
+      "n": 6918,
+      "source": "game_summary (balanced)",
+      "definition": "mean change in displayed average from entry to month 24"
+    },
+    "change_36": {
+      "value": -0.40134287366290833,
+      "ci_low": -0.41182314043296697,
+      "ci_high": -0.3908626068928497,
+      "n": 6918,
+      "source": "game_summary (balanced)",
+      "definition": "mean change in displayed average from entry to month 36"
+    },
+    "share_of_decline_by_12": {
+      "value": 0.6092152321816394,
+      "ci_low": 0.5997402627382581,
+      "ci_high": 0.6198390901072395,
+      "n": 6918,
+      "source": "game_summary (balanced)",
+      "definition": "mean change_12 / mean change_36 (game-level bootstrap CI)"
+    },
+    "median_change_36": {
+      "value": -0.3799999999999999,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6927,
+      "source": "game_summary (main)",
+      "definition": "median change from entry to month 36"
+    },
+    "share_declining": {
+      "value": 0.8693518117511189,
+      "ci_low": 0.861415239849823,
+      "ci_high": 0.8772883836524147,
+      "n": 6927,
+      "source": "game_summary (main)",
+      "definition": "share of games with change_36 < 0"
+    },
+    "change_36_rater_weighted": {
+      "value": -0.2739491603371781,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6927,
+      "source": "game_summary (main)",
+      "definition": "mean change_36 weighted by raters at month 36"
+    },
+    "examples_min_raters": {
+      "value": 5000.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "config",
+      "definition": "minimum raters at month 36 for the example games"
+    },
+    "gap_k3": {
+      "value": -0.14685800685479292,
+      "ci_low": -0.15671195815043712,
+      "ci_high": -0.1370040555591487,
+      "n": 4829,
+      "source": "gap_new_vs_displayed",
+      "definition": "mean of (new_avg_3 - avg_rating) at k=3, usable rows, equal weight per row"
+    },
+    "gap_k6": {
+      "value": -0.19019625979560298,
+      "ci_low": -0.20094745955058074,
+      "ci_high": -0.17944506004062521,
+      "n": 4383,
+      "source": "gap_new_vs_displayed",
+      "definition": "mean of (new_avg_3 - avg_rating) at k=6, usable rows, equal weight per row"
+    },
+    "gap_k12": {
+      "value": -0.20306833412812683,
+      "ci_low": -0.21424476025835812,
+      "ci_high": -0.19189190799789554,
+      "n": 4110,
+      "source": "gap_new_vs_displayed",
+      "definition": "mean of (new_avg_3 - avg_rating) at k=12, usable rows, equal weight per row"
+    },
+    "gap_k24": {
+      "value": -0.21612430120801285,
+      "ci_low": -0.22824813948599076,
+      "ci_high": -0.20400046293003493,
+      "n": 3655,
+      "source": "gap_new_vs_displayed",
+      "definition": "mean of (new_avg_3 - avg_rating) at k=24, usable rows, equal weight per row"
+    },
+    "gap_k36": {
+      "value": -0.23084187811549353,
+      "ci_low": -0.24415439553644197,
+      "ci_high": -0.2175293606945451,
+      "n": 3365,
+      "source": "gap_new_vs_displayed",
+      "definition": "mean of (new_avg_3 - avg_rating) at k=36, usable rows, equal weight per row"
+    },
+    "control_drift_36": {
+      "value": -0.015813471578991937,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6927,
+      "source": "control_adjusted_change36",
+      "definition": "mean control-group change over each main-sample game's own 36-month window"
+    },
+    "change_36_control_adjusted": {
+      "value": -0.38542371623680133,
+      "ci_low": -0.3958890336717237,
+      "ci_high": -0.374958398801879,
+      "n": 6927,
+      "source": "control_adjusted_change36",
+      "definition": "mean of change_36 minus control change over the same calendar months"
+    },
+    "control_change_full_period": {
+      "value": -0.0655477759472829,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 2428,
+      "source": "control_series",
+      "definition": "control-group mean average, last month minus 2016-10"
+    },
+    "change_36_hype_q1": {
+      "value": -0.3646158290005777,
+      "ci_low": -0.38853595770511273,
+      "ci_high": -0.3406957002960427,
+      "n": 1731,
+      "source": "segments",
+      "definition": "mean change_36, hype quartile 1 (1 = least hyped)"
+    },
+    "change_36_hype_q2": {
+      "value": -0.3965895953757226,
+      "ci_low": -0.4160702389571265,
+      "ci_high": -0.37710895179431864,
+      "n": 1730,
+      "source": "segments",
+      "definition": "mean change_36, hype quartile 2 (1 = least hyped)"
+    },
+    "change_36_hype_q3": {
+      "value": -0.43449098312972656,
+      "ci_low": -0.45305203347345696,
+      "ci_high": -0.41592993278599616,
+      "n": 1719,
+      "source": "segments",
+      "definition": "mean change_36, hype quartile 3 (1 = least hyped)"
+    },
+    "change_36_hype_q4": {
+      "value": -0.40919838523644747,
+      "ci_low": -0.430335962268255,
+      "ci_high": -0.38806080820463995,
+      "n": 1734,
+      "source": "segments",
+      "definition": "mean change_36, hype quartile 4 (1 = least hyped)"
+    },
+    "change_6_by_hype_q1": {
+      "value": -0.09860196418255344,
+      "ci_low": -0.10816599296774337,
+      "ci_high": -0.08903793539736352,
+      "n": 1731,
+      "source": "speed_not_size",
+      "definition": "mean avg_m6 - avg_m0, hype quartile 1"
+    },
+    "rater_growth_m6_by_hype_q1": {
+      "value": 1.241525499900881,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1731,
+      "source": "speed_not_size",
+      "definition": "mean of raters_m6 / raters_m0, hype quartile 1"
+    },
+    "rater_growth_median_m6_by_hype_q1": {
+      "value": 1.25,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1731,
+      "source": "speed_not_size",
+      "definition": "median of raters_m6 / raters_m0, hype quartile 1"
+    },
+    "entry_rater_share_m36_by_hype_q1": {
+      "value": 0.4626865671641791,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1731,
+      "source": "speed_not_size",
+      "definition": "median of raters_m0 / raters_m36: share of month-36 raters who were the entry batch, hype quartile 1"
+    },
+    "gap_k36_by_hype_q1": {
+      "value": -0.2953735584402318,
+      "ci_low": -0.3592516002390229,
+      "ci_high": -0.23149551664144064,
+      "n": 278,
+      "source": "speed_not_size",
+      "definition": "mean new-rater minus displayed average at k=36, hype quartile 1"
+    },
+    "change_6_by_hype_q2": {
+      "value": -0.15647976878612718,
+      "ci_low": -0.16847954961375353,
+      "ci_high": -0.14447998795850084,
+      "n": 1730,
+      "source": "speed_not_size",
+      "definition": "mean avg_m6 - avg_m0, hype quartile 2"
+    },
+    "rater_growth_m6_by_hype_q2": {
+      "value": 1.7007692522757367,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1730,
+      "source": "speed_not_size",
+      "definition": "mean of raters_m6 / raters_m0, hype quartile 2"
+    },
+    "rater_growth_median_m6_by_hype_q2": {
+      "value": 1.6774193548387097,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1730,
+      "source": "speed_not_size",
+      "definition": "median of raters_m6 / raters_m0, hype quartile 2"
+    },
+    "entry_rater_share_m36_by_hype_q2": {
+      "value": 0.28115831194996876,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1730,
+      "source": "speed_not_size",
+      "definition": "median of raters_m0 / raters_m36: share of month-36 raters who were the entry batch, hype quartile 2"
+    },
+    "gap_k36_by_hype_q2": {
+      "value": -0.23482764468418377,
+      "ci_low": -0.27527124706556333,
+      "ci_high": -0.1943840423028042,
+      "n": 426,
+      "source": "speed_not_size",
+      "definition": "mean new-rater minus displayed average at k=36, hype quartile 2"
+    },
+    "change_6_by_hype_q3": {
+      "value": -0.20971495055264688,
+      "ci_low": -0.22280972824665657,
+      "ci_high": -0.1966201728586372,
+      "n": 1719,
+      "source": "speed_not_size",
+      "definition": "mean avg_m6 - avg_m0, hype quartile 3"
+    },
+    "rater_growth_m6_by_hype_q3": {
+      "value": 2.625922517916904,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1719,
+      "source": "speed_not_size",
+      "definition": "mean of raters_m6 / raters_m0, hype quartile 3"
+    },
+    "rater_growth_median_m6_by_hype_q3": {
+      "value": 2.55,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1719,
+      "source": "speed_not_size",
+      "definition": "median of raters_m6 / raters_m0, hype quartile 3"
+    },
+    "entry_rater_share_m36_by_hype_q3": {
+      "value": 0.15137614678899083,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1719,
+      "source": "speed_not_size",
+      "definition": "median of raters_m0 / raters_m36: share of month-36 raters who were the entry batch, hype quartile 3"
+    },
+    "gap_k36_by_hype_q3": {
+      "value": -0.21541262715264525,
+      "ci_low": -0.2417375560691322,
+      "ci_high": -0.1890876982361583,
+      "n": 1035,
+      "source": "speed_not_size",
+      "definition": "mean new-rater minus displayed average at k=36, hype quartile 3"
+    },
+    "change_6_by_hype_q4": {
+      "value": -0.1927739331026528,
+      "ci_low": -0.2101287940194515,
+      "ci_high": -0.17541907218585412,
+      "n": 1734,
+      "source": "speed_not_size",
+      "definition": "mean avg_m6 - avg_m0, hype quartile 4"
+    },
+    "rater_growth_m6_by_hype_q4": {
+      "value": 9.963601586392228,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1734,
+      "source": "speed_not_size",
+      "definition": "mean of raters_m6 / raters_m0, hype quartile 4"
+    },
+    "rater_growth_median_m6_by_hype_q4": {
+      "value": 6.022200615783504,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1734,
+      "source": "speed_not_size",
+      "definition": "median of raters_m6 / raters_m0, hype quartile 4"
+    },
+    "entry_rater_share_m36_by_hype_q4": {
+      "value": 0.04557230890258293,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 1734,
+      "source": "speed_not_size",
+      "definition": "median of raters_m0 / raters_m36: share of month-36 raters who were the entry batch, hype quartile 4"
+    },
+    "gap_k36_by_hype_q4": {
+      "value": -0.22755355814775183,
+      "ci_low": -0.243140836435631,
+      "ci_high": -0.21196627985987265,
+      "n": 1623,
+      "source": "speed_not_size",
+      "definition": "mean new-rater minus displayed average at k=36, hype quartile 4"
+    },
+    "share_rank_improved_36": {
+      "value": 0.7441894037823011,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6927,
+      "source": "game_summary (main)",
+      "definition": "share of main-sample games with rank_m36 < rank_m0 (rank improved)"
+    },
+    "avg_rank100": {
+      "value": 7.93,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "snapshots_monthly",
+      "definition": "median raw average of games ranked 90-110 in the end-month snapshot"
+    },
+    "avg_rank1000": {
+      "value": 7.3,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "snapshots_monthly",
+      "definition": "median raw average of games ranked 990-1010 in the end-month snapshot"
+    },
+    "avg_rank100_vs_rank1000": {
+      "value": 0.6299999999999999,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "snapshots_monthly",
+      "definition": "avg_rank100 minus avg_rank1000"
+    },
+    "fade_share_of_rank_gap": {
+      "value": 0.6370521804173149,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "derived",
+      "definition": "|change_36| divided by the average gap between games ranked ~100 and ~1000"
+    },
+    "beta_12": {
+      "value": -0.244201050142199,
+      "ci_low": -0.25239306997898364,
+      "ci_high": -0.23600903030541437,
+      "n": 6927,
+      "source": "model_event_study",
+      "definition": "event-study coefficient at k=12 vs k=0 (game FE, clustered SE)"
+    },
+    "beta_24": {
+      "value": -0.3406168515614048,
+      "ci_low": -0.35047998140397535,
+      "ci_high": -0.33075372171883427,
+      "n": 6927,
+      "source": "model_event_study",
+      "definition": "event-study coefficient at k=24 vs k=0 (game FE, clustered SE)"
+    },
+    "beta_36": {
+      "value": -0.40123718781530565,
+      "ci_low": -0.41170779495761617,
+      "ci_high": -0.39076658067299513,
+      "n": 6927,
+      "source": "model_event_study",
+      "definition": "event-study coefficient at k=36 vs k=0 (game FE, clustered SE)"
+    },
+    "beta_share_by_12": {
+      "value": 0.6086201816729746,
+      "ci_low": 0.5974411871736387,
+      "ci_high": 0.6187262643500725,
+      "n": 6927,
+      "source": "model_event_study",
+      "definition": "beta_12 / beta_36 (game-level bootstrap CI)"
+    },
+    "spec_a_hype": {
+      "value": 0.049240583746334395,
+      "ci_low": 0.032654198899541034,
+      "ci_high": 0.06582696859312775,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec A: as proposed: change_36 on hype, controlling start level and size; raw coefficient on hype_log"
+    },
+    "spec_a_hype_per_sd": {
+      "value": 0.037156309131642036,
+      "ci_low": 0.024640207158136952,
+      "ci_high": 0.04967241110514712,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec A: coefficient per 1 SD of hype_log"
+    },
+    "spec_a_hype_p": {
+      "value": 5.9337591843399785e-09,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec A: p-value of the hype coefficient"
+    },
+    "spec_b_hype": {
+      "value": -0.0044140149292223405,
+      "ci_low": -0.030009021847389336,
+      "ci_high": 0.02118099198894465,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec B: clean timing: change after the hype window (avg_m36 - avg_m6); raw coefficient on hype_log"
+    },
+    "spec_b_hype_per_sd": {
+      "value": -0.003330758710472793,
+      "ci_low": -0.02264477557185529,
+      "ci_high": 0.0159832581509097,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec B: coefficient per 1 SD of hype_log"
+    },
+    "spec_b_hype_p": {
+      "value": 0.7353573596057748,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec B: p-value of the hype coefficient"
+    },
+    "spec_c_hype": {
+      "value": 0.048610497981555846,
+      "ci_low": 0.032144025628641756,
+      "ci_high": 0.06507697033446994,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec C: absolute reach ln(raters_m6) instead of relative growth; raw coefficient on log_reach"
+    },
+    "spec_c_hype_per_sd": {
+      "value": 0.046528923458705546,
+      "ci_low": 0.030767280556060976,
+      "ci_high": 0.062290566361350115,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec C: coefficient per 1 SD of log_reach"
+    },
+    "spec_c_hype_p": {
+      "value": 7.208699883051647e-09,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec C: p-value of the hype coefficient"
+    },
+    "spec_d_hype": {
+      "value": 0.006260758078302296,
+      "ci_low": -0.009798376041508336,
+      "ci_high": 0.02231989219811293,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec D: no controls (entry-year FE only); raw coefficient on hype_log"
+    },
+    "spec_d_hype_per_sd": {
+      "value": 0.004724287261788252,
+      "ci_low": -0.0073939508055386035,
+      "ci_high": 0.016842525329115107,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec D: coefficient per 1 SD of hype_log"
+    },
+    "spec_d_hype_p": {
+      "value": 0.44480483347728716,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6914,
+      "source": "model_q2",
+      "definition": "Spec D: p-value of the hype coefficient"
+    },
+    "q4_rule_month": {
+      "value": 13.0,
+      "ci_low": 13.0,
+      "ci_high": 14.0,
+      "n": 6927,
+      "source": "q4_accuracy_by_k",
+      "definition": "first k with >= 80% of games within \u00b10.25 of their month-36 average (game-level bootstrap CI)"
+    },
+    "q4_share_at_rule_month": {
+      "value": 0.800520381613183,
+      "ci_low": 0.79110362699448,
+      "ci_high": 0.8099371362318859,
+      "n": 6918,
+      "source": "q4_accuracy_by_k",
+      "definition": "share within tolerance at the rule month"
+    },
+    "q4_within_025_k0": {
+      "value": 0.3151436408257543,
+      "ci_low": 0.3042031325764409,
+      "ci_high": 0.3260841490750677,
+      "n": 6927,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.25"
+    },
+    "q4_within_050_k0": {
+      "value": 0.6252345892882922,
+      "ci_low": 0.6138351175599235,
+      "ci_high": 0.636634061016661,
+      "n": 6927,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.5"
+    },
+    "q4_mae_k0": {
+      "value": 0.4688566478995236,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6927,
+      "source": "q4_accuracy_by_k",
+      "definition": "mean absolute error of avg at k=0 vs month-36 avg"
+    },
+    "q4_within_025_k3": {
+      "value": 0.4389290882778582,
+      "ci_low": 0.4272280848667246,
+      "ci_high": 0.4506300916889918,
+      "n": 6910,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.25"
+    },
+    "q4_within_050_k3": {
+      "value": 0.8065123010130246,
+      "ci_low": 0.7971980223818739,
+      "ci_high": 0.8158265796441754,
+      "n": 6910,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.5"
+    },
+    "q4_mae_k3": {
+      "value": 0.34465846599131694,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6910,
+      "source": "q4_accuracy_by_k",
+      "definition": "mean absolute error of avg at k=3 vs month-36 avg"
+    },
+    "q4_within_025_k6": {
+      "value": 0.5535146080416546,
+      "ci_low": 0.541796444511798,
+      "ci_high": 0.5652327715715113,
+      "n": 6914,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.25"
+    },
+    "q4_within_050_k6": {
+      "value": 0.8890656638704079,
+      "ci_low": 0.8816629443116243,
+      "ci_high": 0.8964683834291914,
+      "n": 6914,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.5"
+    },
+    "q4_mae_k6": {
+      "value": 0.28053659242117446,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6914,
+      "source": "q4_accuracy_by_k",
+      "definition": "mean absolute error of avg at k=6 vs month-36 avg"
+    },
+    "q4_within_025_k12": {
+      "value": 0.7721098265895954,
+      "ci_low": 0.7622264495521468,
+      "ci_high": 0.7819932036270439,
+      "n": 6920,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.25"
+    },
+    "q4_within_050_k12": {
+      "value": 0.9585260115606936,
+      "ci_low": 0.9538282293750652,
+      "ci_high": 0.963223793746322,
+      "n": 6920,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.5"
+    },
+    "q4_mae_k12": {
+      "value": 0.19189017341040465,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6920,
+      "source": "q4_accuracy_by_k",
+      "definition": "mean absolute error of avg at k=12 vs month-36 avg"
+    },
+    "q4_within_025_k18": {
+      "value": 0.9122705593293828,
+      "ci_low": 0.9056045039688002,
+      "ci_high": 0.9189366146899655,
+      "n": 6919,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.25"
+    },
+    "q4_within_050_k18": {
+      "value": 0.9838126896950427,
+      "ci_low": 0.9808391210950611,
+      "ci_high": 0.9867862582950242,
+      "n": 6919,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.5"
+    },
+    "q4_mae_k18": {
+      "value": 0.12746784217372453,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6919,
+      "source": "q4_accuracy_by_k",
+      "definition": "mean absolute error of avg at k=18 vs month-36 avg"
+    },
+    "q4_within_025_k24": {
+      "value": 0.9709705372616985,
+      "ci_low": 0.9670159599818389,
+      "ci_high": 0.9749251145415581,
+      "n": 6924,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.25"
+    },
+    "q4_within_050_k24": {
+      "value": 0.9935008665511266,
+      "ci_low": 0.9916081333767905,
+      "ci_high": 0.9953935997254626,
+      "n": 6924,
+      "source": "q4_accuracy_by_k",
+      "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.5"
+    },
+    "q4_mae_k24": {
+      "value": 0.08227469670710573,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 6924,
+      "source": "q4_accuracy_by_k",
+      "definition": "mean absolute error of avg at k=24 vs month-36 avg"
+    },
+    "q4_test_raw_mae_k0": {
+      "value": 0.47644813059505003,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3798,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set MAE vs month-36 average, raw predictor at k=0"
+    },
+    "q4_test_raw_within_k0": {
+      "value": 0.3062137967351237,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3798,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set share within \u00b10.25, raw predictor at k=0"
+    },
+    "q4_test_adj_mae_k0": {
+      "value": 0.28899657101569715,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3798,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set MAE vs month-36 average, adj predictor at k=0"
+    },
+    "q4_test_adj_within_k0": {
+      "value": 0.5539757767245919,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3798,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set share within \u00b10.25, adj predictor at k=0"
+    },
+    "q4_test_raw_mae_k3": {
+      "value": 0.3564749340369393,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3790,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set MAE vs month-36 average, raw predictor at k=3"
+    },
+    "q4_test_raw_within_k3": {
+      "value": 0.4071240105540897,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3790,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set share within \u00b10.25, raw predictor at k=3"
+    },
+    "q4_test_adj_mae_k3": {
+      "value": 0.21959770019336095,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3790,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set MAE vs month-36 average, adj predictor at k=3"
+    },
+    "q4_test_adj_within_k3": {
+      "value": 0.6912928759894459,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3790,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set share within \u00b10.25, adj predictor at k=3"
+    },
+    "q4_test_raw_mae_k6": {
+      "value": 0.29053312219583,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3789,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set MAE vs month-36 average, raw predictor at k=6"
+    },
+    "q4_test_raw_within_k6": {
+      "value": 0.5320665083135392,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3789,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set share within \u00b10.25, raw predictor at k=6"
+    },
+    "q4_test_adj_mae_k6": {
+      "value": 0.1860312686668301,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3789,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set MAE vs month-36 average, adj predictor at k=6"
+    },
+    "q4_test_adj_within_k6": {
+      "value": 0.7674848244919504,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3789,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set share within \u00b10.25, adj predictor at k=6"
+    },
+    "q4_test_raw_mae_k12": {
+      "value": 0.19819931452675982,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3793,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set MAE vs month-36 average, raw predictor at k=12"
+    },
+    "q4_test_raw_within_k12": {
+      "value": 0.7650935934616399,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3793,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set share within \u00b10.25, raw predictor at k=12"
+    },
+    "q4_test_adj_mae_k12": {
+      "value": 0.13185671676120828,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3793,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set MAE vs month-36 average, adj predictor at k=12"
+    },
+    "q4_test_adj_within_k12": {
+      "value": 0.8781966780912207,
+      "ci_low": null,
+      "ci_high": null,
+      "n": 3793,
+      "source": "q4_adjusted_predictor",
+      "definition": "test-set share within \u00b10.25, adj predictor at k=12"
+    },
+    "q4_adj_coef_const_k0": {
+      "value": 1.028086081878223,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (const) at k=0, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_avg_k_k0": {
+      "value": 0.7684042461334424,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (avg_k) at k=0, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_ln_raters_k_k0": {
+      "value": 0.07066952883456376,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (ln_raters_k) at k=0, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_const_k3": {
+      "value": 0.6806778446176356,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (const) at k=3, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_avg_k_k3": {
+      "value": 0.8324162363073314,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (avg_k) at k=3, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_ln_raters_k_k3": {
+      "value": 0.04263178795344447,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (ln_raters_k) at k=3, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_ln_growth_k3": {
+      "value": 0.041965979896091965,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (ln_growth) at k=3, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_const_k6": {
+      "value": 0.5513097398604543,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (const) at k=6, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_avg_k_k6": {
+      "value": 0.8608392617181296,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (avg_k) at k=6, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_ln_raters_k_k6": {
+      "value": 0.037295076997367074,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (ln_raters_k) at k=6, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_ln_growth_k6": {
+      "value": 0.025061457195788634,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (ln_growth) at k=6, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_const_k12": {
+      "value": 0.3543902539073529,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (const) at k=12, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_avg_k_k12": {
+      "value": 0.9077522033610387,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (avg_k) at k=12, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_ln_raters_k_k12": {
+      "value": 0.02698498408606662,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (ln_raters_k) at k=12, trained on entry years 2017-2019"
+    },
+    "q4_adj_coef_ln_growth_k12": {
+      "value": 0.003568153288460609,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "q4_adjusted_predictor",
+      "definition": "adjusted-predictor OLS coefficient (ln_growth) at k=12, trained on entry years 2017-2019"
+    },
+    "robust_1_baseline_main_sample_beta_36": {
+      "value": -0.4012371878158065,
+      "ci_low": -0.41170720028890456,
+      "ci_high": -0.3907671753427084,
+      "n": 6927,
+      "source": "robustness",
+      "definition": "event-study beta_36, variant: 1 Baseline (main sample)"
+    },
+    "robust_1_baseline_main_sample_share_by_12": {
+      "value": 0.6086201816729746,
+      "ci_low": 0.5974411871736387,
+      "ci_high": 0.6187262643500725,
+      "n": 6927,
+      "source": "robustness",
+      "definition": "beta_12 / beta_36, variant: 1 Baseline (main sample)"
+    },
+    "robust_1_baseline_main_sample_hype_a": {
+      "value": 0.049240583746334395,
+      "ci_low": 0.03265389411522672,
+      "ci_high": 0.06582727337744207,
+      "n": 6914,
+      "source": "robustness",
+      "definition": "Spec A hype coefficient, variant: 1 Baseline (main sample)"
+    },
+    "robust_1_baseline_main_sample_hype_b": {
+      "value": -0.0044140149292223405,
+      "ci_low": -0.03000949217029003,
+      "ci_high": 0.021181462311845353,
+      "n": 6914,
+      "source": "robustness",
+      "definition": "Spec B hype coefficient, variant: 1 Baseline (main sample)"
+    },
+    "robust_2_rater_weighted_weights_raters_m36_beta_36": {
+      "value": -0.2739491603371774,
+      "ci_low": -0.31013602975977794,
+      "ci_high": -0.2377622909145769,
+      "n": 6927,
+      "source": "robustness",
+      "definition": "event-study beta_36, variant: 2 Rater-weighted (weights = raters_m36)"
+    },
+    "robust_2_rater_weighted_weights_raters_m36_share_by_12": {
+      "value": 0.542155034455084,
+      "ci_low": 0.48114310302363106,
+      "ci_high": 0.5937004325716737,
+      "n": 6927,
+      "source": "robustness",
+      "definition": "beta_12 / beta_36, variant: 2 Rater-weighted (weights = raters_m36)"
+    },
+    "robust_2_rater_weighted_weights_raters_m36_hype_a": {
+      "value": 0.11599599272683225,
+      "ci_low": 0.08768989106011017,
+      "ci_high": 0.14430209439355432,
+      "n": 6914,
+      "source": "robustness",
+      "definition": "Spec A hype coefficient, variant: 2 Rater-weighted (weights = raters_m36)"
+    },
+    "robust_2_rater_weighted_weights_raters_m36_hype_b": {
+      "value": 0.0008143689052699343,
+      "ci_low": -0.026961207269864482,
+      "ci_high": 0.028589945080404352,
+      "n": 6914,
+      "source": "robustness",
+      "definition": "Spec B hype coefficient, variant: 2 Rater-weighted (weights = raters_m36)"
+    },
+    "robust_3_excluding_2020_2021_entry_cohorts_beta_36": {
+      "value": -0.3862715559960497,
+      "ci_low": -0.39846188092500845,
+      "ci_high": -0.3740812310670909,
+      "n": 5045,
+      "source": "robustness",
+      "definition": "event-study beta_36, variant: 3 Excluding 2020-2021 entry cohorts"
+    },
+    "robust_3_excluding_2020_2021_entry_cohorts_share_by_12": {
+      "value": 0.6137743693391469,
+      "ci_low": 0.601359882459694,
+      "ci_high": 0.6257578725364429,
+      "n": 5045,
+      "source": "robustness",
+      "definition": "beta_12 / beta_36, variant: 3 Excluding 2020-2021 entry cohorts"
+    },
+    "robust_3_excluding_2020_2021_entry_cohorts_hype_a": {
+      "value": 0.04981014642236416,
+      "ci_low": 0.032003480746959426,
+      "ci_high": 0.06761681209776889,
+      "n": 5036,
+      "source": "robustness",
+      "definition": "Spec A hype coefficient, variant: 3 Excluding 2020-2021 entry cohorts"
+    },
+    "robust_3_excluding_2020_2021_entry_cohorts_hype_b": {
+      "value": 0.0010138535751268562,
+      "ci_low": -0.029081537371620156,
+      "ci_high": 0.03110924452187387,
+      "n": 5036,
+      "source": "robustness",
+      "definition": "Spec B hype coefficient, variant: 3 Excluding 2020-2021 entry cohorts"
+    },
+    "robust_4a_popular_only_top_10_raters_m36_beta_36": {
+      "value": -0.2893948126801263,
+      "ci_low": -0.33086688814383647,
+      "ci_high": -0.24792273721641614,
+      "n": 694,
+      "source": "robustness",
+      "definition": "event-study beta_36, variant: 4a Popular only (top 10% raters_m36)"
+    },
+    "robust_4a_popular_only_top_10_raters_m36_share_by_12": {
+      "value": 0.587084246166118,
+      "ci_low": 0.5242804005231475,
+      "ci_high": 0.6506494156682682,
+      "n": 694,
+      "source": "robustness",
+      "definition": "beta_12 / beta_36, variant: 4a Popular only (top 10% raters_m36)"
+    },
+    "robust_4a_popular_only_top_10_raters_m36_hype_a": {
+      "value": -0.0006104930170956224,
+      "ci_low": -0.03492066696423012,
+      "ci_high": 0.03369968093003888,
+      "n": 694,
+      "source": "robustness",
+      "definition": "Spec A hype coefficient, variant: 4a Popular only (top 10% raters_m36)"
+    },
+    "robust_4a_popular_only_top_10_raters_m36_hype_b": {
+      "value": -0.0025931118072454917,
+      "ci_low": -0.03774977093550014,
+      "ci_high": 0.03256354732100915,
+      "n": 694,
+      "source": "robustness",
+      "definition": "Spec B hype coefficient, variant: 4a Popular only (top 10% raters_m36)"
+    },
+    "robust_4b_rest_below_top_10_beta_36": {
+      "value": -0.4136900369003835,
+      "ci_low": -0.4243255830105505,
+      "ci_high": -0.40305449079021644,
+      "n": 6233,
+      "source": "robustness",
+      "definition": "event-study beta_36, variant: 4b Rest (below top 10%)"
+    },
+    "robust_4b_rest_below_top_10_share_by_12": {
+      "value": 0.6102935759738648,
+      "ci_low": 0.5996558004138931,
+      "ci_high": 0.6216940425312396,
+      "n": 6233,
+      "source": "robustness",
+      "definition": "beta_12 / beta_36, variant: 4b Rest (below top 10%)"
+    },
+    "robust_4b_rest_below_top_10_hype_a": {
+      "value": -0.007962583939093933,
+      "ci_low": -0.028724725653410846,
+      "ci_high": 0.01279955777522298,
+      "n": 6220,
+      "source": "robustness",
+      "definition": "Spec A hype coefficient, variant: 4b Rest (below top 10%)"
+    },
+    "robust_4b_rest_below_top_10_hype_b": {
+      "value": 0.008997174838768194,
+      "ci_low": -0.02756688656299471,
+      "ci_high": 0.0455612362405311,
+      "n": 6220,
+      "source": "robustness",
+      "definition": "Spec B hype coefficient, variant: 4b Rest (below top 10%)"
+    },
+    "robust_5_entered_with_50_raters_beta_36": {
+      "value": -0.40153036437248435,
+      "ci_low": -0.42606232607576533,
+      "ci_high": -0.37699840266920337,
+      "n": 1235,
+      "source": "robustness",
+      "definition": "event-study beta_36, variant: 5 Entered with >= 50 raters"
+    },
+    "robust_5_entered_with_50_raters_share_by_12": {
+      "value": 0.6583718163302488,
+      "ci_low": 0.6349748018931689,
+      "ci_high": 0.6824169784767443,
+      "n": 1235,
+      "source": "robustness",
+      "definition": "beta_12 / beta_36, variant: 5 Entered with >= 50 raters"
+    },
+    "robust_5_entered_with_50_raters_hype_a": {
+      "value": 0.0711162532188206,
+      "ci_low": 0.03534206421289671,
+      "ci_high": 0.1068904422247445,
+      "n": 1235,
+      "source": "robustness",
+      "definition": "Spec A hype coefficient, variant: 5 Entered with >= 50 raters"
+    },
+    "robust_5_entered_with_50_raters_hype_b": {
+      "value": -0.02381972052220722,
+      "ci_low": -0.07189744218258305,
+      "ci_high": 0.024258001138168613,
+      "n": 1235,
+      "source": "robustness",
+      "definition": "Spec B hype coefficient, variant: 5 Entered with >= 50 raters"
+    },
+    "robust_6_control_adjusted_outcome_beta_36": {
+      "value": -0.3854237162368149,
+      "ci_low": -0.39588827824405154,
+      "ci_high": -0.3749591542295782,
+      "n": 6927,
+      "source": "robustness",
+      "definition": "event-study beta_36, variant: 6 Control-adjusted outcome"
+    },
+    "robust_6_control_adjusted_outcome_share_by_12": {
+      "value": 0.6153835590849794,
+      "ci_low": 0.6037018409286542,
+      "ci_high": 0.6258428286085833,
+      "n": 6927,
+      "source": "robustness",
+      "definition": "beta_12 / beta_36, variant: 6 Control-adjusted outcome"
+    },
+    "robust_6_control_adjusted_outcome_hype_a": {
+      "value": 0.04906620972962915,
+      "ci_low": 0.032477851596740284,
+      "ci_high": 0.06565456786251801,
+      "n": 6914,
+      "source": "robustness",
+      "definition": "Spec A hype coefficient, variant: 6 Control-adjusted outcome"
+    },
+    "robust_6_control_adjusted_outcome_hype_b": {
+      "value": -0.004369229199983775,
+      "ci_low": -0.02996358499880129,
+      "ci_high": 0.02122512659883374,
+      "n": 6914,
+      "source": "robustness",
+      "definition": "Spec B hype coefficient, variant: 6 Control-adjusted outcome"
+    },
+    "robust_7_unbalanced_all_new_releases_event_study_only_beta_36": {
+      "value": -0.392410371589094,
+      "ci_low": -0.40153846872869836,
+      "ci_high": -0.3832822744494896,
+      "n": 11020,
+      "source": "robustness",
+      "definition": "event-study beta_36, variant: 7 Unbalanced: all new releases (event study only)"
+    },
+    "robust_7_unbalanced_all_new_releases_event_study_only_share_by_12": {
+      "value": 0.601222194502904,
+      "ci_low": 0.5914260375632322,
+      "ci_high": 0.611865141652076,
+      "n": 11020,
+      "source": "robustness",
+      "definition": "beta_12 / beta_36, variant: 7 Unbalanced: all new releases (event study only)"
+    },
+    "gap_sensitivity_baseline_k6": {
+      "value": -0.19019625979560298,
+      "ci_low": -0.20094745955058074,
+      "ci_high": -0.17944506004062521,
+      "n": 4383,
+      "source": "robustness_gap",
+      "definition": "mean gap at config thresholds (matches Fig 2)"
+    },
+    "gap_sensitivity_baseline_k12": {
+      "value": -0.20306833412812683,
+      "ci_low": -0.21424476025835812,
+      "ci_high": -0.19189190799789554,
+      "n": 4110,
+      "source": "robustness_gap",
+      "definition": "mean gap at config thresholds (matches Fig 2)"
+    },
+    "gap_sensitivity_baseline_k36": {
+      "value": -0.23084187811549353,
+      "ci_low": -0.24415439553644197,
+      "ci_high": -0.2175293606945451,
+      "n": 3365,
+      "source": "robustness_gap",
+      "definition": "mean gap at config thresholds (matches Fig 2)"
+    }
+  }
+}

@@ -26,7 +26,7 @@ uv run streamlit run app/streamlit_app.py     # interactive dashboard; APP_MODE=
 uv run bgg export-static         # reports/site/index.html: one offline page, no server needed
 ```
 
-Deployment notes and the data-publication question are in `docs/deploy.md`.
+Deployment is aggregates-only (decision D0): no game-level data is published. See `docs/deploy.md`.
 
 In mainland China set `HTTPS_PROXY` or use `uv run bgg download --backend git`.
 All parameters live in `config.yaml`; data facts and traps are in `docs/data_notes.md`.

@@ -1,0 +1,40 @@
+{
+  "rule_tolerance": 0.25,
+  "rule_share": 0.8,
+  "tolerances": [
+    0.25,
+    0.5
+  ],
+  "k_max": 30,
+  "final_k": 36,
+  "end_month": "2026-10-01",
+  "adjusted_ks": [
+    0,
+    3,
+    6,
+    12
+  ],
+  "train_entry_years": [
+    2017,
+    2019
+  ],
+  "test_entry_years": [
+    2020,
+    2023
+  ],
+  "speed_months": [
+    6,
+    36
+  ],
+  "main_entry_start": "2017-01-01",
+  "main_entry_end": "2023-10-01",
+  "start_month": "2016-10-01",
+  "kickstarter_years": [
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "mode_built": "aggregates"
+}

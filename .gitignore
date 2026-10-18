@@ -9,7 +9,10 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
-# dashboard data extract: git-ignored until the data-publication decision (D0)
-app/data/
+# D0 = aggregates only: game-level files never enter the repo
+app/data/*.parquet
+data/external/
+reports/tables/examples.csv
+reports/figures/app_lookup*.png
 # built static page (5 MB, contains the Plotly bundle); rebuild with `bgg export-static`
 reports/site/
