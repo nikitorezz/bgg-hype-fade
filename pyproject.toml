@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
-authors = [{ name = "Резниченко Никита", email = "nikitorezz@gmail.com" }]
+authors = [{ name = "Nikita Reznichenko", email = "nikitorezz@gmail.com" }]
 keywords = ["data-analytics", "duckdb", "panel-data", "board-games", "streamlit"]
 classifiers = [
     "Programming Language :: Python :: 3",
