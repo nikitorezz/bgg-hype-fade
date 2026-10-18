@@ -120,7 +120,7 @@
     "definition": "mean of (new_avg_3 - avg_rating) at k=36, usable rows, equal weight per row"
   },
   "control_drift_36": {
-    "value": -0.015813471578991763,
+    "value": -0.015813471578991743,
     "ci_low": null,
     "ci_high": null,
     "n": 6927,
@@ -128,15 +128,15 @@
     "definition": "mean control-group change over each main-sample game's own 36-month window"
   },
   "change_36_control_adjusted": {
-    "value": -0.3854237162368015,
-    "ci_low": -0.3958890336717238,
+    "value": -0.38542371623680155,
+    "ci_low": -0.3958890336717239,
     "ci_high": -0.3749583988018792,
     "n": 6927,
     "source": "control_adjusted_change36",
     "definition": "mean of change_36 minus control change over the same calendar months"
   },
   "control_change_full_period": {
-    "value": -0.06554777594727845,
+    "value": -0.06554777594728112,
     "ci_low": null,
     "ci_high": null,
     "n": 2428,

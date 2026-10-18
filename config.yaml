@@ -146,4 +146,4 @@ analysis:
       q4_within_025_k6: 0.55
       q4_within_025_k12: 0.77
       q4_within_025_k18: 0.91
-    loose_tolerance: {spec_a_hype: 0.02, spec_b_hype: 0.02, q4_within_025_k6: 0.02, q4_within_025_k12: 0.02, n_main_sample: 0, n_balanced_sample: 0, n_control_games: 0}
+    loose_tolerance: {spec_b_hype: 0.02, n_main_sample: 0, n_balanced_sample: 0, n_control_games: 0}   # spec says B = 0.00 +/- 0.02; counts exact

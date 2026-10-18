@@ -166,3 +166,17 @@ So conditional on the starting average, more-hyped games decline slightly **less
 **Q4, when to trust.** Share of games within ±0.25 of their month-36 average: k=0 31.5%, 1 35.7%, 2 40%, 3 43.9%, 6 55.4%, 9 66.6%, 12 77.2%, 15 85.6%, 18 91.2%, 24 97.1%. MAE: 0.469 (k0), 0.345 (3), 0.281 (6), 0.192 (12), 0.082 (24). Large-k agreement is partly mechanical (the running average is sticky).
 
 **Extremes worth knowing (raters_m36 ≥ 2,000).** The biggest risers started very low, e.g. *Descent: Legends of the Dark* 4.18 → 7.96 and *Pandemic Legacy: Season 0* 5.05 → 8.44 (likely pre-release protest/low ratings). The biggest fallers started very high, e.g. *Challengers!* 9.31 → 7.08 and *Fireball Island* 8.95 → 6.93. Median rank change k0 → k36: −2,960 places, and 74% of games *improve* in rank despite falling averages. Rank is based on the Bayes average, which pulls games with few raters strongly toward a low prior; as raters accumulate that pull weakens. This is a nice aside for the write-up: the visible rank rises while the raw average falls.
+
+---
+
+## 12. Findings from the analysis run *(2026-10-18)*
+
+All section 11 sanity values were reproduced (reports/results/sanity_checks.csv: 20 of 20 within tolerance). Further facts:
+
+- **Event study vs balanced means:** PanelOLS (game FE, clustered SE) gives beta12/24/36 = -0.244 / -0.341 / -0.401, identical to the balanced means. The share of the 3-year decline reached by month 12 is 61% (bootstrap CI 60-62%).
+- **Q2 (hype):** Spec A +0.049 (SE 0.008), Spec B -0.004 (0.013), Spec C +0.049 (0.008), Spec D +0.006 (0.008). H2 (more hype, bigger fade) is **not supported**: the only significant coefficients are positive, and the clean-timing spec B is a precise zero. Rater-weighted Spec A is +0.116 (positive again); no robustness variant gives a negative significant coefficient.
+- **Q4:** the 80% rule at +-0.25 is met first at **month 13** (bootstrap CI 13-14). Trained on entry years 2017-2019 and tested on 2020-2023, an adjusted launch rating raises the share within +-0.25 of the final rating from 31% to 55% at entry (MAE 0.476 to 0.289) and from 77% to 88% at month 12. Much of this gain is shrinkage toward the mean (coefficient on the displayed average is 0.77 at entry), consistent with the regression-to-the-mean finding.
+- **Gap threshold sensitivity (k = 12):** stricter Delta-raters thresholds shrink the gap (-0.24 at 5, -0.20 at 10, -0.16 at 25) because they select fast-growing games; the error-bound threshold barely matters once Delta >= 10.
+- **Floating-point noise:** DuckDB's parallel averages make control-group numbers vary at the 1e-15 level between runs; nothing material.
+- **Kaggle dataset (Q3):** `data/external/kaggle_bgg/games.csv` (threnjen, CC BY-SA 3.0) is a January 2022 snapshot (max `YearPublished` 2021). It joins on `BGGId` = our `game_id` for 93-100% of main-sample games entering 2017-2021 and 0-3% for 2022-2023, so only 2017-2021 entries are modelled. The `Kickstarted` flag is true for about 31% of matched games, far more than campaign-funded launches alone would suggest, so it is probably a broad "Kickstarter edition or family" label, taken as given and measured as of 2022, not at launch. Kickstarted games fall more (mean change_36 -0.535 vs -0.361; -0.079 conditional on Spec A controls), with no hype interaction (+0.005, p = 0.80). Treat as descriptive only.
+- **Hype quartiles** were assigned in the pipeline across all new releases per entry year, so main-sample quartile sizes are 1,719-1,734 rather than exactly equal.

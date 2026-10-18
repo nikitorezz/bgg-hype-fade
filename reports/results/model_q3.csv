@@ -1,0 +1,16 @@
+model,term,coef,se,p,n,r2
+A (baseline),Intercept,1.17742,0.080546,2.15515e-48,4902,0.221537
+A (baseline),hype_log,0.0548552,0.00990076,3.01602e-08,4902,0.221537
+A (baseline),avg_m0,-0.242268,0.0102678,4.34392e-123,4902,0.221537
+A (baseline),ln_raters_m0,0.0282426,0.0164514,0.0860286,4902,0.221537
+A + kickstarted,Intercept,1.1224,0.0812674,2.181e-43,4902,0.2286
+A + kickstarted,hype_log,0.0488545,0.00997648,9.73241e-07,4902,0.2286
+A + kickstarted,kickstarted,-0.0787029,0.0129176,1.11047e-09,4902,0.2286
+A + kickstarted,avg_m0,-0.231739,0.0105277,2.19148e-107,4902,0.2286
+A + kickstarted,ln_raters_m0,0.0308405,0.0164936,0.0615048,4902,0.2286
+A + kickstarted x hype,Intercept,1.12176,0.0812765,2.48521e-43,4902,0.228615
+A + kickstarted x hype,hype_log,0.0474421,0.0110128,1.64803e-05,4902,0.228615
+A + kickstarted x hype,kickstarted,-0.0830669,0.0222435,0.000188138,4902,0.228615
+A + kickstarted x hype,hype_log:kickstarted,0.00486365,0.0193839,0.801882,4902,0.228615
+A + kickstarted x hype,avg_m0,-0.231631,0.0105624,1.35339e-106,4902,0.228615
+A + kickstarted x hype,ln_raters_m0,0.031212,0.0163921,0.056899,4902,0.228615
