@@ -17,7 +17,7 @@ jobs:
         run: uv sync --locked
       - name: Lint
         run: uv run ruff check .
-      - name: Tests (data-dependent tests skip: the repository holds no raw data)
+      - name: "Tests (data-dependent tests skip, the repository holds no raw data)"
         run: uv run pytest -q
       - name: README is up to date
         run: uv run python scripts/render_readme.py --check
