@@ -23,3 +23,11 @@ def test_static_page_is_self_contained_and_matches_key_numbers():
     assert f"{abs(n['change_36']['value']):.2f} points" in page
     assert "Look up" not in page            # no game-level content in the static page
     assert path.stat().st_size < 12e6
+
+
+def test_static_page_has_social_preview_tags():
+    page = run_export_static(CFG).read_text(encoding="utf-8")
+    for tag in ('property="og:title"', 'property="og:description"', 'property="og:image"',
+                'name="twitter:card"', 'name="description"'):
+        assert tag in page
+    assert (CFG.root / "reports" / "site" / "social_card.png").exists()

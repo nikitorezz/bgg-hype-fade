@@ -170,12 +170,31 @@ enthusiast platform; the Kickstarter flag comes from a 2022 snapshot; monthly sn
 BoardGameGeek; this project is not affiliated with BoardGameGeek. Metadata: "Board Game Database
 from BoardGameGeek" (threnjen, Kaggle, CC BY-SA 3.0).</footer>
 """
-    page = (f'<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" '
-            f'content="width=device-width, initial-scale=1"><title>Does the Hype Fade?</title>'
+    pages = (cfg.section("publish").get("pages_url") or "").rstrip("/")
+    image = f"{pages}/social_card.png" if pages else "social_card.png"
+    desc = (f"On BoardGameGeek the typical new board game loses {fmt(abs(n['change_36']['value']), '.2f')} "
+            f"rating points in three years, {pct(n['share_of_decline_by_12']['value'])} of it in year "
+            "one. An interactive look at how launch ratings fade.")
+    meta = "".join([
+        '<meta charset="utf-8">',
+        '<meta name="viewport" content="width=device-width, initial-scale=1">',
+        f'<meta name="description" content="{html.escape(desc, quote=True)}">',
+        '<meta property="og:type" content="website">',
+        '<meta property="og:title" content="Does the Hype Fade? Board-game ratings after launch">',
+        f'<meta property="og:description" content="{html.escape(desc, quote=True)}">',
+        f'<meta property="og:image" content="{html.escape(image, quote=True)}">',
+        f'<meta property="og:url" content="{html.escape(pages, quote=True)}">' if pages else "",
+        '<meta name="twitter:card" content="summary_large_image">',
+        f'<meta name="twitter:image" content="{html.escape(image, quote=True)}">'])
+    page = (f'<!DOCTYPE html><html lang="en"><head>{meta}<title>Does the Hype Fade?</title>'
             f"<style>{CSS}</style></head><body>{body}</body></html>")
     out = cfg.root / "reports" / "site" / "index.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page, encoding="utf-8")
+    card = cfg.root / "reports" / "figures" / "social_card.png"
+    if card.exists():  # next to index.html, so the og:image link works once hosted
+        (out.parent / "social_card.png").write_bytes(card.read_bytes())
+    (out.parent / ".nojekyll").write_text("", encoding="utf-8")
     log.info("wrote %s (%.1f MB)", out, out.stat().st_size / 1e6)
     if re.search(r"<script[^>]+src=", page):
         raise RuntimeError("static page references an external script; it must work offline")

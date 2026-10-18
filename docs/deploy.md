@@ -35,28 +35,62 @@ uv run streamlit run app/streamlit_app.py
 `APP_MODE=full` (default) or `APP_MODE=aggregates`. In aggregates mode the app also falls back
 automatically if `app/data/games.parquet` is absent.
 
-## Streamlit Community Cloud (after D0)
+## Publishing checklist (what needs the author)
 
-1. Push the repository to GitHub (after the history clean-up). `app/data/` (tables, key numbers,
-   app config) is already committed; the parquet files are ignored.
-2. On <https://share.streamlit.io>, create an app: repository = yours, branch = `main`, main file
-   = `app/streamlit_app.py`. Dependencies come from `app/requirements.txt` (pinned). No secrets.
-3. Set the environment variable `APP_MODE` to `aggregates` (Advanced settings), to be explicit.
-   Optionally set `BGG_REPO_URL` and `BGG_WRITEUP_URL` to show the links in the "Method & data" tab.
-4. The theme is in `.streamlit/config.toml` at the repository root (light theme, minimal toolbar).
+`gh` (GitHub CLI) is not installed on this machine, so the repository is created in the browser.
+
+**1. Create the GitHub repository** (public, empty: no README, no .gitignore, no licence):
+<https://github.com/new>, name `bgg-hype-fade`. Then, in the project folder:
+
+```bash
+git remote add origin https://github.com/<YOUR-USER>/bgg-hype-fade.git
+git push -u origin main
+```
+
+**2. Fill in `config.yaml` -> `publish:`** (`github_repo: "<YOUR-USER>/bgg-hype-fade"`), then
+`uv run python scripts/render_readme.py` (adds the CI badge) and commit.
+
+**3. GitHub Pages (offline dashboard):**
+
+```bash
+uv run python scripts/publish_pages.py --push      # one orphan commit on gh-pages
+```
+
+Then Settings -> Pages -> "Deploy from a branch" -> `gh-pages` / `(root)`. The URL is
+`https://<YOUR-USER>.github.io/bgg-hype-fade/`; put it in `publish.pages_url`, rerun
+`publish_pages.py --push` (so the social-preview image URL is absolute) and the README renderer.
+
+**4. Streamlit Community Cloud (live dashboard).** Sign in at <https://share.streamlit.io> with GitHub,
+click "Create app" -> "Deploy a public app from GitHub", and fill in:
+
+| Field | Value |
+|---|---|
+| Repository | `<YOUR-USER>/bgg-hype-fade` |
+| Branch | `main` |
+| Main file path | `app/streamlit_app.py` |
+| App URL (optional) | e.g. `bgg-hype-fade` |
+| Advanced settings -> Python version | 3.11 or newer |
+| Advanced settings -> Secrets / environment | `APP_MODE = "aggregates"`, `BGG_REPO_URL = "https://github.com/<YOUR-USER>/bgg-hype-fade"`, `BGG_WRITEUP_URL = "https://github.com/<YOUR-USER>/bgg-hype-fade/blob/main/reports/writeup.md"` |
+
+Dependencies come from `app/requirements.txt` (pinned); the theme from `.streamlit/config.toml`. No
+secrets are needed. Streamlit may ask for an app reboot after the first deploy.
+
+**5. Send the URLs back** (repository, Pages, Streamlit) so the placeholders in the README
+(`publish:` in `config.yaml`), the write-up links and `pyproject.toml` URLs can be filled in.
 
 Caveat: Streamlit Community Cloud (`*.streamlit.app`) may be slow or unreachable from mainland
 China. The intended audience is international, but the author cannot rely on it for local demos.
 
-## Fallback: static page for GitHub Pages
+## Static page for GitHub Pages
 
 ```bash
-uv run bgg export-static        # writes reports/site/index.html (about 5 MB)
+uv run bgg export-static        # writes reports/site/index.html (+ social_card.png), about 5 MB
 ```
 
 A single self-contained HTML file (Plotly inlined, no CDN, no lookup, no sliders). It opens offline
-and needs only aggregate tables. To host it on GitHub Pages, copy `reports/site/index.html` to a
-`docs/` folder or a `gh-pages` branch (the file is git-ignored by default because of its size).
+and needs only aggregate tables. It carries Open Graph / Twitter tags so links preview nicely on
+LinkedIn. `scripts/publish_pages.py --push` publishes it to the `gh-pages` branch (see the checklist);
+the file is git-ignored on `main` because of its size.
 
 ## Screenshots for the README
 
