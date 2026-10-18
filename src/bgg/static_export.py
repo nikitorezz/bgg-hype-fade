@@ -48,8 +48,9 @@ h1{font-size:3rem;line-height:1.08;letter-spacing:-.02em;margin:3rem 0 .8rem;fon
 .lede{font-size:1.2rem;line-height:1.55;max-width:46rem;margin:1.6rem 0 0}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:2.2rem 0 0;
 border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
-.stat{padding:1.1rem 1.1rem 1.1rem 0}.stat+.stat{padding-left:1.1rem;border-left:1px solid var(--rule)}
-.stat .v{font-size:2.1rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat{--c:#6B7585;padding:.9rem 0 .5rem;border-top:3px solid var(--c)}.stats{gap:0 1.2rem}
+.stat.fall{--c:#B23F68}.stat.time{--c:#2167B0}.stat.trust{--c:#B3770A}
+.stat .v{font-size:2.1rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--c)}
 .stat .l{font-size:.9rem;color:var(--ink-3);margin-top:.2rem}
 .hero-chart{margin:2.2rem 0 0}
 .hero-chart svg{width:100%;height:auto;display:block}
@@ -81,7 +82,7 @@ footer{margin:4rem 0 0;border-top:1px solid var(--rule);padding:1.2rem 0 2.4rem;
 color:var(--ink-3)}footer a{color:var(--ink-2)}
 @media (max-width:760px){
 h1{font-size:2.2rem;margin-top:2rem}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-.stat:nth-child(3){padding-left:0;border-left:none}.stat:nth-child(n+3){border-top:1px solid var(--rule)}
+.stat{margin-bottom:.6rem}
 .findings{grid-template-columns:1fr;gap:24px}.two{grid-template-columns:1fr}
 header.top nav a{margin-left:14px;font-size:.9rem}header.top .brand{display:none}
 .hero-chart svg text.t{font-size:28px}.hero-chart svg text.m{font-size:34px}}
@@ -204,9 +205,10 @@ def run_export_static(cfg: Config) -> Path:
     def curve(gt: str) -> pd.DataFrame:
         return curves[(curves["group_type"] == gt) & (curves["adjusted"] == 0)]
 
-    stats = "".join(f'<div class="stat"><div class="v">{html.escape(v)}</div>'
+    tones = ["fall", "time", "fall", "trust"]
+    stats = "".join(f'<div class="stat {t}"><div class="v">{html.escape(v)}</div>'
                     f'<div class="l">{html.escape(lab)}</div></div>'
-                    for v, lab in text.kpis(n, acfg))
+                    for (v, lab), t in zip(text.kpis(n, acfg), tones, strict=True))
     first, last = acfg["speed_months"]
     speed = table("speed_not_size")
     q1, q4 = speed.iloc[0], speed.iloc[-1]

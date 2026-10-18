@@ -5,7 +5,7 @@
 
 The pushed branch holds index.html (small landing page for link previews), dashboard.html (about 5 MB),
 social_card.png and .nojekyll as a single
-commit, so the main repository history never grows with the Plotly bundle. Aggregate data only.
+commit, so the main repository history never grows with the Plotly bundle. Aggregate data only (no game lookup).
 """
 
 from __future__ import annotations

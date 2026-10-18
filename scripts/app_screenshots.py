@@ -18,9 +18,9 @@ from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
-SECTIONS = ["Overview", "New raters vs displayed", "Hype: speed, not size",
-            "When can you trust a rating?", "Explore segments", "Method & data"]
-SLUGS = ["overview", "gap", "hype", "trust", "explore", "method"]
+SECTIONS = ["The fade", "New vs displayed", "Hype", "When to trust", "Explore", "Look up a game",
+            "Method"]
+SLUGS = ["overview", "gap", "hype", "trust", "explore", "lookup", "method"]
 
 
 def free_port() -> int:
@@ -31,7 +31,7 @@ def free_port() -> int:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", default="aggregates")
+    ap.add_argument("--mode", default="full")
     ap.add_argument("--mobile", action="store_true")
     args = ap.parse_args()
     port = free_port()

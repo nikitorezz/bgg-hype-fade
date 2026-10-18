@@ -2,7 +2,7 @@
 
 **How board-game ratings change after launch: ten years of BoardGameGeek data, {{n_main_sample:,.0f}} new releases, three years each.**
 
-{{#if github_repo}}[![CI](https://github.com/{{@github_repo}}/actions/workflows/ci.yml/badge.svg)](https://github.com/{{@github_repo}}/actions/workflows/ci.yml) {{/if}}![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-2167B0) ![Code licence: MIT](https://img.shields.io/badge/code%20licence-MIT-2167B0) ![Data: not redistributed](https://img.shields.io/badge/data-not%20redistributed-7A8494)
+{{#if github_repo}}[![CI](https://github.com/{{@github_repo}}/actions/workflows/ci.yml/badge.svg)](https://github.com/{{@github_repo}}/actions/workflows/ci.yml) {{/if}}![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-2167B0) ![Code licence: MIT](https://img.shields.io/badge/code%20licence-MIT-2167B0) ![Data: derived extract only](https://img.shields.io/badge/data-derived%20extract%20only-7A8494)
 
 <p align="center"><img src="reports/figures/social_card.png" width="760" alt="New games lose {{change_36|abs:.2f}} rating points in 3 years, {{share_of_decline_by_12|pct:.0f}}% of it in year one"></p>
 
@@ -49,7 +49,7 @@ At launch only {{q4_within_025_k0|pct:.0f}}% of games are within ±0.25 of their
 - **Statistics:** a game fixed-effects event study, robust regressions, game-level bootstrap intervals and an eight-variant robustness grid.
 - **Prediction:** an out-of-sample check of when a rating can be trusted, and a simple model that corrects launch ratings.
 - **Honest reporting:** the headline hypothesis was not supported, and the analysis says so.
-- **Communication:** an interactive Streamlit dashboard, a static project page and a written report, all built from aggregate data, with every number generated from one file (`key_numbers.json`).
+- **Communication:** an interactive Streamlit dashboard (with a lookup for any new release), a static project page and a written report, with every number generated from one file (`key_numbers.json`).
 - **Engineering:** type hints, ruff, pytest and CI on every push.
 
 ## Method in brief
@@ -70,7 +70,7 @@ One snapshot per month (October 2016 to October 2026) of BGG's ranked list. A ga
 ```
 sql/            numbered, commented SQL: load, cohorts, panel, quality checks
 src/bgg/        pipeline (download, build, qc), analysis/, figures, dashboard extract, static site
-app/            Streamlit dashboard (reads only app/data: aggregate tables and key numbers)
+app/            Streamlit dashboard (reads only app/data: tables, key numbers and a per-game extract)
 config.yaml     every threshold, date and rule used anywhere
 reports/        write-up, figures, tables, model outputs, key_numbers.json, quality-check report
 tests/          unit and integration tests (data-dependent tests skip when data is absent)
@@ -86,7 +86,7 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.11+.
 uv sync
 uv run bgg all                  # download ({{download_mb:.0f}} MB), load, cohorts, panel, quality checks
 uv run bgg analysis             # figures, models, key_numbers.json
-uv run bgg dashboard-data --aggregates-only
+uv run bgg dashboard-data
 uv run streamlit run app/streamlit_app.py
 uv run bgg export-static        # reports/site/: project page + static dashboard
 uv run pytest && uv run ruff check .
@@ -97,7 +97,7 @@ Downloads are resumable and retried. If GitHub is slow from your network, set `H
 ## Data and licence
 
 - **Code:** MIT (see [`LICENSE`](LICENSE)). The licence covers the code only, not the data.
-- **Data:** daily BGG ranking snapshots from [beefsack/bgg-ranking-historicals](https://github.com/beefsack/bgg-ranking-historicals). The archive has no licence file, so no data is redistributed here; the pipeline downloads it, and only aggregate results are published. Data © BoardGameGeek; this project is not affiliated with BoardGameGeek.
+- **Data:** daily BGG ranking snapshots from [beefsack/bgg-ranking-historicals](https://github.com/beefsack/bgg-ranking-historicals). The archive has no licence file, so the snapshot files are not redistributed; the pipeline downloads them. The published dashboard shows per-game ratings, ranks and rater counts derived from them (facts BoardGameGeek shows publicly), and group averages only for the third-party Kickstarter metadata. Data © BoardGameGeek; this project is not affiliated with BoardGameGeek.
 - **Metadata:** "Board Game Database from BoardGameGeek" by threnjen on Kaggle (CC BY-SA 3.0), used for the crowdfunding comparison and not redistributed.
 
 ---

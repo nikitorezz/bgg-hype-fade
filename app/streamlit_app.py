@@ -1,7 +1,7 @@
 """Does the Hype Fade? Interactive dashboard (Streamlit).
 
 Run:  uv run streamlit run app/streamlit_app.py
-Mode: APP_MODE=full (default) or APP_MODE=aggregates (no game-level data, no lookup).
+Mode: APP_MODE=full (default) or APP_MODE=aggregates (hides the game lookup).
 Every number on this page comes from app/data/key_numbers.json or app/data/tables/*.csv.
 """
 
@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import html
 import os
+import random
 import sys
 from pathlib import Path
 
@@ -27,12 +28,14 @@ WRITEUP_URL = os.environ.get(
     "BGG_WRITEUP_URL", "https://github.com/nikitorezz/bgg-hype-fade/blob/main/reports/writeup.md")
 PAGES_URL = os.environ.get("BGG_PAGES_URL", "https://nikitorezz.github.io/bgg-hype-fade/")
 AUTHOR = os.environ.get("BGG_AUTHOR", "Nikita Reznichenko")
+BLUE_C, PLUM_C = "#2167B0", "#B23F68"
 PLOT_CONFIG = {"displayModeBar": False, "responsive": True, "scrollZoom": False}
 COMPARE = {"All new games": "none", "By hype (growth in raters, months 0–6)": "hype_quartile",
            "By popularity": "popularity", "By Kickstarter status": "kickstarted"}
 SEGMENT_TYPES = {"Launch year": "launch_year", "Hype quartile": "hype_quartile",
                  "Starting rating (deciles)": "start_decile", "Popularity": "popularity",
                  "Kickstarter": "kickstarted"}
+TONES = ["fall", "time", "fall", "trust"]   # accent of each headline number
 REASONS = {
     "left_censored": "was already ranked when the data starts (Oct 2016), so its launch "
                      "was not observed",
@@ -48,28 +51,43 @@ CSS = """
 h1, h2, h3, h4 {letter-spacing: -0.01em;}
 .hero h1 {font-size: 2.7rem; line-height: 1.1; margin: 0 0 .5rem 0; padding: 0; font-weight: 700;}
 .hero .deck {font-size: 1.08rem; color: #4A5466; max-width: 46rem; margin: 0;}
-.stats {display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 1.8rem 0 .4rem;
-        border-top: 1px solid #E3E8EE; border-bottom: 1px solid #E3E8EE;}
-.stat {padding: 1rem 1.1rem 1rem 0; }
-.stat + .stat {padding-left: 1.1rem; border-left: 1px solid #E3E8EE;}
+.stats {display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 1.2rem;
+        margin: 1.8rem 0 .6rem;}
+.stat {--c: #6B7585; padding: .85rem 0 .4rem; border-top: 3px solid var(--c);}
 .stat .v {font-size: 2rem; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums;
-          color: #1D2533;}
-.stat .l {font-size: .88rem; color: #6B7585; margin-top: .2rem;}
+          color: var(--c);}
+.stat .l {font-size: .88rem; color: #4A5466; margin-top: .2rem;}
+.stat.fall {--c: #B23F68;} .stat.time {--c: #2167B0;} .stat.trust {--c: #B3770A;}
+.stats.sm .v {font-size: 1.5rem; color: #1D2533;}
+.stats.sm .stat.fall .v {color: #B23F68;} .stats.sm .stat.rise .v {color: #2167B0;}
+.stat.rise {--c: #2167B0;} .stat.amber {--c: #B3770A;} .stat.amber .v {color: #8A5A00;}
 @media (max-width: 700px) {
   .hero h1 {font-size: 2.1rem;}
   .stats {grid-template-columns: repeat(2, minmax(0, 1fr));}
-  .stat:nth-child(3) {padding-left: 0; border-left: none;}
-  .stat:nth-child(n+3) {border-top: 1px solid #E3E8EE;}
+  .stat {margin-bottom: .6rem;}
 }
+.delta {font-weight: 600; white-space: nowrap;}
+.delta.up {color: #2167B0;} .delta.down {color: #B23F68;}
+.game-name {font-size: 1.7rem; font-weight: 600; line-height: 1.2; margin: 1rem 0 .35rem;}
+.chips {display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .9rem;}
+.chip {display: inline-block; padding: .12rem .65rem; border-radius: 999px; font-size: .8rem;
+       font-weight: 500; background: #EEF1F5; color: #4A5466;}
+.chip.blue {background: #E7F0FA; color: #174E88;} .chip.amber {background: #FBF0D8; color: #7A4F00;}
+.chip.plum {background: #F8E7ED; color: #8E2F51;}
 .lede {font-size: 1.15rem; line-height: 1.55; max-width: 48rem; margin: .4rem 0 1.2rem;}
 .section-title {font-size: 1.45rem; font-weight: 600; margin: .6rem 0 .3rem; line-height: 1.25;}
+.section-title::before {content: ""; display: inline-block; width: 5px; height: 1em;
+                         background: #2167B0; border-radius: 2px; margin-right: .6rem;
+                         vertical-align: -.1em;}
 .section-sub {color: #4A5466; max-width: 48rem; margin: 0 0 .8rem;}
 .chart-title {font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .1rem;}
-.note {border-left: 3px solid #2167B0; background: #F4F6F9; padding: .85rem 1.1rem;
+.note {border-left: 3px solid #2167B0; background: #EEF4FB; padding: .85rem 1.1rem;
        border-radius: 0 6px 6px 0; color: #1D2533; max-width: 52rem; margin: .4rem 0 1rem;}
+.note.fall {border-color: #B23F68; background: #FBEFF3;}
+.note.amber {border-color: #B3770A; background: #FBF5E6;}
 .small {font-size: .85rem; color: #6B7585; max-width: 52rem;}
 .trust-num {font-size: 3rem; font-weight: 600; line-height: 1; margin: .4rem 0 .5rem;
-            font-variant-numeric: tabular-nums;}
+            font-variant-numeric: tabular-nums; color: #2167B0;}
 .site-foot {margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #E3E8EE; font-size: .82rem;
             color: #6B7585;}
 .site-foot a {color: #4A5466;}
@@ -115,9 +133,10 @@ def small(s: str) -> None:
 
 
 def hero(n: dict) -> None:
-    stats = "".join(f'<div class="stat"><div class="v">{html.escape(v)}</div>'
+    stats = "".join(f'<div class="stat {tone}"><div class="v">{html.escape(v)}</div>'
                     f'<div class="l">{html.escape(lab)}</div></div>'
-                    for v, lab in text.kpis(n, loaders.app_config()))
+                    for (v, lab), tone in zip(text.kpis(n, loaders.app_config()), TONES,
+                                              strict=True))
     st.markdown(
         f'<div class="hero"><h1>Does the hype fade?</h1><p class="deck">{html.escape(text.deck(n))}'
         f'</p></div><div class="stats">{stats}</div>', unsafe_allow_html=True)
@@ -213,8 +232,7 @@ def section_trust(n: dict, mode: str) -> None:
 
 def section_explore(n: dict) -> None:
     section_title("Explore the groups",
-                  "Split the new releases and compare each group's path with the overall one. "
-                  "Only group averages are published, never individual games.")
+                  "Split the new releases and compare each group's path with the overall one.")
     c1, c2 = st.columns([3, 2], vertical_alignment="bottom")
     label = c1.selectbox("Split by", list(SEGMENT_TYPES))
     adjust = c2.toggle("Remove site-wide drift", value=False, key="explore_adjust")
@@ -243,7 +261,12 @@ def section_explore(n: dict) -> None:
     view = pd.DataFrame({"Group": t.index, "Games": [f"{int(v):,}" for v in t[("n", "change_36")]],
                          "Change by month 12": cell("change_12"),
                          "Change by month 36": cell("change_36")})
-    st.dataframe(view, hide_index=True, width="stretch")
+    def tone(v: str) -> str:
+        return f"color: {PLUM_C}; font-weight: 500" if str(v).startswith("−") else \
+            f"color: {BLUE_C}; font-weight: 500"
+
+    st.dataframe(view.style.map(tone, subset=["Change by month 12", "Change by month 36"]),
+                 hide_index=True, width="stretch")
     small("Mean change in the displayed rating since entry, with 95% confidence intervals."
           + (" Part of the larger fall for high starters is regression to the mean."
              if gt == "start_decile" else ""))
@@ -256,36 +279,153 @@ def _lookup_other(query: str) -> None:
         small("No excluded game matches that name.")
         return
     for _, r in hits.iterrows():
-        st.warning(f"**{r['latest_name']}** is not in the sample: it {REASONS[r['reason']]}.")
+        st.markdown(f'<div class="note amber"><b>{html.escape(r["latest_name"])}</b> is not in '
+                    f'the sample: it {REASONS[r["reason"]]}.</div>', unsafe_allow_html=True)
+
+
+def _stat(value: str, label: str, tone: str = "") -> str:
+    return (f'<div class="stat {tone}"><div class="v">{value}</div>'
+            f'<div class="l">{label}</div></div>')
+
+
+def _delta(x: float, digits: int = 2) -> str:
+    up = x >= 0
+    return (f'<span class="delta {"up" if up else "down"}">{"▲" if up else "▼"} '
+            f'{text.signed(x, digits)}</span>')
+
+
+def _chip(label: str, tone: str = "") -> str:
+    return f'<span class="chip {tone}">{html.escape(label)}</span>'
+
+
+def _verdict(n: dict, row: pd.Series, k: int, change: float, rank_better: bool,
+             wide: pd.DataFrame, games: pd.DataFrame) -> tuple[str, str] | None:
+    """(sentence, tone) comparing the game's change with games launched in the same year."""
+    year = int(row["entry_year"])
+    dist = logic.cohort_change_distribution(wide, games, year, k)
+    if k < 3 or len(dist) < 20:
+        return None
+    if change < 0:
+        p = logic.share_fallen_further(change, dist)
+        msg = (f"By month {k} its rating fell **{fmt(abs(change), '.2f')}**, more than "
+               f"**{fmt(100 * (1 - p), '.0f')}%** of games launched in {year}.")
+        if rank_better:
+            msg += (f" Its rank still improved, as it did for "
+                    f"{fmt(100 * logic.kn(n, 'share_rank_improved_36'), '.0f')}% of games.")
+        return msg, "fall"
+    share = float((dist >= 0).mean())
+    return (f"By month {k} its rating held or rose ({text.signed(change)}), which only "
+            f"**{fmt(100 * share, '.0f')}%** of games launched in {year} managed."), ""
+
+
+def _pick_random(labels: list[str]) -> None:
+    st.session_state["lk_pick"] = random.choice(labels)
 
 
 def section_lookup(n: dict) -> None:
-    """Local-only view (needs game-level data that is never published)."""
+    """Per-game view: one game's rating, rank and audience against games from its launch year."""
     cfg = loaders.app_config()
-    g, traj = loaders.games(), loaders.trajectories()
-    section_title("Look up a game")
-    g = g.assign(label=g["latest_name"] + " (" + g["entry_year"].astype(str) + ")")
-    default = g.index[g["game_id"] == DEFAULT_GAME_ID]
-    pick = st.selectbox(f"Search {len(g):,} new releases", g["label"].tolist(),
-                        index=int(default[0]) if len(default) else 0)
+    g, traj, wide = loaders.games(), loaders.trajectories(), loaders.wide()
+    g = g.sort_values(["latest_name", "entry_year"]).reset_index(drop=True)
+    label = g["latest_name"] + " (" + g["entry_year"].astype(str) + ")"
+    label = label.where(~label.duplicated(keep=False), label + " · BGG " + g["game_id"].astype(str))
+    g["label"] = label
+    labels = g["label"].tolist()
+    sample_labels = g.loc[g["main_sample"], "label"].tolist()
+    if "lk_pick" not in st.session_state:
+        hit = g.loc[g["game_id"] == DEFAULT_GAME_ID, "label"]
+        st.session_state["lk_pick"] = hit.iloc[0] if len(hit) else labels[0]
+
+    section_title("Look up a game",
+                  f"{len(g):,} board games entered the BoardGameGeek ranking after October 2016. "
+                  "Pick one to see how its rating, rank and audience moved, and how that compares "
+                  "with games launched in the same year.")
+    c1, c2 = st.columns([5, 1], vertical_alignment="bottom")
+    pick = c1.selectbox("Search for a game", labels, key="lk_pick",
+                        label_visibility="collapsed", placeholder="Search for a game")
+    c2.button("Random", on_click=_pick_random, args=(sample_labels,), width="stretch",
+              icon=":material/shuffle:")
+    c3, c4 = st.columns([5, 3], vertical_alignment="bottom")
+    other_pick = c3.selectbox("Compare with", labels, index=None, key="lk_other",
+                              placeholder="Compare with another game (optional)",
+                              label_visibility="collapsed")
+    metric_label = c4.segmented_control("Show", ["Rating", "Rank", "Raters"], default="Rating",
+                                        key="lk_metric", label_visibility="collapsed")
+    metric = (metric_label or "Rating").lower()
+
     row = g[g["label"] == pick].iloc[0]
     tj = traj[traj["game_id"] == row["game_id"]].sort_values("k")
     last = logic.last_observed(tj)
+    k_now = int(last["k"])
+    start, now = float(row["avg_m0"]), float(last["avg_rating"])
+    change = now - start
+    expected = row.get("adj_rating_k0")
+
+    chips = [_chip(f"Entered {pd.Timestamp(row['entry_month']).strftime('%b %Y')}")]
+    q = row["hype_quartile"]
+    if q == q:
+        chips.append(_chip(f"Hype Q{int(q)} of 4", "blue"))
+    if row["followup_months"] < cfg["final_k"]:
+        chips.append(_chip(f"Still in follow-up: {int(row['followup_months'])} of "
+                           f"{cfg['final_k']} months", "amber"))
+    elif not row["main_sample"]:
+        chips.append(_chip("Outside the analysis sample", "amber"))
+    st.markdown(f'<div class="game-name">{html.escape(row["latest_name"])}</div>'
+                f'<div class="chips">{"".join(chips)}</div>', unsafe_allow_html=True)
+
+    rank_now = float(last["rank"]) if last["rank"] == last["rank"] else float("nan")
+    rank_better = bool(rank_now == rank_now and row["rank_m0"] == row["rank_m0"]
+                       and rank_now < float(row["rank_m0"]))
+    v = _verdict(n, row, k_now, change, rank_better, wide, g)
+    if v is not None:
+        st.markdown(f'<div class="note {v[1]}">{md(v[0])}</div>', unsafe_allow_html=True)
+
+    rise = change >= 0
+    adj_txt = "–" if not expected == expected else fmt(expected, ".2f")
+    actual = row["avg_m36"] if row["observed_m36"] and row["avg_m36"] == row["avg_m36"] else None
+    adj_label = "expected rating at month 36, from launch data" + (
+        f" (actual {fmt(actual, '.2f')})" if actual is not None else "")
+    rank_txt = (f"#{int(row['rank_m0']):,} → #{int(rank_now):,}"
+                if rank_now == rank_now and row["rank_m0"] == row["rank_m0"] else "–")
+    stats = "".join([
+        _stat(f"{fmt(start, '.2f')} → {fmt(now, '.2f')}",
+              f"{_delta(change)} by month {k_now}", "rise" if rise else "fall"),
+        _stat(adj_txt, adj_label, "amber"),
+        _stat(rank_txt, "rank at entry → latest"),
+        _stat(f"{int(row['raters_m0']):,} → {int(last['n_raters']):,}", "raters at entry → latest"),
+    ])
+    st.markdown(f'<div class="stats sm">{stats}</div>', unsafe_allow_html=True)
+
     cohort = loaders.table("curve_by_entry_year")
     cohort = cohort[cohort["entry_year"] == row["entry_year"]].sort_values("k")
-    if cohort.empty:
-        cohort = loaders.table("curve_overall")
-    show(charts.fig_lookup(row.to_dict(), tj, cohort, "new_avg_3"))
-    start, now = row["avg_m0"], float(last["avg_rating"])
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Entered the ranking", pd.Timestamp(row["entry_month"]).strftime("%b %Y"))
-    c2.metric(f"Rating, start → month {int(last['k'])}", f"{fmt(start, '.2f')} → {fmt(now, '.2f')}",
-              text.signed(now - start))
-    q = row["hype_quartile"]
-    c3.metric("Hype quartile", f"Q{int(q)} of 4" if q == q else "–")
-    if row["followup_months"] < cfg["final_k"]:
-        small(f"Still in follow-up: {int(row['followup_months'])} of {cfg['final_k']} months.")
-    query = st.text_input("Looking for an established game?", placeholder="e.g. Gloomhaven")
+    other = None
+    if other_pick and other_pick != pick:
+        orow = g[g["label"] == other_pick].iloc[0]
+        other = (orow["latest_name"], traj[traj["game_id"] == orow["game_id"]])
+    show(charts.fig_lookup(row["latest_name"], tj, start, cohort, "new_avg_3", metric, other,
+                           expected if expected == expected else None,
+                           f"Typical {int(row['entry_year'])} launch"))
+    captions = {
+        "rating": "Blue: the rating shown on BoardGameGeek. Plum dots: the average of ratings "
+                  "added in the previous three months. Grey dashes: the average path of games "
+                  f"launched in {int(row['entry_year'])}, from this game's starting rating. "
+                  "Amber diamond: the rating a model expects at month 36 from launch-month data.",
+        "rank": "Position in the BoardGameGeek ranking, 1 being the best. Log scale.",
+        "raters": "Number of ratings the game had collected. Log scale."}
+    if other is not None and metric == "rating":
+        captions["rating"] = (f"Displayed rating of {row['latest_name']} (blue) and {other[0]} (amber), "
+                              "by months since each entered the ranking. The numbers above "
+                              f"describe {row['latest_name']}.")
+    small(captions[metric])
+    tr = cfg["train_entry_years"]
+    if tr[0] <= int(row["entry_year"]) <= tr[1]:
+        small(f"The expected rating for {tr[0]}–{tr[1]} launches comes from a model fitted on "
+              "those same games, so it flatters the model slightly.")
+    st.markdown("&nbsp;", unsafe_allow_html=True)
+    query = st.text_input("Looking for an established game?", placeholder="e.g. Gloomhaven",
+                          help="Games already ranked in October 2016 or published long before "
+                               "entering the ranking are not new releases, so they are not in the "
+                               "sample. Search a name to see why a game is missing.")
     if query.strip():
         _lookup_other(query.strip())
 

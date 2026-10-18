@@ -138,7 +138,8 @@ Not every hit declines: *Dune: Imperium* and *Frosthaven* rose.
 
 ## 8. Licence and publication
 
-- The source archive has no licence file, so raw and processed data are never committed or published. The pipeline downloads the data itself.
-- The public dashboard and project page use **aggregate tables only** (group curves, segment summaries, model outputs). Game-level files (`app/data/*.parquet`, `data/external/`, example trajectories) are git-ignored, and the dashboard's game lookup runs only locally.
-- Metadata for the crowdfunding comparison comes from "Board Game Database from BoardGameGeek" (threnjen, Kaggle, CC BY-SA 3.0), a January 2022 snapshot that is downloaded manually and not redistributed.
+- The source archive has no licence file, so the raw and processed snapshot files are never committed or published; the pipeline downloads the data itself.
+- The dashboard's game lookup publishes a compact derived extract (`app/data/*.parquet`: rating, rank and rater count per game and month, plus derived fields). These are facts BoardGameGeek shows publicly on every game page, with no user-level data. The author chose to publish them without a licence from the archive owner, so this is a documented risk decision, not a granted permission. The extract is easy to remove (`bgg dashboard-data --aggregates-only`) if the archive owner or BoardGameGeek objects.
+- The Kickstarter flag is not part of the published per-game files; only group averages derived from it appear.
+- Metadata for the crowdfunding comparison comes from "Board Game Database from BoardGameGeek" (threnjen, Kaggle, CC BY-SA 3.0), a January 2022 snapshot that is downloaded manually and not redistributed; only group averages derived from it are published.
 - Data © BoardGameGeek. This project is not affiliated with BoardGameGeek.

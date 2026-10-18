@@ -206,7 +206,9 @@ def run_dashboard_data(cfg: Config, aggregates_only: bool = False) -> None:
         other = build_other_games(cfg)
         log.info("games %d rows (main sample %d), trajectories %d rows, other games %d rows",
                  len(games), int(games["main_sample"].sum()), len(traj), len(other))
-        games.to_parquet(out / "games.parquet", index=False, compression="zstd")
+        # the Kickstarter flag derives from CC BY-SA metadata: only its group averages are published
+        published = games.drop(columns=["kickstarted"])
+        published.to_parquet(out / "games.parquet", index=False, compression="zstd")
         traj.to_parquet(out / "trajectories.parquet", index=False, compression="zstd")
         other.to_parquet(out / "other_games.parquet", index=False, compression="zstd")
 

@@ -89,7 +89,7 @@ def test_lookup_works_for_every_spot_check_game(monkeypatch):
     ti = next(t for t in at.text_input if t.label.startswith("Looking for an established"))
     ti.set_value("Gloomhaven").run()
     assert not at.exception
-    assert any("not in the sample" in w.value for w in at.warning)
+    assert any("not in the sample" in m.value for m in at.markdown)
 
 
 @needs_data

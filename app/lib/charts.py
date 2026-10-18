@@ -372,25 +372,80 @@ def fig_adjusted(bars: pd.DataFrame, tol: float) -> go.Figure:
     return base_layout(fig, height=320, legend=True, unified=False)
 
 
-def fig_lookup(game: dict, traj: pd.DataFrame, cohort_curve: pd.DataFrame,
-               new_col: str) -> go.Figure:
-    """One game's displayed average, new-rater dots and its launch-year cohort path (local only)."""
+def _short(name: str, n: int = 26) -> str:
+    return name if len(name) <= n else name[: n - 1].rstrip() + "…"
+
+
+RANK_TICKS = [1, 3, 10, 30, 100, 300, 1000, 3000, 10000, 30000]
+
+
+def fig_lookup(name: str, traj: pd.DataFrame, avg_m0: float, cohort_curve: pd.DataFrame | None,
+               new_col: str, metric: str = "rating", other: tuple[str, pd.DataFrame] | None = None,
+               expected: float | None = None, cohort_label: str = "Typical launch") -> go.Figure:
+    """One game's path (rating, rank or raters), optionally against a second game.
+
+    Rating view: displayed average, new-rater dots, the typical path of its launch year and the
+    model's expected three-year rating. Comparing two games drops the context layers.
+    """
     fig = go.Figure()
-    t = traj.sort_values("k")
-    ref = cohort_curve[cohort_curve["k"] <= t["k"].max()]
-    fig.add_trace(go.Scatter(x=ref["k"], y=game["avg_m0"] + ref["mean"], mode="lines",
-                             name="Typical path for its launch year",
-                             line=dict(color=GREY, dash="dash", width=1.8),
-                             hovertemplate="Typical path: %{y:.2f}<extra></extra>"))
-    fig.add_trace(go.Scatter(x=t["k"], y=t["avg_rating"], mode="lines", name="Displayed average",
-                             line=dict(color=BLUE, width=2.6),
-                             customdata=t["n_raters"],
-                             hovertemplate="Displayed: %{y:.2f} (%{customdata:,} raters)"
-                                           "<extra></extra>"))
-    ok = t.dropna(subset=[new_col])
-    fig.add_trace(go.Scatter(x=ok["k"], y=ok[new_col], mode="markers", name="New raters",
-                             marker=dict(color=PLUM, size=7),
-                             hovertemplate="New raters: %{y:.2f}<extra></extra>"))
-    _x_axis(fig, int(max(36, t["k"].max())))
-    fig.update_yaxes(title="Average rating")
-    return base_layout(fig, height=420, legend=True)
+    col = {"rating": "avg_rating", "rank": "rank", "raters": "n_raters"}[metric]
+    fmt_hover = {"rating": "%{y:.2f}", "rank": "#%{y:,.0f}", "raters": "%{y:,.0f} raters"}[metric]
+    series = [(name, traj.sort_values("k"), BLUE)]
+    if other is not None:
+        series.append((other[0], other[1].sort_values("k"), AMBER))
+    labels, ys = [], []
+    if metric == "rating" and other is None:
+        t0 = series[0][1]
+        if cohort_curve is not None and not cohort_curve.empty:
+            ref = cohort_curve[cohort_curve["k"] <= t0["k"].max()].sort_values("k")
+            fig.add_trace(go.Scatter(
+                x=ref["k"], y=avg_m0 + ref["mean"], mode="lines", name=cohort_label,
+                line=dict(color="#B9C1CE", width=2, dash="dash"),
+                hovertemplate=cohort_label + ": %{y:.2f}<extra></extra>"))
+            labels.append((cohort_label, float(ref["k"].iloc[-1]),
+                           float(avg_m0 + ref["mean"].iloc[-1]), GREY))
+            ys.append(float(avg_m0 + ref["mean"].iloc[-1]))
+        ok = t0.dropna(subset=[new_col])
+        if not ok.empty:
+            fig.add_trace(go.Scatter(
+                x=ok["k"], y=ok[new_col], mode="markers", name="New raters",
+                marker=dict(color=PLUM, size=7, line=dict(color="white", width=1)),
+                hovertemplate="New raters: %{y:.2f}<extra></extra>"))
+            ys += list(ok[new_col])
+    for nm, t, color in series:
+        d = t.dropna(subset=[col])
+        if d.empty:
+            continue
+        fig.add_trace(go.Scatter(
+            x=d["k"], y=d[col], mode="lines", name=_short(nm, 40),
+            line=dict(color=color, width=2.8),
+            hovertemplate=f"{_short(nm, 30)}: {fmt_hover}<extra></extra>"))
+        labels.append((_short(nm), float(d["k"].iloc[-1]), float(d[col].iloc[-1]), color))
+        ys += list(d[col])
+    if expected is not None and metric == "rating" and other is None and expected == expected:
+        fig.add_trace(go.Scatter(
+            x=[36], y=[expected], mode="markers", name="Expected from launch data",
+            marker=dict(color=AMBER, size=11, symbol="diamond", line=dict(color="white", width=2)),
+            hovertemplate="Expected 3-year rating: %{y:.2f}<extra></extra>"))
+        labels.append(("Expected at 36", 36.0, float(expected), AMBER))
+        ys.append(float(expected))
+    kmax = int(max(36, max(t["k"].max() for _, t, _ in series)))
+    _x_axis(fig, kmax)
+    if metric == "rating":
+        span = max(ys) - min(ys) if ys else 1.0
+        fig.update_yaxes(title="Average rating", tickformat=".1f")
+        _end_labels(fig, labels, min_gap=max(span, 0.3) * 0.075)
+    elif metric == "rank":
+        fig.update_yaxes(type="log", autorange="reversed", title="Rank (1 = best)",
+                         tickvals=RANK_TICKS, ticktext=[f"{v:,}" for v in RANK_TICKS])
+        for lab, x, y, color in labels:
+            fig.add_annotation(x=x, y=np.log10(y), xanchor="left", yanchor="middle", xshift=8,
+                               showarrow=False, text=f"<span style='color:{color}'>●</span> "
+                               f"{lab}", font=dict(size=12, color=INK_2))
+    else:
+        fig.update_yaxes(type="log", title="Raters (log scale)")
+        for lab, x, y, color in labels:
+            fig.add_annotation(x=x, y=np.log10(y), xanchor="left", yanchor="middle", xshift=8,
+                               showarrow=False, text=f"<span style='color:{color}'>●</span> "
+                               f"{lab}", font=dict(size=12, color=INK_2))
+    return base_layout(fig, height=420, right_margin=150)

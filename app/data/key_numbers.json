@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generated": "2026-10-18T19:58:00+08:00",
+    "generated": "2026-10-18T21:53:44+08:00",
     "end_month": "2026-10-01",
-    "git_commit": "7586209"
+    "git_commit": "a971cf6"
   },
   "numbers": {
     "q3_status": {
@@ -254,7 +254,7 @@
       "definition": "mean of (new_avg_3 - avg_rating) at k=36, usable rows, equal weight per row"
     },
     "control_drift_36": {
-      "value": -0.0158134715789919,
+      "value": -0.015813471578991937,
       "ci_low": null,
       "ci_high": null,
       "n": 6927,
@@ -270,7 +270,7 @@
       "definition": "mean of change_36 minus control change over the same calendar months"
     },
     "control_change_full_period": {
-      "value": -0.0655477759472829,
+      "value": -0.065547775947282,
       "ci_low": null,
       "ci_high": null,
       "n": 2428,
@@ -1574,33 +1574,33 @@
       "definition": "Spec B hype coefficient, variant: 5 Entered with >= 50 raters"
     },
     "robust_6_control_adjusted_outcome_beta_36": {
-      "value": -0.3854237162368144,
-      "ci_low": -0.39588827824405104,
-      "ci_high": -0.3749591542295777,
+      "value": -0.38542371623681426,
+      "ci_low": -0.39588827824405093,
+      "ci_high": -0.3749591542295776,
       "n": 6927,
       "source": "robustness",
       "definition": "event-study beta_36, variant: 6 Control-adjusted outcome"
     },
     "robust_6_control_adjusted_outcome_share_by_12": {
-      "value": 0.615383559084979,
-      "ci_low": 0.6037018409286545,
-      "ci_high": 0.6258428286085841,
+      "value": 0.6153835590849785,
+      "ci_low": 0.603701840928655,
+      "ci_high": 0.6258428286085838,
       "n": 6927,
       "source": "robustness",
       "definition": "beta_12 / beta_36, variant: 6 Control-adjusted outcome"
     },
     "robust_6_control_adjusted_outcome_hype_a": {
-      "value": 0.04906620972962912,
-      "ci_low": 0.032477851596740256,
-      "ci_high": 0.06565456786251798,
+      "value": 0.04906620972962918,
+      "ci_low": 0.03247785159674031,
+      "ci_high": 0.06565456786251805,
       "n": 6914,
       "source": "robustness",
       "definition": "Spec A hype coefficient, variant: 6 Control-adjusted outcome"
     },
     "robust_6_control_adjusted_outcome_hype_b": {
-      "value": -0.004369229199983849,
-      "ci_low": -0.029963584998801366,
-      "ci_high": 0.02122512659883367,
+      "value": -0.004369229199983996,
+      "ci_low": -0.029963584998801515,
+      "ci_high": 0.02122512659883352,
       "n": 6914,
       "source": "robustness",
       "definition": "Spec B hype coefficient, variant: 6 Control-adjusted outcome"
@@ -1644,6 +1644,78 @@
       "n": 3365,
       "source": "robustness_gap",
       "definition": "mean gap at config thresholds (matches Fig 2)"
+    },
+    "n_snapshots": {
+      "value": 121.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "manifest",
+      "definition": "monthly snapshot files used"
+    },
+    "n_snapshot_rows": {
+      "value": 2611791.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "manifest",
+      "definition": "data rows over all monthly snapshots"
+    },
+    "download_mb": {
+      "value": 541.498463,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "manifest",
+      "definition": "size of the monthly snapshot CSVs in MB"
+    },
+    "n_games_ever_ranked": {
+      "value": 31676.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "sample_waterfall",
+      "definition": "distinct games ever ranked"
+    },
+    "n_new_releases": {
+      "value": 11020.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "sample_waterfall",
+      "definition": "games classed as new releases"
+    },
+    "n_qc_pass": {
+      "value": 36.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "qc_results",
+      "definition": "QC checks with status PASS"
+    },
+    "n_qc_warn": {
+      "value": 0.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "qc_results",
+      "definition": "QC checks with status WARN"
+    },
+    "n_qc_fail": {
+      "value": 0.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "qc_results",
+      "definition": "QC checks with status FAIL"
+    },
+    "n_dup_rows_removed": {
+      "value": 721.0,
+      "ci_low": null,
+      "ci_high": null,
+      "n": null,
+      "source": "pipeline outputs",
+      "definition": "duplicate rows removed in load"
     }
   }
 }
