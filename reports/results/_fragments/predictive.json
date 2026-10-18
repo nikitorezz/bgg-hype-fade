@@ -1,0 +1,290 @@
+{
+  "q4_rule_month": {
+    "value": 13.0,
+    "ci_low": 13.0,
+    "ci_high": 14.0,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "first k with >= 80% of games within \u00b10.25 of their month-36 average (game-level bootstrap CI)"
+  },
+  "q4_share_at_rule_month": {
+    "value": 0.800520381613183,
+    "ci_low": 0.79110362699448,
+    "ci_high": 0.8099371362318859,
+    "n": 6918,
+    "source": "q4_accuracy_by_k",
+    "definition": "share within tolerance at the rule month"
+  },
+  "q4_within_025_k0": {
+    "value": 0.3151436408257543,
+    "ci_low": 0.3042031325764409,
+    "ci_high": 0.3260841490750677,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.25"
+  },
+  "q4_within_050_k0": {
+    "value": 0.6252345892882922,
+    "ci_low": 0.6138351175599235,
+    "ci_high": 0.636634061016661,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=0 - avg at month 36| <= 0.5"
+  },
+  "q4_mae_k0": {
+    "value": 0.4688566478995236,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6927,
+    "source": "q4_accuracy_by_k",
+    "definition": "mean absolute error of avg at k=0 vs month-36 avg"
+  },
+  "q4_within_025_k3": {
+    "value": 0.4389290882778582,
+    "ci_low": 0.4272280848667246,
+    "ci_high": 0.4506300916889918,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.25"
+  },
+  "q4_within_050_k3": {
+    "value": 0.8065123010130246,
+    "ci_low": 0.7971980223818739,
+    "ci_high": 0.8158265796441754,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=3 - avg at month 36| <= 0.5"
+  },
+  "q4_mae_k3": {
+    "value": 0.34465846599131694,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6910,
+    "source": "q4_accuracy_by_k",
+    "definition": "mean absolute error of avg at k=3 vs month-36 avg"
+  },
+  "q4_within_025_k6": {
+    "value": 0.5535146080416546,
+    "ci_low": 0.541796444511798,
+    "ci_high": 0.5652327715715113,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.25"
+  },
+  "q4_within_050_k6": {
+    "value": 0.8890656638704079,
+    "ci_low": 0.8816629443116243,
+    "ci_high": 0.8964683834291914,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=6 - avg at month 36| <= 0.5"
+  },
+  "q4_mae_k6": {
+    "value": 0.28053659242117446,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6914,
+    "source": "q4_accuracy_by_k",
+    "definition": "mean absolute error of avg at k=6 vs month-36 avg"
+  },
+  "q4_within_025_k12": {
+    "value": 0.7721098265895954,
+    "ci_low": 0.7622264495521468,
+    "ci_high": 0.7819932036270439,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.25"
+  },
+  "q4_within_050_k12": {
+    "value": 0.9585260115606936,
+    "ci_low": 0.9538282293750652,
+    "ci_high": 0.963223793746322,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=12 - avg at month 36| <= 0.5"
+  },
+  "q4_mae_k12": {
+    "value": 0.19189017341040465,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6920,
+    "source": "q4_accuracy_by_k",
+    "definition": "mean absolute error of avg at k=12 vs month-36 avg"
+  },
+  "q4_within_025_k18": {
+    "value": 0.9122705593293828,
+    "ci_low": 0.9056045039688002,
+    "ci_high": 0.9189366146899655,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.25"
+  },
+  "q4_within_050_k18": {
+    "value": 0.9838126896950427,
+    "ci_low": 0.9808391210950611,
+    "ci_high": 0.9867862582950242,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=18 - avg at month 36| <= 0.5"
+  },
+  "q4_mae_k18": {
+    "value": 0.12746784217372453,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6919,
+    "source": "q4_accuracy_by_k",
+    "definition": "mean absolute error of avg at k=18 vs month-36 avg"
+  },
+  "q4_within_025_k24": {
+    "value": 0.9709705372616985,
+    "ci_low": 0.9670159599818389,
+    "ci_high": 0.9749251145415581,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.25"
+  },
+  "q4_within_050_k24": {
+    "value": 0.9935008665511266,
+    "ci_low": 0.9916081333767905,
+    "ci_high": 0.9953935997254626,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "share of games with |avg at k=24 - avg at month 36| <= 0.5"
+  },
+  "q4_mae_k24": {
+    "value": 0.08227469670710573,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6924,
+    "source": "q4_accuracy_by_k",
+    "definition": "mean absolute error of avg at k=24 vs month-36 avg"
+  },
+  "q4_test_raw_mae_k0": {
+    "value": 0.47644813059505003,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3798,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set MAE vs month-36 average, raw predictor at k=0"
+  },
+  "q4_test_raw_within_k0": {
+    "value": 0.3062137967351237,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3798,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set share within \u00b10.25, raw predictor at k=0"
+  },
+  "q4_test_adj_mae_k0": {
+    "value": 0.28899657101569715,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3798,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set MAE vs month-36 average, adj predictor at k=0"
+  },
+  "q4_test_adj_within_k0": {
+    "value": 0.5539757767245919,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3798,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set share within \u00b10.25, adj predictor at k=0"
+  },
+  "q4_test_raw_mae_k3": {
+    "value": 0.3564749340369393,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3790,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set MAE vs month-36 average, raw predictor at k=3"
+  },
+  "q4_test_raw_within_k3": {
+    "value": 0.4071240105540897,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3790,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set share within \u00b10.25, raw predictor at k=3"
+  },
+  "q4_test_adj_mae_k3": {
+    "value": 0.21959770019336095,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3790,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set MAE vs month-36 average, adj predictor at k=3"
+  },
+  "q4_test_adj_within_k3": {
+    "value": 0.6912928759894459,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3790,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set share within \u00b10.25, adj predictor at k=3"
+  },
+  "q4_test_raw_mae_k6": {
+    "value": 0.29053312219583,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3789,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set MAE vs month-36 average, raw predictor at k=6"
+  },
+  "q4_test_raw_within_k6": {
+    "value": 0.5320665083135392,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3789,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set share within \u00b10.25, raw predictor at k=6"
+  },
+  "q4_test_adj_mae_k6": {
+    "value": 0.1860312686668301,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3789,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set MAE vs month-36 average, adj predictor at k=6"
+  },
+  "q4_test_adj_within_k6": {
+    "value": 0.7674848244919504,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3789,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set share within \u00b10.25, adj predictor at k=6"
+  },
+  "q4_test_raw_mae_k12": {
+    "value": 0.19819931452675982,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3793,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set MAE vs month-36 average, raw predictor at k=12"
+  },
+  "q4_test_raw_within_k12": {
+    "value": 0.7650935934616399,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3793,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set share within \u00b10.25, raw predictor at k=12"
+  },
+  "q4_test_adj_mae_k12": {
+    "value": 0.13185671676120828,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3793,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set MAE vs month-36 average, adj predictor at k=12"
+  },
+  "q4_test_adj_within_k12": {
+    "value": 0.8781966780912207,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 3793,
+    "source": "q4_adjusted_predictor",
+    "definition": "test-set share within \u00b10.25, adj predictor at k=12"
+  }
+}
