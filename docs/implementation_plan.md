@@ -269,10 +269,10 @@ Suggested pacing from 19 Oct: M1–M2 by early Nov, M3–M4 by mid/late Nov, M6�
 
 ## 11. Open decisions
 
-- [ ] Python only, or R (`fixest`) for models?
+- [x] Python only (`linearmodels`/`statsmodels`) for models (decided 2026-10-18)
 - [ ] Write-up home: README only, a blog (Medium/personal site), or both?
-- [ ] Include Q3 (crowdfunding) — decide after the coverage check in M5.
-- [ ] Include Q4 (predictive rule) — recommended; cheap and very "business".
+- [ ] Include Q3 (crowdfunding): optional step in task 02; runs only if the Kaggle file is placed in `data/external/kaggle_bgg/`
+- [x] Include Q4 (predictive rule) + an adjusted-predictor mini model (decided 2026-10-18)
 - [ ] Dashboard: Streamlit (default) or Tableau Public?
 - [ ] May derived data (panel/game_summary) be published for the dashboard, given the source repo has no licence?
 
@@ -297,3 +297,4 @@ Suggested pacing from 19 Oct: M1–M2 by early Nov, M3–M4 by mid/late Nov, M6�
 | 2026-10-18 | Plan | Plan created from proposal |
 | 2026-10-18 | Pilot + handoff | Monthly files checked in DuckDB; data traps documented (`docs/data_notes.md`); Claude Code spec for steps 1–5 written (`docs/handoff/`) |
 | 2026-10-18 | Pipeline steps 1-5 | `uv run bgg all` runs download, load, cohorts, panel and qc end to end and is idempotent. 121 months, 2.61M rows, 11,020 new releases, 335,973 panel rows. QC: 36 PASS, 0 WARN, 0 FAIL (+7 INFO). Deviations from spec: first-month window fallback; 2021 cohort is 977, not 978 (junk pub year 3000, see data_notes section 10). |
+| 2026-10-18 | Analysis handoff | Pre-checks on processed data (data_notes §11): fade −0.40 at 36 m, ~61% in year 1, 87% decline; site drift only −0.016; H2 looks unsupported (hype coef +0.05 with controls). Task 02 spec written (`docs/handoff/02_TASK_analysis.md`) |

@@ -139,3 +139,30 @@ The repository has **no LICENSE file** (checked 2026-10-18), so by default no re
 - **Missing months:** 286 new releases miss at least one month in k = 0…36 (pilot 442). 208 have an internal gap, 79 left the ranking early (one game can be in both).
 - **Panel:** 335,973 rows, 11,020 games. Mean change in `Average` from k=0: −0.046 (k=1), −0.160 (6), −0.237 (12), −0.332 (24), −0.401 (36); matches §8. Raters decreased in 4,766 of 324,733 one-month steps (1.47%); unchanged in 14.0%.
 - **Usable `new_avg` share (Δ ≥ 10 raters AND error bound ≤ 0.5 AND in [1, 10]), 1-month / 3-month window:** k=3 37% / 69%, k=12 33% / 59%, k=36 14% / 49%. Much lower than §6's err-only figures because the Δ ≥ 10 rule also binds early, when games gain few raters per month.
+
+---
+
+## 11. Analysis pre-checks *(2026-10-18, on the final processed data; sanity values for task 02)*
+
+Quick checks run on `panel.parquet`, `game_summary.parquet` and `snapshots_monthly.parquet` before writing the analysis spec. They're sanity values, not results to aim for.
+
+**Samples.** Main sample (in_main_sample AND observed_m36) = 6,927; balanced (also observed at k=12, 24) = 6,918.
+
+**Q1, the fade.** Balanced mean change_12 / 24 / 36 = −0.245 / −0.341 / −0.401 (≈ 61% of the 3-year decline by month 12). Median change_36 −0.38; **86.9% of games decline**. Rater-weighted change_36 = −0.274: big games decline less. Mean change_36 by entry year ranges −0.36 (2022–23) … −0.44 (2020–21).
+
+**Background drift (control group).** Games ranked in 2016-10 with ≥ 500 raters and present in all 121 snapshots: **2,428 games**. Their mean average falls 6.741 → 6.675 over 10 years (≈ −0.007/yr, slowing after 2022). Over each main-sample game's own 36-month window the control drifts **−0.016** on average, so the control-adjusted change_36 is **−0.385**: ~96% of the fade is game-specific, not site-wide.
+
+**Starting level ≫ hype.** change_36 by avg_m0 quintile: −0.13 / −0.29 / −0.41 / −0.49 / −0.68. Part of this is regression to the mean: entry averages rest on ~34 raters (median), so they're noisy.
+
+**Q2, hype.** Quartile means of change_36 (Q1 → Q4): −0.365 / −0.397 / −0.434 / −0.409, not monotonic. Raw corr(hype_log, change_36) = 0.01. hype_log correlates with ln(raters_m0) (0.36) and avg_m0 (0.18). Quick OLS (HC1, entry-year FE):
+- Spec A: change_36 ~ hype_log + avg_m0 + ln raters_m0 → hype **+0.049 (SE 0.008)**, avg_m0 −0.246 (0.008)
+- Spec B: (avg_m36 − avg_m6) ~ hype_log + avg_m6 + ln raters_m6 → hype **−0.004 (0.013)**
+- Spec C: reach ln(raters_m6) instead of hype → +0.049 (0.008)
+
+So conditional on the starting average, more-hyped games decline slightly **less**, and after month 6 hype predicts nothing. H2 as stated looks unsupported. Report it straight.
+
+**New raters vs displayed average (trap!).** Among rows with `new_avg_ok_3`, the equal-weight mean of `new_avg_3 − avg_rating` is −0.147 (k=3), −0.190 (6), −0.203 (12), −0.216 (24), −0.231 (36). New raters keep rating below the displayed average even at month 36, so the decline isn't finished. Δ-weighted: −0.06 … −0.16. ⚠️ A Δ-weighted mean of new_avg (≈ 7.5) vs an unweighted mean of avg_rating (≈ 7.2) wrongly suggests new raters rate *higher*: the weighting lets big, highly rated games dominate. Always compute the gap row-wise, then average.
+
+**Q4, when to trust.** Share of games within ±0.25 of their month-36 average: k=0 31.5%, 1 35.7%, 2 40%, 3 43.9%, 6 55.4%, 9 66.6%, 12 77.2%, 15 85.6%, 18 91.2%, 24 97.1%. MAE: 0.469 (k0), 0.345 (3), 0.281 (6), 0.192 (12), 0.082 (24). Large-k agreement is partly mechanical (the running average is sticky).
+
+**Extremes worth knowing (raters_m36 ≥ 2,000).** The biggest risers started very low, e.g. *Descent: Legends of the Dark* 4.18 → 7.96 and *Pandemic Legacy: Season 0* 5.05 → 8.44 (likely pre-release protest/low ratings). The biggest fallers started very high, e.g. *Challengers!* 9.31 → 7.08 and *Fireball Island* 8.95 → 6.93. Median rank change k0 → k36: −2,960 places, and 74% of games *improve* in rank despite falling averages. Rank is based on the Bayes average, which pulls games with few raters strongly toward a low prior; as raters accumulate that pull weakens. This is a nice aside for the write-up: the visible rank rises while the raw average falls.

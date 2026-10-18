@@ -1,0 +1,62 @@
+section,label,metric,value
+waterfall,All games ever ranked,n_games,31676
+waterfall,Excluding left-censored (already in first snapshot),n_games,18917
+waterfall,Excluding unknown / junk publication year,n_games,18629
+waterfall,Excluding old games entering late = new releases,n_games,11020
+waterfall,New releases in main entry window (full follow-up possible),n_games,6980
+waterfall,Main sample observed at month 36,n_games,6927
+cohort_sizes,2016,new_releases,240
+cohort_sizes,2017,new_releases,1033
+cohort_sizes,2018,new_releases,1045
+cohort_sizes,2019,new_releases,1068
+cohort_sizes,2020,new_releases,921
+cohort_sizes,2021,new_releases,977
+cohort_sizes,2022,new_releases,1055
+cohort_sizes,2023,new_releases,1213
+cohort_sizes,2024,new_releases,1235
+cohort_sizes,2025,new_releases,1267
+cohort_sizes,2026,new_releases,966
+cohort_sizes,2016,observed_m12,238
+cohort_sizes,2017,observed_m12,1030
+cohort_sizes,2018,observed_m12,1040
+cohort_sizes,2019,observed_m12,1064
+cohort_sizes,2020,observed_m12,915
+cohort_sizes,2021,observed_m12,974
+cohort_sizes,2022,observed_m12,1046
+cohort_sizes,2023,observed_m12,1205
+cohort_sizes,2024,observed_m12,1227
+cohort_sizes,2025,observed_m12,912
+cohort_sizes,2026,observed_m12,0
+cohort_sizes,2016,observed_m24,238
+cohort_sizes,2017,observed_m24,1028
+cohort_sizes,2018,observed_m24,1039
+cohort_sizes,2019,observed_m24,1064
+cohort_sizes,2020,observed_m24,912
+cohort_sizes,2021,observed_m24,974
+cohort_sizes,2022,observed_m24,1047
+cohort_sizes,2023,observed_m24,1202
+cohort_sizes,2024,observed_m24,894
+cohort_sizes,2025,observed_m24,0
+cohort_sizes,2026,observed_m24,0
+cohort_sizes,2016,observed_m36,238
+cohort_sizes,2017,observed_m36,1028
+cohort_sizes,2018,observed_m36,1039
+cohort_sizes,2019,observed_m36,1062
+cohort_sizes,2020,observed_m36,910
+cohort_sizes,2021,observed_m36,972
+cohort_sizes,2022,observed_m36,1047
+cohort_sizes,2023,observed_m36,869
+cohort_sizes,2024,observed_m36,0
+cohort_sizes,2025,observed_m36,0
+cohort_sizes,2026,observed_m36,0
+cohort_sizes,2016,in_main_sample,0
+cohort_sizes,2017,in_main_sample,1033
+cohort_sizes,2018,in_main_sample,1045
+cohort_sizes,2019,in_main_sample,1068
+cohort_sizes,2020,in_main_sample,921
+cohort_sizes,2021,in_main_sample,977
+cohort_sizes,2022,in_main_sample,1055
+cohort_sizes,2023,in_main_sample,881
+cohort_sizes,2024,in_main_sample,0
+cohort_sizes,2025,in_main_sample,0
+cohort_sizes,2026,in_main_sample,0

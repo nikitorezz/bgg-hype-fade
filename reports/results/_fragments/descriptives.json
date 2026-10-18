@@ -1,0 +1,178 @@
+{
+  "n_main_sample": {
+    "value": 6927.0,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6927,
+    "source": "game_summary",
+    "definition": "in_main_sample AND observed_m36"
+  },
+  "n_balanced_sample": {
+    "value": 6918.0,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6918,
+    "source": "game_summary",
+    "definition": "main sample also observed at k=12 and k=24"
+  },
+  "n_control_games": {
+    "value": 2428.0,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 2428,
+    "source": "control_series",
+    "definition": "ranked 2016-10 with >=500 raters, present in every snapshot"
+  },
+  "change_12": {
+    "value": -0.24450419196299508,
+    "ci_low": -0.2526950228843556,
+    "ci_high": -0.23631336104163458,
+    "n": 6918,
+    "source": "game_summary (balanced)",
+    "definition": "mean change in displayed average from entry to month 12"
+  },
+  "change_24": {
+    "value": -0.3408904307603353,
+    "ci_low": -0.350753749782259,
+    "ci_high": -0.33102711173841165,
+    "n": 6918,
+    "source": "game_summary (balanced)",
+    "definition": "mean change in displayed average from entry to month 24"
+  },
+  "change_36": {
+    "value": -0.40134287366290833,
+    "ci_low": -0.41182314043296697,
+    "ci_high": -0.3908626068928497,
+    "n": 6918,
+    "source": "game_summary (balanced)",
+    "definition": "mean change in displayed average from entry to month 36"
+  },
+  "share_of_decline_by_12": {
+    "value": 0.6092152321816394,
+    "ci_low": 0.5997402627382581,
+    "ci_high": 0.6198390901072395,
+    "n": 6918,
+    "source": "game_summary (balanced)",
+    "definition": "mean change_12 / mean change_36 (game-level bootstrap CI)"
+  },
+  "median_change_36": {
+    "value": -0.3799999999999999,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6927,
+    "source": "game_summary (main)",
+    "definition": "median change from entry to month 36"
+  },
+  "share_declining": {
+    "value": 0.8693518117511189,
+    "ci_low": 0.861415239849823,
+    "ci_high": 0.8772883836524147,
+    "n": 6927,
+    "source": "game_summary (main)",
+    "definition": "share of games with change_36 < 0"
+  },
+  "change_36_rater_weighted": {
+    "value": -0.2739491603371781,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6927,
+    "source": "game_summary (main)",
+    "definition": "mean change_36 weighted by raters at month 36"
+  },
+  "gap_k3": {
+    "value": -0.14685800685479292,
+    "ci_low": -0.15671195815043712,
+    "ci_high": -0.1370040555591487,
+    "n": 4829,
+    "source": "gap_new_vs_displayed",
+    "definition": "mean of (new_avg_3 - avg_rating) at k=3, usable rows, equal weight per row"
+  },
+  "gap_k6": {
+    "value": -0.19019625979560298,
+    "ci_low": -0.20094745955058074,
+    "ci_high": -0.17944506004062521,
+    "n": 4383,
+    "source": "gap_new_vs_displayed",
+    "definition": "mean of (new_avg_3 - avg_rating) at k=6, usable rows, equal weight per row"
+  },
+  "gap_k12": {
+    "value": -0.20306833412812683,
+    "ci_low": -0.21424476025835812,
+    "ci_high": -0.19189190799789554,
+    "n": 4110,
+    "source": "gap_new_vs_displayed",
+    "definition": "mean of (new_avg_3 - avg_rating) at k=12, usable rows, equal weight per row"
+  },
+  "gap_k24": {
+    "value": -0.21612430120801285,
+    "ci_low": -0.22824813948599076,
+    "ci_high": -0.20400046293003493,
+    "n": 3655,
+    "source": "gap_new_vs_displayed",
+    "definition": "mean of (new_avg_3 - avg_rating) at k=24, usable rows, equal weight per row"
+  },
+  "gap_k36": {
+    "value": -0.23084187811549353,
+    "ci_low": -0.24415439553644197,
+    "ci_high": -0.2175293606945451,
+    "n": 3365,
+    "source": "gap_new_vs_displayed",
+    "definition": "mean of (new_avg_3 - avg_rating) at k=36, usable rows, equal weight per row"
+  },
+  "control_drift_36": {
+    "value": -0.015813471578991763,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 6927,
+    "source": "control_adjusted_change36",
+    "definition": "mean control-group change over each main-sample game's own 36-month window"
+  },
+  "change_36_control_adjusted": {
+    "value": -0.3854237162368015,
+    "ci_low": -0.3958890336717238,
+    "ci_high": -0.3749583988018792,
+    "n": 6927,
+    "source": "control_adjusted_change36",
+    "definition": "mean of change_36 minus control change over the same calendar months"
+  },
+  "control_change_full_period": {
+    "value": -0.06554777594727845,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 2428,
+    "source": "control_series",
+    "definition": "control-group mean average, last month minus 2016-10"
+  },
+  "change_36_hype_q1": {
+    "value": -0.3646158290005777,
+    "ci_low": -0.38853595770511273,
+    "ci_high": -0.3406957002960427,
+    "n": 1731,
+    "source": "segments",
+    "definition": "mean change_36, hype quartile 1 (1 = least hyped)"
+  },
+  "change_36_hype_q2": {
+    "value": -0.3965895953757226,
+    "ci_low": -0.4160702389571265,
+    "ci_high": -0.37710895179431864,
+    "n": 1730,
+    "source": "segments",
+    "definition": "mean change_36, hype quartile 2 (1 = least hyped)"
+  },
+  "change_36_hype_q3": {
+    "value": -0.43449098312972656,
+    "ci_low": -0.45305203347345696,
+    "ci_high": -0.41592993278599616,
+    "n": 1719,
+    "source": "segments",
+    "definition": "mean change_36, hype quartile 3 (1 = least hyped)"
+  },
+  "change_36_hype_q4": {
+    "value": -0.40919838523644747,
+    "ci_low": -0.430335962268255,
+    "ci_high": -0.38806080820463995,
+    "n": 1734,
+    "source": "segments",
+    "definition": "mean change_36, hype quartile 4 (1 = least hyped)"
+  }
+}

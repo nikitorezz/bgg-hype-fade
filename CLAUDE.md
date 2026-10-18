@@ -15,8 +15,11 @@ The audience is hiring managers and analytics leads, so code quality, readable S
 
 ## Current scope
 
-**Pipeline steps 1–5 only:** download → load → cohorts → panel → quality checks.
-Out of scope for now (don't build): regressions/models, analysis notebooks, the Streamlit app, Kaggle metadata, the write-up. Leave clean seams for them (e.g. `src/bgg/plots.py` can wait).
+- ✅ **Done:** pipeline steps 1–5 (`docs/handoff/01_TASK_pipeline_steps_1-5.md`): `uv run bgg all`, QC 36 PASS / 0 FAIL.
+- 🔨 **Now:** analysis, milestones M3–M5 (`docs/handoff/02_TASK_analysis.md`): descriptive figures, Q1 event study, Q2 hype regressions, Q4 "when to trust" rule, robustness grid, key_numbers.json, optional Q3 crowdfunding.
+- ⏭ **Not yet (don't build):** Streamlit dashboard, narrative write-up, slides, daily-snapshot download.
+
+Treat the pipeline (sql/, download/build/qc) as stable: change it only to fix a real bug, rerun `uv run bgg all` + QC afterwards, and note the change.
 
 ## Environment
 
@@ -44,6 +47,7 @@ These definitions are decisions, not implementation details. If the data seems t
 - main-sample window (entry 2017-01 … end_month − 36 months)
 - raw `Average` as the outcome (not `Bayes average`)
 - new-rating average formula and its usability rule (Δraters threshold **and** rounding-error bound)
+- analysis definitions in task 02 (main/balanced samples, equal weight per game as primary, control group, model specs A–D). **Never pick a specification because its result looks better.** A null or reversed H2 is a finding.
 
 ## Keeping docs current
 

@@ -77,3 +77,73 @@ qc:
     - {id: 295947, name: Cascadia, entry: 2020-10-01, pub_year: 2021, in_cohort: true, avg_k0: 7.95, raters_k0: 66, raters_k6: 228, avg_k12: 8.09, avg_k36: 7.97, raters_k36: 29574}
     - {id: 316554, name: "Dune: Imperium", entry: 2020-12-01, pub_year: 2020, in_cohort: true, avg_k0: 8.04, raters_k0: 71, raters_k6: 4877, avg_k12: 8.31, avg_k36: 8.42, raters_k36: 39421}
     - {id: 342942, name: Ark Nova, entry: 2021-11-01, pub_year: 2021, in_cohort: true, avg_k0: 8.50, raters_k0: 252, raters_k6: 6383, avg_k12: 8.60, avg_k36: 8.53, raters_k36: 46693}
+
+# ---- Analysis (task 02). Every choice below is a fixed research definition; see docs/handoff/02_TASK_analysis.md.
+analysis:
+  seed: 20261018
+  bootstrap_reps: 1000
+  ci_z: 1.96                          # 95% normal-approximation CI for means
+  curve_k_max: 36
+  horizons: [12, 24, 36]              # k at which changes are reported; balanced sample must observe all
+  results_dir: reports/results
+  external_dir: data/external/kaggle_bgg
+  control:                            # mature control group for background drift
+    base_month: 2016-10-01
+    min_raters: 500
+  gap:
+    window: 3                         # use new_avg_3 / new_avg_ok_3
+    ks: [3, 6, 12, 24, 36]
+  segments:
+    avg0_quintiles: 5
+    avg0_deciles: 10
+    entry_raters_edges: [35, 50, 100] # buckets: <35, 35-49, 50-99, 100+
+    popular_top_share: 0.10           # top share of raters_m36
+  examples:
+    min_raters_m36: 5000
+    n_decliners: 2
+    n_risers: 2
+    n_typical: 2
+  q4:
+    k_max: 30
+    tolerances: [0.25, 0.5]
+    rule_tolerance: 0.25
+    rule_share: 0.80
+    adjusted_ks: [0, 3, 6, 12]
+    train_entry_years: [2017, 2019]   # inclusive
+    test_entry_years: [2020, 2023]    # inclusive
+  robustness:
+    covid_entry_years: [2020, 2021]
+    min_entry_raters: 50
+    popular_top_share: 0.10
+    gap_ks: [6, 12, 36]
+    gap_min_delta_raters: [5, 10, 25]
+    gap_max_error_bound: [0.25, 0.5, 1.0]
+  q3:
+    min_coverage: 0.5                 # entry years below this get coverage only, no model
+    id_column: BGGId
+    flag_column: Kickstarted
+  # Values from docs/data_notes.md section 11, compared (not enforced) in reports/results/sanity_checks.csv
+  sanity:
+    tolerance: 0.01
+    values:
+      n_main_sample: 6927
+      n_balanced_sample: 6918
+      n_control_games: 2428
+      change_12: -0.245
+      change_24: -0.341
+      change_36: -0.401
+      median_change_36: -0.38
+      share_declining: 0.869
+      control_drift_36: -0.016
+      change_36_control_adjusted: -0.385
+      change_36_rater_weighted: -0.274
+      gap_k3: -0.15
+      gap_k12: -0.20
+      gap_k36: -0.23
+      spec_a_hype: 0.05
+      spec_b_hype: 0.00
+      q4_within_025_k0: 0.315
+      q4_within_025_k6: 0.55
+      q4_within_025_k12: 0.77
+      q4_within_025_k18: 0.91
+    loose_tolerance: {spec_a_hype: 0.02, spec_b_hype: 0.02, q4_within_025_k6: 0.02, q4_within_025_k12: 0.02, n_main_sample: 0, n_balanced_sample: 0, n_control_games: 0}
