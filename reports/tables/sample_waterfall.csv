@@ -1,0 +1,7 @@
+step_no,step,n_games,removed
+1,All games ever ranked,31676,
+2,Excluding left-censored (already in first snapshot),18917,12759
+3,Excluding unknown / junk publication year,18629,288
+4,Excluding old games entering late = new releases,11020,7609
+5,New releases in main entry window (full follow-up possible),6980,4040
+6,Main sample observed at month 36,6927,53
