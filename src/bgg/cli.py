@@ -31,6 +31,14 @@ def _run_stage(name: str, cfg: Config, args: argparse.Namespace) -> int:
         from bgg.qc import run_qc
 
         return run_qc(cfg)
+    elif name == "dashboard-data":
+        from bgg.dashboard import run_dashboard_data
+
+        run_dashboard_data(cfg, aggregates_only=args.aggregates_only)
+    elif name == "export-static":
+        from bgg.static_export import run_export_static
+
+        run_export_static(cfg)
     elif name == "analysis":
         from bgg.analysis.run import run_analysis
 
@@ -52,6 +60,8 @@ def build_parser() -> argparse.ArgumentParser:
         "all": "run every pipeline stage in order",
         "analysis": "run the analysis (figures, models, key numbers)",
         "everything": "pipeline stages followed by the analysis",
+        "dashboard-data": "build app/data (self-contained extract for the dashboard)",
+        "export-static": "build reports/site/index.html (single-file static dashboard)",
     }
     for name, h in help_text.items():
         sp = sub.add_parser(name, help=h)
@@ -61,6 +71,9 @@ def build_parser() -> argparse.ArgumentParser:
         if name == "everything":
             sp.add_argument("--backend", choices=["http", "git"], default=None,
                             help="override download.backend from config")
+        if name == "dashboard-data":
+            sp.add_argument("--aggregates-only", action="store_true",
+                            help="skip game-level files (for APP_MODE=aggregates)")
         if name == "analysis":
             sp.add_argument("--only", default=None, choices=ANALYSIS_STEPS,
                             help="run a single analysis step")
@@ -75,6 +88,7 @@ def main(argv: list[str] | None = None) -> None:
     cfg = load_config(args.config)
     stages = {"all": STAGES, "everything": [*STAGES, "analysis"]}.get(args.stage, [args.stage])
     args.only = getattr(args, "only", None)
+    args.aggregates_only = getattr(args, "aggregates_only", False)
     run: Callable[[str], int] = lambda s: _run_stage(s, cfg, args)  # noqa: E731
     code = 0
     for s in stages:

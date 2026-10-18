@@ -9,3 +9,5 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.egg-info/
+# dashboard data extract: git-ignored until the data-publication decision (D0)
+app/data/
