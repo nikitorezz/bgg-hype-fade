@@ -14,6 +14,7 @@ from bgg import plots
 from bgg.analysis.data import Inputs, main_panel, main_summary
 from bgg.analysis.io import entry, md_table, results_dir, save_fragment, write_table
 from bgg.analysis.stats import percentile_ci
+from bgg.analysis.titles import figure_titles
 
 log = logging.getLogger(__name__)
 
@@ -114,8 +115,6 @@ def run_event_study(cfg, inp: Inputs) -> tuple[pd.DataFrame, dict[str, dict]]:
     zero = pd.DataFrame({"k": [0], "beta": [0.0], "se": [0.0], "ci_low": [0.0], "ci_high": [0.0],
                          "n_obs": [int(es["n_obs"].iloc[0])]})
     write_table(cfg, pd.concat([zero, es], ignore_index=True), "model_event_study", "results")
-    plots.save_figure(plots.fig07_event_study(pd.concat([zero, es], ignore_index=True)),
-                      "fig07_event_study", cfg.path("figures_dir"))
 
     draws = event_study_bootstrap(ea, a["bootstrap_reps"], a["seed"])
     keys: dict[str, dict] = {}
@@ -132,6 +131,9 @@ def run_event_study(cfg, inp: Inputs) -> tuple[pd.DataFrame, dict[str, dict]]:
     keys[f"beta_share_by_{first}"] = entry(
         share_by(fast, ea.ks, first, last), "model_event_study",
         f"beta_{first} / beta_{last} (game-level bootstrap CI)", lo, hi, n_games)
+    fig7 = plots.add_titles(plots.fig07_event_study(pd.concat([zero, es], ignore_index=True)),
+                            *figure_titles(cfg, "fig07", keys))
+    plots.save_figure(fig7, "fig07_event_study", cfg.path("figures_dir"))
     notes = (
         "# Event study notes\n\n"
         "Model: avg_rating_it = alpha_i + sum_k beta_k * 1[k_it = k] + e_it, k = 1..36, month 0 "

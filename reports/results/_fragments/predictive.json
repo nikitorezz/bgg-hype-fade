@@ -286,5 +286,125 @@
     "n": 3793,
     "source": "q4_adjusted_predictor",
     "definition": "test-set share within \u00b10.25, adj predictor at k=12"
+  },
+  "q4_adj_coef_const_k0": {
+    "value": 1.028086081878223,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (const) at k=0, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_avg_k_k0": {
+    "value": 0.7684042461334424,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (avg_k) at k=0, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_ln_raters_k_k0": {
+    "value": 0.07066952883456376,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (ln_raters_k) at k=0, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_const_k3": {
+    "value": 0.6806778446176356,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (const) at k=3, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_avg_k_k3": {
+    "value": 0.8324162363073314,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (avg_k) at k=3, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_ln_raters_k_k3": {
+    "value": 0.04263178795344447,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (ln_raters_k) at k=3, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_ln_growth_k3": {
+    "value": 0.041965979896091965,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (ln_growth) at k=3, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_const_k6": {
+    "value": 0.5513097398604543,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (const) at k=6, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_avg_k_k6": {
+    "value": 0.8608392617181296,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (avg_k) at k=6, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_ln_raters_k_k6": {
+    "value": 0.037295076997367074,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (ln_raters_k) at k=6, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_ln_growth_k6": {
+    "value": 0.025061457195788634,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (ln_growth) at k=6, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_const_k12": {
+    "value": 0.3543902539073529,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (const) at k=12, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_avg_k_k12": {
+    "value": 0.9077522033610387,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (avg_k) at k=12, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_ln_raters_k_k12": {
+    "value": 0.02698498408606662,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (ln_raters_k) at k=12, trained on entry years 2017-2019"
+  },
+  "q4_adj_coef_ln_growth_k12": {
+    "value": 0.003568153288460609,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "q4_adjusted_predictor",
+    "definition": "adjusted-predictor OLS coefficient (ln_growth) at k=12, trained on entry years 2017-2019"
   }
 }

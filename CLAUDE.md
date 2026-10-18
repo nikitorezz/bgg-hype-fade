@@ -15,11 +15,11 @@ The audience is hiring managers and analytics leads, so code quality, readable S
 
 ## Current scope
 
-- ✅ **Done:** pipeline steps 1–5 (`docs/handoff/01_TASK_pipeline_steps_1-5.md`): `uv run bgg all`, QC 36 PASS / 0 FAIL.
-- 🔨 **Now:** analysis, milestones M3–M5 (`docs/handoff/02_TASK_analysis.md`): descriptive figures, Q1 event study, Q2 hype regressions, Q4 "when to trust" rule, robustness grid, key_numbers.json, optional Q3 crowdfunding.
-- ⏭ **Not yet (don't build):** Streamlit dashboard, narrative write-up, slides, daily-snapshot download.
+- ✅ **Done:** pipeline steps 1–5 (task 01) and analysis M3–M5 (task 02, reviewed: `docs/findings.md`).
+- 🔨 **Now:** task 03 (`docs/handoff/04_TASK_dashboard.md`): analysis polish (new key numbers, figs 9–10, action titles) + Streamlit dashboard + deployment prep. **Don't deploy** before the user answers the data-publication question (D0).
+- ⏭ **Not yet:** final README rewrite and write-up polish (task 04), slide deck, daily-snapshot robustness.
 
-Treat the pipeline (sql/, download/build/qc) as stable: change it only to fix a real bug, rerun `uv run bgg all` + QC afterwards, and note the change.
+Treat the pipeline and the reviewed analysis as stable. Change them only to fix a real bug, rerun the affected stages afterwards, and note the change. `docs/findings.md` and `reports/writeup.md` are the user's documents: report contradictions, don't edit them silently.
 
 ## Environment
 

@@ -12,6 +12,7 @@ from bgg import plots
 from bgg.analysis.data import Inputs, main_panel, main_summary
 from bgg.analysis.io import entry, md_table, results_dir, save_fragment, write_table
 from bgg.analysis.stats import percentile_ci
+from bgg.analysis.titles import figure_titles
 
 log = logging.getLogger(__name__)
 
@@ -120,9 +121,6 @@ def run_predictive(cfg, inp: Inputs | None = None) -> None:
     n_never = int(np.isnan(draws).sum())
     log.info("Q4 rule: month %s (bootstrap CI %.0f-%.0f; %d draws never reach it)", k_rule, lo, hi,
              n_never)
-    plots.save_figure(plots.fig08_when_to_trust(acc, {"k": k_rule, "ci_low": lo, "ci_high": hi},
-                                                tol, thr), "fig08_when_to_trust",
-                      cfg.path("figures_dir"))
 
     adj = adjusted_predictor(inp)
     write_table(cfg, adj, "q4_adjusted_predictor")
@@ -174,4 +172,16 @@ def run_predictive(cfg, inp: Inputs | None = None) -> None:
             keys[f"q4_test_{kind}_within_k{k}"] = entry(
                 r[f"{kind}_within_{t}"], "q4_adjusted_predictor",
                 f"test-set share within ±{t}, {kind} predictor at k={k}", n=r["n_test"])
+    for _, r in adj.iterrows():  # model coefficients, applied by the dashboard extract
+        for col in [c for c in adj.columns if c.startswith("coef_")]:
+            if not np.isnan(r[col]):
+                keys[f"q4_adj_{col}_k{int(r['k'])}"] = entry(
+                    r[col], "q4_adjusted_predictor",
+                    f"adjusted-predictor OLS coefficient ({col[5:]}) at k={int(r['k'])}, "
+                    "trained on "
+                    f"entry years {q['train_entry_years'][0]}-{q['train_entry_years'][1]}")
+    fig8 = plots.add_titles(plots.fig08_when_to_trust(
+        acc, {"k": k_rule, "ci_low": lo, "ci_high": hi}, tol, thr), *figure_titles(
+        cfg, "fig08", keys))
+    plots.save_figure(fig8, "fig08_when_to_trust", cfg.path("figures_dir"))
     save_fragment(cfg, "predictive", keys)

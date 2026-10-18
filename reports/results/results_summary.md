@@ -61,6 +61,20 @@ Not done: daily-vs-monthly snapshot robustness (needs a multi-GB download).
 | q4_within_025_k6 | 0.550 | 0.554 | 0.004 | 0.010 | OK |
 | q4_within_025_k12 | 0.770 | 0.772 | 0.002 | 0.010 | OK |
 | q4_within_025_k18 | 0.910 | 0.912 | 0.002 | 0.010 | OK |
+| change_6_by_hype_q1 | -0.099 | -0.099 | 0.000 | 0.010 | OK |
+| change_6_by_hype_q2 | -0.156 | -0.156 | -0.001 | 0.010 | OK |
+| change_6_by_hype_q3 | -0.210 | -0.210 | 0.000 | 0.010 | OK |
+| change_6_by_hype_q4 | -0.193 | -0.193 | 0.000 | 0.010 | OK |
+| gap_k36_by_hype_q1 | -0.300 | -0.295 | 0.005 | 0.020 | OK |
+| gap_k36_by_hype_q2 | -0.240 | -0.235 | 0.005 | 0.010 | OK |
+| gap_k36_by_hype_q3 | -0.220 | -0.215 | 0.005 | 0.010 | OK |
+| gap_k36_by_hype_q4 | -0.230 | -0.228 | 0.002 | 0.010 | OK |
+| ks_avg_m0 | 7.620 | 7.617 | -0.003 | 0.010 | OK |
+| nonks_avg_m0 | 7.230 | 7.226 | -0.004 | 0.010 | OK |
+| ks_gap_within_bands | -0.080 | -0.076 | 0.004 | 0.020 | OK |
+| share_rank_improved_36 | 0.740 | 0.744 | 0.004 | 0.010 | OK |
+| avg_rank100 | 7.930 | 7.930 | 0.000 | 0.010 | OK |
+| avg_rank1000 | 7.300 | 7.300 | 0.000 | 0.010 | OK |
 
 ## Figures
 
@@ -72,24 +86,29 @@ Not done: daily-vs-monthly snapshot robustness (needs a multi-GB download).
 - [fig06_by_hype_quartile.png](../figures/fig06_by_hype_quartile.png)
 - [fig07_event_study.png](../figures/fig07_event_study.png)
 - [fig08_when_to_trust.png](../figures/fig08_when_to_trust.png)
+- [fig09_speed_not_size.png](../figures/fig09_speed_not_size.png)
+- [fig10_kickstarter.png](../figures/fig10_kickstarter.png)
 
 ## Tables
 
 - [change36_by_avg0_decile.csv](../tables/change36_by_avg0_decile.csv)
 - [cohort_sizes.csv](../tables/cohort_sizes.csv)
 - [control_adjusted_change36.csv](../tables/control_adjusted_change36.csv)
+- [control_curve_by_age.csv](../tables/control_curve_by_age.csv)
 - [control_series.csv](../tables/control_series.csv)
 - [curve_by_entry_year.csv](../tables/curve_by_entry_year.csv)
 - [curve_by_hype_quartile.csv](../tables/curve_by_hype_quartile.csv)
 - [curve_overall.csv](../tables/curve_overall.csv)
 - [examples.csv](../tables/examples.csv)
 - [gap_new_vs_displayed.csv](../tables/gap_new_vs_displayed.csv)
+- [kickstarter_by_band.csv](../tables/kickstarter_by_band.csv)
 - [q3_change_by_kickstarted.csv](../tables/q3_change_by_kickstarted.csv)
 - [q3_coverage.csv](../tables/q3_coverage.csv)
 - [q4_accuracy_by_k.csv](../tables/q4_accuracy_by_k.csv)
 - [q4_adjusted_predictor.csv](../tables/q4_adjusted_predictor.csv)
 - [sample_waterfall.csv](../tables/sample_waterfall.csv)
 - [segments.csv](../tables/segments.csv)
+- [speed_not_size.csv](../tables/speed_not_size.csv)
 - [table1_sample.csv](../tables/table1_sample.csv)
 
 ## Model and robustness outputs

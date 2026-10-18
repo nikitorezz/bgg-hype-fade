@@ -122,6 +122,51 @@ analysis:
     min_coverage: 0.5                 # entry years below this get coverage only, no model
     id_column: BGGId
     flag_column: Kickstarted
+  # --- task 03 additions
+  speed:
+    months: [6, 36]                    # dumbbell: change by month 6 vs month 36, per hype quartile
+  rank_compare:
+    top_ranks: [90, 110]               # rank window "around 100" in the end-month snapshot
+    low_ranks: [990, 1010]             # rank window "around 1000"
+  kickstarter:
+    band_start: 6.5                    # 0.5-wide bands of avg_m0 for the within-band comparison
+    band_end: 9.0
+    band_width: 0.5
+    min_band_n: 30                     # per group, for the band-gap range
+  hist:
+    x_range: [-3.0, 2.0]               # Fig 4 histogram range
+  social_card_px: [1200, 630]
+  titles:                              # action titles; {key|abs|pct:fmt} filled from key_numbers at runtime
+    fig01:
+      title: "New games lose {change_36|abs:.2f} rating points in 3 years, {share_of_decline_by_12|pct:.0f}% of it in year one"
+      subtitle: "Mean change in displayed average since entering the ranking (main sample, 95% CI)"
+    fig02:
+      title: "New raters still rate games {gap_k36|abs:.2f} below the displayed average at month 36"
+      subtitle: "New-rater average minus displayed average, usable game-months only (95% CI)"
+    fig03:
+      title: "The fade is specific to new games: site-wide drift explains only {control_drift_36|abs:.3f} of it"
+      subtitle: "Change by launch year, against the mature control group over the same months"
+    fig04:
+      title: "{share_declining|pct:.0f}% of new games end lower than they started"
+      subtitle: "Distribution of the 36-month change, and the change by starting rating"
+    fig05:
+      title: "Example trajectories: displayed average vs what new raters say"
+      subtitle: "Six games chosen by rule among those with at least {examples_min_raters:,.0f} raters at month 36"
+    fig06:
+      title: "Hype changes how fast ratings fall, not how far"
+      subtitle: "Mean change since entry by hype quartile (growth in raters during months 0-6)"
+    fig07:
+      title: "Within the same game, the rating keeps falling for three years (month 36: {beta_36:+.2f})"
+      subtitle: "Event-study coefficients vs month 0, game fixed effects, 95% CI"
+    fig08:
+      title: "It takes about {q4_rule_month:.0f} months before a new game's rating can be trusted"
+      subtitle: "Share of games within the tolerance of their month-36 rating"
+    fig09:
+      title: "Hype changes how fast ratings fall, not how far"
+      subtitle: "Mean change in displayed average by hype quartile, at month 6 and at month 36 (95% CI)"
+    fig10:
+      title: "Kickstarted games fall further, even from the same starting rating"
+      subtitle: "Change to month 36 by starting-rating band, 2017-2021 entries (descriptive; flag from a 2022 snapshot)"
   # Values from docs/data_notes.md section 11, compared (not enforced) in reports/results/sanity_checks.csv
   sanity:
     tolerance: 0.01
@@ -146,4 +191,18 @@ analysis:
       q4_within_025_k6: 0.55
       q4_within_025_k12: 0.77
       q4_within_025_k18: 0.91
-    loose_tolerance: {spec_b_hype: 0.02, n_main_sample: 0, n_balanced_sample: 0, n_control_games: 0}   # spec says B = 0.00 +/- 0.02; counts exact
+      change_6_by_hype_q1: -0.099
+      change_6_by_hype_q2: -0.156
+      change_6_by_hype_q3: -0.210
+      change_6_by_hype_q4: -0.193
+      gap_k36_by_hype_q1: -0.30
+      gap_k36_by_hype_q2: -0.24
+      gap_k36_by_hype_q3: -0.22
+      gap_k36_by_hype_q4: -0.23
+      ks_avg_m0: 7.62
+      nonks_avg_m0: 7.23
+      ks_gap_within_bands: -0.08
+      share_rank_improved_36: 0.74
+      avg_rank100: 7.93
+      avg_rank1000: 7.30
+    loose_tolerance: {gap_k36_by_hype_q1: 0.02, ks_gap_within_bands: 0.02, spec_b_hype: 0.02, n_main_sample: 0, n_balanced_sample: 0, n_control_games: 0}   # spec says B = 0.00 +/- 0.02; counts exact

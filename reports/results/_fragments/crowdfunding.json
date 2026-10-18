@@ -78,5 +78,45 @@
     "n": 1547,
     "source": "q3_change_by_kickstarted",
     "definition": "mean change_36 where Kickstarted = 1"
+  },
+  "ks_avg_m0": {
+    "value": 7.616670976082741,
+    "ci_low": 7.5747345701781015,
+    "ci_high": 7.65860738198738,
+    "n": 1547,
+    "source": "model_q3",
+    "definition": "mean starting average, Kickstarted = 1 (Q3 sample)"
+  },
+  "nonks_avg_m0": {
+    "value": 7.225800298062593,
+    "ci_low": 7.198525459463705,
+    "ci_high": 7.25307513666148,
+    "n": 3355,
+    "source": "model_q3",
+    "definition": "mean starting average, Kickstarted = 0 (Q3 sample)"
+  },
+  "ks_gap_within_bands": {
+    "value": -0.07616647206742383,
+    "ci_low": -0.10057815232837661,
+    "ci_high": -0.05175479180647105,
+    "n": 4154,
+    "source": "kickstarter_by_band",
+    "definition": "mean of (Kickstarted - other) change_36 across 0.5-wide starting-average bands, weighted by band size"
+  },
+  "ks_gap_band_min": {
+    "value": -0.16297511867736125,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "kickstarter_by_band",
+    "definition": "smallest per-band gap among bands with >= 30 games in each group"
+  },
+  "ks_gap_band_max": {
+    "value": -0.05731311356864588,
+    "ci_low": null,
+    "ci_high": null,
+    "n": null,
+    "source": "kickstarter_by_band",
+    "definition": "largest per-band gap (same bands)"
   }
 }

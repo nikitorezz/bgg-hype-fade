@@ -1,31 +1,46 @@
 segment_type,segment_value,metric,mean,ci_low,ci_high,n
+hype_quartile,Q1,change_6,-0.098602,-0.108166,-0.0890379,1731
 hype_quartile,Q1,change_12,-0.181591,-0.195901,-0.16728,1729
 hype_quartile,Q1,change_36,-0.364616,-0.388536,-0.340696,1731
+hype_quartile,Q2,change_6,-0.15648,-0.16848,-0.14448,1730
 hype_quartile,Q2,change_12,-0.240647,-0.256233,-0.225062,1730
 hype_quartile,Q2,change_36,-0.39659,-0.41607,-0.377109,1730
+hype_quartile,Q3,change_6,-0.209715,-0.22281,-0.19662,1719
 hype_quartile,Q3,change_12,-0.287051,-0.302314,-0.271787,1719
 hype_quartile,Q3,change_36,-0.434491,-0.453052,-0.41593,1719
+hype_quartile,Q4,change_6,-0.192774,-0.210129,-0.175419,1734
 hype_quartile,Q4,change_12,-0.268973,-0.288333,-0.249614,1734
 hype_quartile,Q4,change_36,-0.409198,-0.430336,-0.388061,1734
+avg_m0_quintile,Q1,change_6,-0.0462049,-0.0611037,-0.0313061,1386
 avg_m0_quintile,Q1,change_12,-0.0733429,-0.0916655,-0.0550204,1388
 avg_m0_quintile,Q1,change_36,-0.128459,-0.151973,-0.104946,1389
+avg_m0_quintile,Q2,change_6,-0.105816,-0.119373,-0.0922592,1391
 avg_m0_quintile,Q2,change_12,-0.166564,-0.182122,-0.151005,1391
 avg_m0_quintile,Q2,change_36,-0.290991,-0.309188,-0.272795,1392
+avg_m0_quintile,Q3,change_6,-0.1725,-0.185341,-0.159659,1384
 avg_m0_quintile,Q3,change_12,-0.252007,-0.267252,-0.236762,1385
 avg_m0_quintile,Q3,change_36,-0.413574,-0.432449,-0.394699,1385
+avg_m0_quintile,Q4,change_6,-0.222017,-0.236143,-0.207892,1388
 avg_m0_quintile,Q4,change_12,-0.316036,-0.331782,-0.30029,1390
 avg_m0_quintile,Q4,change_36,-0.494239,-0.512437,-0.47604,1392
+avg_m0_quintile,Q5,change_6,-0.276945,-0.293428,-0.260462,1365
 avg_m0_quintile,Q5,change_12,-0.417372,-0.438071,-0.396672,1366
 avg_m0_quintile,Q5,change_36,-0.683053,-0.70942,-0.656686,1369
+entry_raters_bucket,100+,change_6,-0.16358,-0.194412,-0.132749,243
 entry_raters_bucket,100+,change_12,-0.224074,-0.261911,-0.186237,243
 entry_raters_bucket,100+,change_36,-0.32144,-0.379867,-0.263014,243
+entry_raters_bucket,35-49,change_6,-0.189946,-0.203041,-0.176852,2038
 entry_raters_bucket,35-49,change_12,-0.277499,-0.29359,-0.261408,2039
 entry_raters_bucket,35-49,change_36,-0.444242,-0.464096,-0.424388,2039
+entry_raters_bucket,50-99,change_6,-0.198448,-0.21587,-0.181025,992
 entry_raters_bucket,50-99,change_12,-0.274224,-0.294637,-0.253811,992
 entry_raters_bucket,50-99,change_36,-0.421149,-0.448018,-0.39428,992
+entry_raters_bucket,<35,change_6,-0.140742,-0.149772,-0.131711,3641
 entry_raters_bucket,<35,change_12,-0.21932,-0.230359,-0.20828,3646
 entry_raters_bucket,<35,change_36,-0.377134,-0.391311,-0.362957,3653
+popularity,rest,change_6,-0.169928,-0.176613,-0.163242,6220
 popularity,rest,change_12,-0.252816,-0.260974,-0.244658,6226
 popularity,rest,change_36,-0.41369,-0.424326,-0.403054,6233
+popularity,top 10% by raters_m36,change_6,-0.114135,-0.143959,-0.0843121,694
 popularity,top 10% by raters_m36,change_12,-0.169899,-0.205648,-0.134151,694
 popularity,top 10% by raters_m36,change_36,-0.289395,-0.330897,-0.247893,694

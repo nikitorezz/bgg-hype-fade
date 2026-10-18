@@ -8,9 +8,11 @@ import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
 
+from bgg import plots
 from bgg.analysis.data import Inputs, main_summary
 from bgg.analysis.io import entry, md_table, results_dir, save_fragment, write_table
 from bgg.analysis.stats import mean_ci
+from bgg.analysis.titles import figure_titles
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +40,52 @@ def load_kaggle(cfg) -> pd.DataFrame | None:
     if df["game_id"].duplicated().any():
         raise ValueError("games.csv has duplicate ids")
     return df
+
+
+def _kickstarter_bands(cfg, inp: Inputs, d: pd.DataFrame) -> dict[str, dict]:
+    """Starting-rating comparison and within-band change gap (Kickstarted minus not); Fig 10."""
+    kc = inp.acfg["kickstarter"]
+    z = inp.z
+    keys: dict[str, dict] = {}
+    for flag, name in ((1, "ks_avg_m0"), (0, "nonks_avg_m0")):
+        r = mean_ci(d.loc[d["kickstarted"] == flag, "avg_m0"], z)
+        keys[name] = entry(r["mean"], "model_q3",
+                           f"mean starting average, Kickstarted = {flag} (Q3 sample)",
+                           r["ci_low"], r["ci_high"], r["n"])
+    raw = {"ks": d.loc[d["kickstarted"] == 1, "change_36"].mean(),
+           "other": d.loc[d["kickstarted"] == 0, "change_36"].mean()}  # full Q3 sample
+    edges = np.arange(kc["band_start"], kc["band_end"] + 1e-9, kc["band_width"])
+    d = d.assign(band=pd.cut(d["avg_m0"], edges, right=False)).dropna(subset=["band"])
+    rows = []
+    for (band, flag), g in d.groupby(["band", "kickstarted"], observed=True):
+        r = mean_ci(g["change_36"], z)
+        rows.append({"kickstarted": int(flag), "band_low": band.left, "band_high": band.right,
+                     "band_mid": (band.left + band.right) / 2, "mean": r["mean"], "se": r["se"],
+                     "ci_low": r["ci_low"], "ci_high": r["ci_high"], "n": r["n"]})
+    bands = pd.DataFrame(rows)
+    write_table(cfg, bands, "kickstarter_by_band")
+    wide = bands.pivot(index="band_low", columns="kickstarted", values=["mean", "se", "n"])
+    ok = wide.dropna()
+    gaps = ok[("mean", 1)] - ok[("mean", 0)]
+    size = ok[("n", 1)] + ok[("n", 0)]
+    w = size / size.sum()
+    var = ok[("se", 1)] ** 2 + ok[("se", 0)] ** 2
+    gap = float((w * gaps).sum())
+    se = float(np.sqrt((w ** 2 * var).sum()))
+    keys["ks_gap_within_bands"] = entry(
+        gap, "kickstarter_by_band", "mean of (Kickstarted - other) change_36 across 0.5-wide "
+        "starting-average bands, weighted by band size", gap - z * se, gap + z * se,
+        int(size.sum()))
+    big = ok[(ok[("n", 1)] >= kc["min_band_n"]) & (ok[("n", 0)] >= kc["min_band_n"])]
+    bg = big[("mean", 1)] - big[("mean", 0)]
+    keys["ks_gap_band_min"] = entry(bg.min(), "kickstarter_by_band",
+                                    f"smallest per-band gap among bands with >= {kc['min_band_n']} "
+                                    "games in each group")
+    keys["ks_gap_band_max"] = entry(bg.max(), "kickstarter_by_band",
+                                    "largest per-band gap (same bands)")
+    fig = plots.add_titles(plots.fig10_kickstarter(bands, raw), *figure_titles(cfg, "fig10", keys))
+    plots.save_figure(fig, "fig10_kickstarter", cfg.path("figures_dir"))
+    return keys
 
 
 def run_crowdfunding(cfg, inp: Inputs | None = None) -> None:
@@ -125,4 +173,5 @@ def run_crowdfunding(cfg, inp: Inputs | None = None) -> None:
             r["mean"], "q3_change_by_kickstarted",
             f"mean change_36 where Kickstarted = {int(r['kickstarted'])}", r["ci_low"],
             r["ci_high"], r["n"])
+    keys.update(_kickstarter_bands(cfg, inp, d))
     save_fragment(cfg, "crowdfunding", keys)

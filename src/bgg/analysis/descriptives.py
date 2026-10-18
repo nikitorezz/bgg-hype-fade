@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 
+import duckdb
 import numpy as np
 import pandas as pd
 
@@ -25,6 +26,7 @@ from bgg.analysis.stats import (
     percentile_ci,
     weighted_mean,
 )
+from bgg.analysis.titles import figure_titles
 
 log = logging.getLogger(__name__)
 
@@ -138,6 +140,7 @@ def segments_table(inp: Inputs) -> pd.DataFrame:
     cut = m["raters_m36"].quantile(1 - s["popular_top_share"])
     m["popularity"] = np.where(m["raters_m36"] >= cut,
                                f"top {int(100 * s['popular_top_share'])}% by raters_m36", "rest")
+    m["change_6"] = m["avg_m6"] - m["avg_m0"]
     m["hype_quartile_lbl"] = m["hype_quartile"].map(lambda v: f"Q{int(v)}" if v == v else None)
     rows = []
     for seg_type, col in [("hype_quartile", "hype_quartile_lbl"),
@@ -145,7 +148,7 @@ def segments_table(inp: Inputs) -> pd.DataFrame:
                           ("entry_raters_bucket", "entry_raters_bucket"),
                           ("popularity", "popularity")]:
         for val, g in m.dropna(subset=[col]).groupby(col):
-            for metric in ("change_12", "change_36"):
+            for metric in ("change_6", "change_12", "change_36"):
                 r = mean_ci(g[metric], inp.z)
                 rows.append({"segment_type": seg_type, "segment_value": val, "metric": metric,
                              "mean": r["mean"], "ci_low": r["ci_low"], "ci_high": r["ci_high"],
@@ -177,8 +180,66 @@ def table1(cfg, inp: Inputs) -> pd.DataFrame:
     return long
 
 
+def control_curve_by_k(inp: Inputs, series: pd.DataFrame) -> pd.DataFrame:
+    """Mean control-group change from each main-sample game's entry month to entry + k."""
+    look = control_lookup(series)
+    entry_months = main_summary(inp)["entry_month"]
+    rows = []
+    for k in range(inp.acfg["curve_k_max"] + 1):
+        drift = control_change(look, entry_months, 0, k)
+        rows.append({"k": k, **mean_ci(drift, inp.z)})
+    return pd.DataFrame(rows)
+
+
+def speed_table(inp: Inputs) -> pd.DataFrame:
+    """Per hype quartile: change by the two speed months, rater growth, entry-batch share, gap."""
+    first, last = inp.acfg["speed"]["months"]
+    w = inp.acfg["gap"]["window"]
+    m = main_summary(inp)
+    m[f"change_{first}"] = m[f"avg_m{first}"] - m["avg_m0"]
+    m["growth"] = m[f"raters_m{first}"].astype(float) / m["raters_m0"].astype(float)
+    m["entry_share"] = m["raters_m0"].astype(float) / m[f"raters_m{last}"].astype(float)
+    p = main_panel(inp)
+    p = p[(p["k"] == last) & p[f"new_avg_ok_{w}"]].copy()
+    p["gap"] = p[f"new_avg_{w}"] - p["avg_rating"]
+    p = p.merge(m[["game_id", "hype_quartile"]], on="game_id")
+    rows = []
+    for q, g in m.dropna(subset=["hype_quartile"]).groupby("hype_quartile"):
+        row: dict = {"hype_quartile": int(q), "n": len(g)}
+        for k in (first, last):
+            r = mean_ci(g[f"change_{k}"], inp.z)
+            row.update({f"change_{k}": r["mean"], f"change_{k}_ci_low": r["ci_low"],
+                        f"change_{k}_ci_high": r["ci_high"]})
+        row.update({"growth_mean": g["growth"].mean(), "growth_median": g["growth"].median(),
+                    "entry_share_median": g["entry_share"].median()})
+        gp = mean_ci(p.loc[p["hype_quartile"] == q, "gap"], inp.z)
+        row.update({f"gap_k{last}": gp["mean"], f"gap_k{last}_ci_low": gp["ci_low"],
+                    f"gap_k{last}_ci_high": gp["ci_high"], f"gap_k{last}_n": gp["n"]})
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def rank_numbers(cfg, inp: Inputs) -> dict[str, float]:
+    """Share of games whose rank improved by month 36; median average near rank 100 vs 1000."""
+    m = main_summary(inp).dropna(subset=["rank_m0", "rank_m36"])
+    snap = (cfg.path("interim_dir") / "snapshots_monthly.parquet").as_posix()
+    rc = inp.acfg["rank_compare"]
+    end = cfg.end_month
+    out = {"share_improved": float((m["rank_m36"] < m["rank_m0"]).mean()), "n_rank": len(m)}
+    for name, (lo, hi) in (("top", rc["top_ranks"]), ("low", rc["low_ranks"])):
+        out[name] = float(duckdb.sql(
+            f"SELECT median(avg_rating) FROM '{snap}' WHERE snap_month = DATE '{end}' "
+            f"AND rank BETWEEN {int(lo)} AND {int(hi)}").fetchone()[0])
+    return out
+
+
+def _titled(cfg, fig, fig_id: str, keys: dict[str, dict]):
+    title, subtitle = figure_titles(cfg, fig_id, keys)
+    return plots.add_titles(fig, title, subtitle)
+
+
 def run_descriptives(cfg, inp: Inputs | None = None) -> None:
-    """Build Figs 1-6, Table 1, all descriptive tables and the descriptive key numbers."""
+    """Build Figs 1-6 and 9, Table 1, all descriptive tables and the descriptive key numbers."""
     from bgg.analysis.data import load_inputs
     inp = inp or load_inputs(cfg)
     fig_dir, z = cfg.path("figures_dir"), inp.z
@@ -186,12 +247,10 @@ def run_descriptives(cfg, inp: Inputs | None = None) -> None:
     m, b = main_summary(inp), balanced_summary(inp)
     series, ctrl_ids = control_series(cfg)
 
-    # --- Fig 1 -----------------------------------------------------------------------------
+    # --- numbers used in titles first (figures are titled from key numbers) ----------------
     curve = curve_overall(inp)
     write_table(cfg, curve, "curve_overall")
     share = share_of_decline(inp, 12, 36)
-    plots.save_figure(plots.fig01_rating_change(curve, share), "fig01_rating_change_by_age",
-                      fig_dir)
     keys["n_main_sample"] = entry(len(m), "game_summary", "in_main_sample AND observed_m36",
                                   n=len(m))
     keys["n_balanced_sample"] = entry(len(b), "game_summary",
@@ -219,27 +278,38 @@ def run_descriptives(cfg, inp: Inputs | None = None) -> None:
     keys["change_36_rater_weighted"] = entry(
         weighted_mean(c36, m["raters_m36"]), "game_summary (main)",
         "mean change_36 weighted by raters at month 36", n=len(m))
+    keys["examples_min_raters"] = entry(inp.acfg["examples"]["min_raters_m36"], "config",
+                                        "minimum raters at month 36 for the example games")
+
+    # --- Fig 1 + social card ---------------------------------------------------------------
+    plots.save_figure(_titled(cfg, plots.fig01_rating_change(curve, share), "fig01", keys),
+                      "fig01_rating_change_by_age", fig_dir)
+    title, _ = figure_titles(cfg, "fig01", keys)
+    card = plots.social_card(curve, title, tuple(inp.acfg["social_card_px"]))
+    with plots.plt.rc_context({"savefig.bbox": "standard"}):  # keep the exact pixel size
+        card.savefig(fig_dir / "social_card.png", dpi=100)
+    plots.plt.close(card)
 
     # --- Fig 2 -----------------------------------------------------------------------------
     gap = gap_table(inp)
     write_table(cfg, gap, "gap_new_vs_displayed")
-    plots.save_figure(plots.fig02_gap(gap), "fig02_new_vs_displayed_gap", fig_dir)
     for k in inp.acfg["gap"]["ks"]:
         r = gap[gap["k"] == k].iloc[0]
         keys[f"gap_k{k}"] = entry(r["mean"], "gap_new_vs_displayed",
                                   f"mean of (new_avg_3 - avg_rating) at k={k}, usable rows, equal "
                                   "weight per row", r["ci_low"], r["ci_high"], r["n"])
+    plots.save_figure(_titled(cfg, plots.fig02_gap(gap), "fig02", keys),
+                      "fig02_new_vs_displayed_gap", fig_dir)
 
     # --- Fig 3 -----------------------------------------------------------------------------
     by_year = curve_by_entry_year(inp)
     write_table(cfg, by_year, "curve_by_entry_year")
     write_table(cfg, series, "control_series")
+    ccurve = control_curve_by_k(inp, series)
+    write_table(cfg, ccurve, "control_curve_by_age")
     gm, adj = control_adjusted(inp, series)
     write_table(cfg, adj, "control_adjusted_change36")
     a_all = adj[adj["group"] == "all"].iloc[0]
-    plots.save_figure(plots.fig03_cohorts_control(
-        by_year, series, {"raw": a_all["change_36"], "drift": a_all["control_drift"],
-                          "adjusted": a_all["adj_mean"]}), "fig03_cohorts_and_control", fig_dir)
     keys["control_drift_36"] = entry(a_all["control_drift"], "control_adjusted_change36",
                                      "mean control-group change over each main-sample game's own "
                                      "36-month window", n=a_all["n"])
@@ -250,30 +320,81 @@ def run_descriptives(cfg, inp: Inputs | None = None) -> None:
     keys["control_change_full_period"] = entry(
         series["mean_avg"].iloc[-1] - series["mean_avg"].iloc[0], "control_series",
         "control-group mean average, last month minus 2016-10", n=len(ctrl_ids))
+    plots.save_figure(_titled(cfg, plots.fig03_cohorts_control(
+        by_year, ccurve, series, {"raw": a_all["change_36"], "drift": a_all["control_drift"],
+                                  "adjusted": a_all["adj_mean"]}), "fig03", keys),
+        "fig03_cohorts_and_control", fig_dir)
 
     # --- Fig 4 -----------------------------------------------------------------------------
     dec = decile_table(inp)
     write_table(cfg, dec, "change36_by_avg0_decile")
-    plots.save_figure(plots.fig04_distribution(c36, dec, p_decl, c36.median()),
-                      "fig04_change_distribution", fig_dir)
+    plots.save_figure(_titled(cfg, plots.fig04_distribution(
+        c36, dec, p_decl, c36.median(), tuple(inp.acfg["hist"]["x_range"])), "fig04", keys),
+        "fig04_change_distribution", fig_dir)
 
     # --- Fig 5 -----------------------------------------------------------------------------
     ex = examples(inp)
     write_table(cfg, ex, "examples")
-    plots.save_figure(plots.fig05_examples(ex), "fig05_examples", fig_dir)
+    plots.save_figure(_titled(cfg, plots.fig05_examples(ex), "fig05", keys), "fig05_examples",
+                      fig_dir)
 
     # --- Step 2: segments + Fig 6 ----------------------------------------------------------
     seg = segments_table(inp)
     write_table(cfg, seg, "segments")
     hq = curve_by_hype_quartile(inp)
     write_table(cfg, hq, "curve_by_hype_quartile")
-    plots.save_figure(plots.fig06_hype_quartiles(hq), "fig06_by_hype_quartile", fig_dir)
+    plots.save_figure(_titled(cfg, plots.fig06_hype_quartiles(hq), "fig06", keys),
+                      "fig06_by_hype_quartile", fig_dir)
     for q in range(1, 5):
         r = seg[(seg["segment_type"] == "hype_quartile") & (seg["segment_value"] == f"Q{q}")
                 & (seg["metric"] == "change_36")].iloc[0]
         keys[f"change_36_hype_q{q}"] = entry(r["mean"], "segments",
                                              f"mean change_36, hype quartile {q} (1 = least hyped)",
                                              r["ci_low"], r["ci_high"], r["n"])
+
+    # --- Fig 9: speed, not size ------------------------------------------------------------
+    first, last = inp.acfg["speed"]["months"]
+    speed = speed_table(inp)
+    write_table(cfg, speed, "speed_not_size")
+    for _, r in speed.iterrows():
+        q = int(r["hype_quartile"])
+        keys[f"change_{first}_by_hype_q{q}"] = entry(
+            r[f"change_{first}"], "speed_not_size",
+            f"mean avg_m{first} - avg_m0, hype quartile {q}", r[f"change_{first}_ci_low"],
+            r[f"change_{first}_ci_high"], r["n"])
+        keys[f"rater_growth_m{first}_by_hype_q{q}"] = entry(
+            r["growth_mean"], "speed_not_size",
+            f"mean of raters_m{first} / raters_m0, hype quartile {q}", n=r["n"])
+        keys[f"rater_growth_median_m{first}_by_hype_q{q}"] = entry(
+            r["growth_median"], "speed_not_size",
+            f"median of raters_m{first} / raters_m0, hype quartile {q}", n=r["n"])
+        keys[f"entry_rater_share_m{last}_by_hype_q{q}"] = entry(
+            r["entry_share_median"], "speed_not_size",
+            f"median of raters_m0 / raters_m{last}: share of month-{last} raters who were the "
+            f"entry batch, hype quartile {q}", n=r["n"])
+        keys[f"gap_k{last}_by_hype_q{q}"] = entry(
+            r[f"gap_k{last}"], "speed_not_size",
+            f"mean new-rater minus displayed average at k={last}, hype quartile {q}",
+            r[f"gap_k{last}_ci_low"], r[f"gap_k{last}_ci_high"], r[f"gap_k{last}_n"])
+    plots.save_figure(_titled(cfg, plots.fig09_speed_not_size(speed, (first, last)), "fig09",
+                              keys), "fig09_speed_not_size", fig_dir)
+
+    # --- rank facts ------------------------------------------------------------------------
+    rk = rank_numbers(cfg, inp)
+    keys["share_rank_improved_36"] = entry(
+        rk["share_improved"], "game_summary (main)",
+        "share of main-sample games with rank_m36 < rank_m0 (rank improved)", n=rk["n_rank"])
+    keys["avg_rank100"] = entry(rk["top"], "snapshots_monthly",
+                                "median raw average of games ranked 90-110 in the end-month "
+                                "snapshot")
+    keys["avg_rank1000"] = entry(rk["low"], "snapshots_monthly",
+                                 "median raw average of games ranked 990-1010 in the end-month "
+                                 "snapshot")
+    keys["avg_rank100_vs_rank1000"] = entry(rk["top"] - rk["low"], "snapshots_monthly",
+                                            "avg_rank100 minus avg_rank1000")
+    keys["fade_share_of_rank_gap"] = entry(
+        abs(keys["change_36"]["value"]) / (rk["top"] - rk["low"]), "derived",
+        "|change_36| divided by the average gap between games ranked ~100 and ~1000")
 
     write_table(cfg, table1(cfg, inp), "table1_sample")
     save_fragment(cfg, "descriptives", keys)

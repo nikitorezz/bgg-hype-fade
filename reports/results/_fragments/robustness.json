@@ -192,33 +192,33 @@
     "definition": "Spec B hype coefficient, variant: 5 Entered with >= 50 raters"
   },
   "robust_6_control_adjusted_outcome_beta_36": {
-    "value": -0.3854237162368153,
-    "ci_low": -0.395888278244052,
-    "ci_high": -0.37495915422957865,
+    "value": -0.3854237162368149,
+    "ci_low": -0.39588827824405154,
+    "ci_high": -0.3749591542295782,
     "n": 6927,
     "source": "robustness",
     "definition": "event-study beta_36, variant: 6 Control-adjusted outcome"
   },
   "robust_6_control_adjusted_outcome_share_by_12": {
-    "value": 0.6153835590849792,
-    "ci_low": 0.6037018409286541,
-    "ci_high": 0.6258428286085834,
+    "value": 0.6153835590849794,
+    "ci_low": 0.6037018409286542,
+    "ci_high": 0.6258428286085833,
     "n": 6927,
     "source": "robustness",
     "definition": "beta_12 / beta_36, variant: 6 Control-adjusted outcome"
   },
   "robust_6_control_adjusted_outcome_hype_a": {
-    "value": 0.04906620972962917,
-    "ci_low": 0.0324778515967403,
-    "ci_high": 0.06565456786251804,
+    "value": 0.04906620972962915,
+    "ci_low": 0.032477851596740284,
+    "ci_high": 0.06565456786251801,
     "n": 6914,
     "source": "robustness",
     "definition": "Spec A hype coefficient, variant: 6 Control-adjusted outcome"
   },
   "robust_6_control_adjusted_outcome_hype_b": {
-    "value": -0.004369229199983769,
-    "ci_low": -0.029963584998801283,
-    "ci_high": 0.021225126598833747,
+    "value": -0.004369229199983775,
+    "ci_low": -0.02996358499880129,
+    "ci_high": 0.02122512659883374,
     "n": 6914,
     "source": "robustness",
     "definition": "Spec B hype coefficient, variant: 6 Control-adjusted outcome"

@@ -25,6 +25,12 @@ REQUIRED = (
      "beta_share_by_12", "q4_rule_month", "q3_status"]
     + [f"spec_{s}_hype{suffix}" for s in "abcd" for suffix in ("", "_per_sd", "_p")]
     + [f"change_36_hype_q{q}" for q in range(1, 5)]
+    + [f"{base}_by_hype_q{q}" for base in ("change_6", "rater_growth_m6",
+                                            "rater_growth_median_m6", "entry_rater_share_m36",
+                                            "gap_k36") for q in range(1, 5)]
+    + ["share_rank_improved_36", "avg_rank100", "avg_rank1000", "avg_rank100_vs_rank1000",
+       "fade_share_of_rank_gap", "ks_avg_m0", "nonks_avg_m0", "ks_gap_within_bands"]
+    + [f"q4_adj_coef_{c}_k{k}" for k in (0, 3, 6, 12) for c in ("const", "avg_k", "ln_raters_k")]
     + [f"q4_mae_k{k}" for k in (0, 3, 6, 12)]
     + [f"q4_within_025_k{k}" for k in (0, 3, 6, 12)]
     + [f"q4_test_{kind}_{m}_k{k}" for kind in ("raw", "adj") for m in ("mae", "within")
