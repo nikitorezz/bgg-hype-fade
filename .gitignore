@@ -11,3 +11,5 @@ __pycache__/
 *.egg-info/
 # dashboard data extract: git-ignored until the data-publication decision (D0)
 app/data/
+# built static page (5 MB, contains the Plotly bundle); rebuild with `bgg export-static`
+reports/site/

@@ -17,7 +17,7 @@ import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from lib import charts, loaders, logic  # noqa: E402
+from lib import charts, loaders, logic, text  # noqa: E402
 
 DEFAULT_GAME_ID = 342942  # Ark Nova (a spot-check game from the pipeline QC)
 REPO_URL = os.environ.get("BGG_REPO_URL", "")
@@ -40,22 +40,14 @@ def show(fig) -> None:
     st.plotly_chart(fig, width="stretch", config=PLOT_CONFIG)
 
 
-def signed(x: float, digits: int = 2) -> str:
-    return f"{x:+.{digits}f}".replace("-", "−")
-
-
 # ----------------------------------------------------------------------------------------------
 def section_overview(n: dict, mode: str) -> None:
     kn = logic.kn
     cfg = loaders.app_config()
     st.subheader("Does the hype fade?")
-    st.markdown(
-        f"**Launch ratings oversell.** On BoardGameGeek the typical new game loses "
-        f"**{abs(kn(n, 'change_36')):.2f} points** over three years, most of it in year one, and "
-        "new raters still rate it lower at the end. Hype doesn't decide how far a game falls; it "
-        "decides how fast the number catches up.")
+    st.markdown(text.headline(n))
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("3-year change", signed(kn(n, "change_36")),
+    c1.metric("3-year change", text.signed(kn(n, "change_36")),
               help=f"95% CI {logic.ci_text(n, 'change_36', 2)}; n = {n['change_36']['n']:,}")
     c1.caption("Average fall in a new game's displayed rating")
     c2.metric("Fall happening in year one", f"{100 * kn(n, 'share_of_decline_by_12'):.0f}%",
@@ -92,13 +84,8 @@ def section_overview(n: dict, mode: str) -> None:
 
 
 def section_gap(n: dict) -> None:
-    kn = logic.kn
     st.subheader("What new raters say vs what is displayed")
-    st.markdown(
-        f"The displayed rating is a running average, so it still carries the enthusiasm of the "
-        f"launch crowd. Looking only at the ratings added recently, new raters score games "
-        f"**{abs(kn(n, 'gap_k3')):.2f} below the displayed average at month 3 and "
-        f"{abs(kn(n, 'gap_k36')):.2f} below at month 36**. The decline isn't finished.")
+    st.markdown(text.gap_text(n))
     show(charts.fig_gap(loaders.table("gap_new_vs_displayed")))
     st.caption("Lower panel: share of game-months where the new-rater average can be backed out "
                "reliably. It is available for roughly half to two-thirds of game-months, more "
@@ -115,23 +102,12 @@ def section_gap(n: dict) -> None:
 
 
 def section_hype(n: dict) -> None:
-    kn = logic.kn
     cfg = loaders.app_config()
     first, last = cfg["speed_months"]
     st.subheader("Hype: speed, not size")
     speed = loaders.table("speed_not_size")
     show(charts.fig_speed(speed, (first, last)))
-    q1, q4 = speed.iloc[0], speed.iloc[-1]
-    st.info(
-        f"**Takeaway.** Hype changes how fast ratings fall, not how far. By month {first}, the "
-        f"most-hyped quarter of games has lost {abs(q4[f'change_{first}']):.2f} points and the "
-        f"least-hyped quarter {abs(q1[f'change_{first}']):.2f}. By month {last} they are close "
-        f"({abs(q4[f'change_{last}']):.2f} vs {abs(q1[f'change_{last}']):.2f}). A hyped game "
-        f"gains a median {q4['growth_median']:.0f}x its launch raters in {first} months, which "
-        f"dilutes the early enthusiasts quickly; for a quiet release the launch crowd is still "
-        f"{100 * q1['entry_share_median']:.0f}% of raters at month {last}, and new raters rate it "
-        f"{abs(q1[f'gap_k{last}']):.2f} below the displayed number. Quiet games haven't faded "
-        "less; they haven't finished fading.")
+    st.info(text.hype_takeaway(speed, (first, last)))
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("**Change curves by hype quartile**")
@@ -141,23 +117,14 @@ def section_hype(n: dict) -> None:
     with col2:
         st.markdown("**Does hype predict the size of the fall? (H2: negative sign)**")
         show(charts.fig_specs(n))
-        st.caption(
-            f"Spec A (controls for starting rating and size): {signed(kn(n, 'spec_a_hype'), 3)}; "
-            f"Spec B (change after month 6): {signed(kn(n, 'spec_b_hype'), 3)}. No spec supports "
-            "a bigger fall for more-hyped games. Observational data: patterns, not causal effects.")
+        st.caption(text.specs_caption(n))
     st.markdown("**Kickstarted games fall further, even from the same starting rating**")
     bands = loaders.table("kickstarter_by_band")
     show(charts.fig_kickstarter(bands))
-    st.caption(
-        f"Kickstarted games start higher ({kn(n, 'ks_avg_m0'):.2f} vs {kn(n, 'nonks_avg_m0'):.2f}) "
-        f"and, within the same starting band, fall {abs(kn(n, 'ks_gap_within_bands')):.2f} more on "
-        "average. Descriptive only: the flag comes from a January 2022 snapshot and covers about "
-        f"{100 * kn(n, 'q3_share_kickstarted'):.0f}% of games, so it is probably broader than "
-        "\"launched via Kickstarter\".")
+    st.caption(text.kickstarter_caption(n))
 
 
 def section_trust(n: dict, mode: str) -> None:
-    kn = logic.kn
     cfg = loaders.app_config()
     st.subheader("When can you trust a new game's rating?")
     if mode == "full":
@@ -194,14 +161,7 @@ def section_trust(n: dict, mode: str) -> None:
     st.markdown("#### A platform could show an adjusted launch rating")
     bars = logic.adjusted_vs_raw(loaders.table("q4_adjusted_predictor"), cfg["rule_tolerance"])
     show(charts.fig_adjusted(bars, cfg["rule_tolerance"]))
-    tr, te = cfg["train_entry_years"], cfg["test_entry_years"]
-    st.caption(
-        f"Trained on games entering {tr[0]}-{tr[1]}, tested on {te[0]}-{te[1]}. At entry the "
-        f"adjusted rating is within ±{cfg['rule_tolerance']} of the eventual rating for "
-        f"{100 * kn(n, 'q4_test_adj_within_k0'):.0f}% of test games (displayed rating: "
-        f"{100 * kn(n, 'q4_test_raw_within_k0'):.0f}%) and cuts the mean error from "
-        f"{kn(n, 'q4_test_raw_mae_k0'):.2f} to {kn(n, 'q4_test_adj_mae_k0'):.2f}. It works mostly "
-        "by shrinking high launch ratings toward the typical level.")
+    st.caption(text.adjusted_caption(n, cfg))
 
 
 def _lookup_other(query: str) -> None:
@@ -243,7 +203,7 @@ def section_lookup(n: dict) -> None:
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Entered the ranking", pd.Timestamp(row["entry_month"]).strftime("%b %Y"))
     c2.metric(f"Rating: start to month {int(last['k'])}", f"{start:.2f} → {now:.2f}",
-              signed(now - start))
+              text.signed(now - start))
     c3.metric(f"Fell further than (of {int(row['entry_year'])} launches)",
               f"{100 * frac:.0f}%" if frac == frac else "n/a",
               help=f"Share of games launched in {int(row['entry_year'])} whose rating fell by "

@@ -18,6 +18,16 @@ uv run ruff check .
 Outputs: `data/processed/{panel,game_summary}.parquet`, `reports/qc/qc_report.md`,
 `reports/tables/*.csv`, `reports/figures/qc_spotcheck_trajectories.png`. `bgg qc` exits non-zero on any FAIL.
 
+### Dashboard
+
+```bash
+uv run bgg dashboard-data        # build app/data (self-contained extract; --aggregates-only for a public-safe version)
+uv run streamlit run app/streamlit_app.py     # interactive dashboard; APP_MODE=aggregates hides game-level views
+uv run bgg export-static         # reports/site/index.html: one offline page, no server needed
+```
+
+Deployment notes and the data-publication question are in `docs/deploy.md`.
+
 In mainland China set `HTTPS_PROXY` or use `uv run bgg download --backend git`.
 All parameters live in `config.yaml`; data facts and traps are in `docs/data_notes.md`.
 
