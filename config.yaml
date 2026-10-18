@@ -54,3 +54,26 @@ summary:
   milestones: [0, 3, 6, 12, 24, 36]
   hype_month: 6
   hype_quartile_partition: entry_year
+
+# Expected values for the QC stage (docs/data_notes.md sections 3, 5, 8). Added after the pipeline spec.
+qc:
+  expected_substituted_months: [2024-01-01, 2024-09-01]
+  tolerance_mean_change: 0.03
+  expected_mean_change: {12: -0.238, 24: -0.332, 36: -0.400}   # all new releases, from k=0
+  pilot_games_with_missing_month: 442
+  # New releases by entry year. 2021 is 977, not the pilot's 978: the pilot counted Knucklebones
+  # (id 11726, Year = 3000 = junk) as a new release; the junk-year rule correctly excludes it.
+  expected_new_releases: {2017: 1033, 2018: 1045, 2019: 1068, 2020: 921, 2021: 977, 2022: 1055, 2023: 1213}
+  # Pilot observed-at-m36 counts (naive first-of-month files). Lower values would be a regression.
+  pilot_observed_m36: {2017: 1028, 2018: 1039, 2019: 1062, 2020: 910, 2021: 965, 2022: 1047}
+  spot_checks:   # data_notes section 8; avg tolerance 0.01, raters exact
+    - {id: 174430, name: Gloomhaven, entry: 2016-10-01, pub_year: 2016, in_cohort: false, avg_k0: 8.67, raters_k0: 58, raters_k6: 2516, avg_k12: 9.01, avg_k36: 8.87, raters_k36: 28171}
+    - {id: 233078, name: Twilight Imperium (4th Ed.), entry: 2017-09-01, pub_year: 2017, in_cohort: true, avg_k0: 8.77, raters_k0: 82, raters_k6: 2098, avg_k12: 8.80, avg_k36: 8.69, raters_k36: 11607}
+    - {id: 224517, name: "Brass: Birmingham", entry: 2017-12-01, pub_year: 2018, in_cohort: true, avg_k0: 8.73, raters_k0: 33, raters_k6: 65, avg_k12: 8.67, avg_k36: 8.65, raters_k36: 17047}
+    - {id: 266192, name: Wingspan, entry: 2019-01-01, pub_year: 2019, in_cohort: true, avg_k0: 8.08, raters_k0: 32, raters_k6: 9083, avg_k12: 8.09, avg_k36: 8.10, raters_k36: 55431}
+    - {id: 295770, name: Frosthaven, entry: 2020-01-01, pub_year: 2021, in_cohort: true, avg_k0: 7.09, raters_k0: 48, raters_k6: 305, avg_k12: 7.18, avg_k36: 7.75, raters_k36: 1052}
+    - {id: 291457, name: "Gloomhaven: Jaws of the Lion", entry: 2020-07-01, pub_year: 2020, in_cohort: true, avg_k0: 9.22, raters_k0: 438, raters_k6: 5822, avg_k12: 8.78, avg_k36: 8.50, raters_k36: 29202}
+    - {id: 312484, name: Lost Ruins of Arnak, entry: 2020-10-01, pub_year: 2020, in_cohort: true, avg_k0: 8.16, raters_k0: 39, raters_k6: 3665, avg_k12: 8.11, avg_k36: 8.08, raters_k36: 37788}
+    - {id: 295947, name: Cascadia, entry: 2020-10-01, pub_year: 2021, in_cohort: true, avg_k0: 7.95, raters_k0: 66, raters_k6: 228, avg_k12: 8.09, avg_k36: 7.97, raters_k36: 29574}
+    - {id: 316554, name: "Dune: Imperium", entry: 2020-12-01, pub_year: 2020, in_cohort: true, avg_k0: 8.04, raters_k0: 71, raters_k6: 4877, avg_k12: 8.31, avg_k36: 8.42, raters_k36: 39421}
+    - {id: 342942, name: Ark Nova, entry: 2021-11-01, pub_year: 2021, in_cohort: true, avg_k0: 8.50, raters_k0: 252, raters_k6: 6383, avg_k12: 8.60, avg_k36: 8.53, raters_k36: 46693}

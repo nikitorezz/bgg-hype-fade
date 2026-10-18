@@ -12,6 +12,9 @@ uv run pytest
 uv run ruff check .
 ```
 
+Outputs: `data/processed/{panel,game_summary}.parquet`, `reports/qc/qc_report.md`,
+`reports/tables/*.csv`, `reports/figures/qc_spotcheck_trajectories.png`. `bgg qc` exits non-zero on any FAIL.
+
 In mainland China set `HTTPS_PROXY` or use `uv run bgg download --backend git`.
 All parameters live in `config.yaml`; data facts and traps are in `docs/data_notes.md`.
 

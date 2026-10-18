@@ -125,3 +125,17 @@ Not every hit declines (Dune: Imperium and Frosthaven rose), which makes for goo
 ## 9. Licence
 
 The repository has **no LICENSE file** (checked 2026-10-18), so by default no reuse rights are granted. Until that's resolved: don't commit raw or processed data to a public repo. Ship the download script, cite the repository and BoardGameGeek, and use the data non-commercially. Whether derived aggregates may be published (for the dashboard) is an **open decision**; opening an issue to ask the repo owner is an option.
+
+---
+
+## 10. Findings from the full pipeline run *(2026-10-18, truncation fix applied)*
+
+- **Download:** 121 files selected, 2,611,791 data rows, **541 MB** (the "~700 MB" above was an over-estimate). Took ~2 min over plain http from mainland China, no proxy needed. Substitutions are exactly 2024-01-05 and 2024-09-03; every other month is day 1 except 2016-10-12. Raw line count equals DuckDB's row count, so no `Name` contains an embedded newline.
+- **First month:** the archive's first file is 2016-10-12, outside the `max_candidate_day` = 10 window. The selection falls back to the earliest file of a month when its day window is empty (logged as a WARNING, status `ok`).
+- **CSV sniffer trap:** DuckDB's auto-detection fails on names such as `"Tarleton's Quarter!"` (written as `"""Tarleton's Quarter!"""`) and reports an unterminated quote. `sql/01_load.sql` therefore sets the dialect explicitly (`auto_detect = false`, comma, `"` quote and escape).
+- **Dedup:** 721 duplicate rows removed in 16 files, identical to the pilot. Ties after `n_raters DESC, rank ASC` are broken by further keys purely for determinism.
+- **Junk publication years at entry:** `Year = 3000` is a placeholder for ancient games, e.g. *Knucklebones* (id 11726, entered 2021-10). A naive "pub year ≥ entry year − 1" rule would call it a 2021 new release; the pilot did, which is why the proposal's 2021 count is 978. With the junk-year cleaning rule from config the correct count is **977** (unknown/junk pub year among later entrants is 288 = 287 zeros + this one; total new releases 11,020). Left-censored (12,759) and old games (7,609) match the pilot.
+- **Cohort sizes after the fix** (new releases / observed at m36): 2017 1,033 / 1,028 · 2018 1,045 / 1,039 · 2019 1,068 / 1,062 · 2020 921 / 910 · 2021 977 / 972 · 2022 1,055 / 1,047. Observed-at-m36 is not below the pilot anywhere. The proposal's 1,040 (2018), 911 (2020) and 973 (2021) are one game higher than ours; the 2021 gap is Knucklebones, the other two were not investigated further (±1).
+- **Missing months:** 286 new releases miss at least one month in k = 0…36 (pilot 442). 208 have an internal gap, 79 left the ranking early (one game can be in both).
+- **Panel:** 335,973 rows, 11,020 games. Mean change in `Average` from k=0: −0.046 (k=1), −0.160 (6), −0.237 (12), −0.332 (24), −0.401 (36); matches §8. Raters decreased in 4,766 of 324,733 one-month steps (1.47%); unchanged in 14.0%.
+- **Usable `new_avg` share (Δ ≥ 10 raters AND error bound ≤ 0.5 AND in [1, 10]), 1-month / 3-month window:** k=3 37% / 69%, k=12 33% / 59%, k=36 14% / 49%. Much lower than §6's err-only figures because the Δ ≥ 10 rule also binds early, when games gain few raters per month.

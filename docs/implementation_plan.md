@@ -296,3 +296,4 @@ Suggested pacing from 19 Oct: M1–M2 by early Nov, M3–M4 by mid/late Nov, M6�
 |---|---|---|
 | 2026-10-18 | Plan | Plan created from proposal |
 | 2026-10-18 | Pilot + handoff | Monthly files checked in DuckDB; data traps documented (`docs/data_notes.md`); Claude Code spec for steps 1–5 written (`docs/handoff/`) |
+| 2026-10-18 | Pipeline steps 1-5 | `uv run bgg all` runs download, load, cohorts, panel and qc end to end and is idempotent. 121 months, 2.61M rows, 11,020 new releases, 335,973 panel rows. QC: 36 PASS, 0 WARN, 0 FAIL (+7 INFO). Deviations from spec: first-month window fallback; 2021 cohort is 977, not 978 (junk pub year 3000, see data_notes section 10). |
