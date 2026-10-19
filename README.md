@@ -2,7 +2,7 @@
 
 **How board-game ratings change after launch: ten years of BoardGameGeek data, 6,927 new releases, three years each.**
 
-[![CI](https://github.com/nikitorezz/bgg-hype-fade/actions/workflows/ci.yml/badge.svg)](https://github.com/nikitorezz/bgg-hype-fade/actions/workflows/ci.yml) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-2167B0) ![Code licence: MIT](https://img.shields.io/badge/code%20licence-MIT-2167B0) ![Data: derived extract only](https://img.shields.io/badge/data-derived%20extract%20only-7A8494)
+[![CI](https://github.com/nikitorezz/bgg-hype-fade/actions/workflows/ci.yml/badge.svg)](https://github.com/nikitorezz/bgg-hype-fade/actions/workflows/ci.yml) ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-1F5AA6) ![Code licence: MIT](https://img.shields.io/badge/code%20licence-MIT-1F5AA6) ![Data: derived extract only](https://img.shields.io/badge/data-derived%20extract%20only-8B95A5)
 
 <p align="center"><img src="reports/figures/social_card.png" width="760" alt="New games lose 0.40 rating points in 3 years, 61% of it in year one"></p>
 

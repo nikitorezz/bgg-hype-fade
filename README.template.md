@@ -2,7 +2,7 @@
 
 **How board-game ratings change after launch: ten years of BoardGameGeek data, {{n_main_sample:,.0f}} new releases, three years each.**
 
-{{#if github_repo}}[![CI](https://github.com/{{@github_repo}}/actions/workflows/ci.yml/badge.svg)](https://github.com/{{@github_repo}}/actions/workflows/ci.yml) {{/if}}![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-2167B0) ![Code licence: MIT](https://img.shields.io/badge/code%20licence-MIT-2167B0) ![Data: derived extract only](https://img.shields.io/badge/data-derived%20extract%20only-7A8494)
+{{#if github_repo}}[![CI](https://github.com/{{@github_repo}}/actions/workflows/ci.yml/badge.svg)](https://github.com/{{@github_repo}}/actions/workflows/ci.yml) {{/if}}![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-1F5AA6) ![Code licence: MIT](https://img.shields.io/badge/code%20licence-MIT-1F5AA6) ![Data: derived extract only](https://img.shields.io/badge/data-derived%20extract%20only-8B95A5)
 
 <p align="center"><img src="reports/figures/social_card.png" width="760" alt="New games lose {{change_36|abs:.2f}} rating points in 3 years, {{share_of_decline_by_12|pct:.0f}}% of it in year one"></p>
 

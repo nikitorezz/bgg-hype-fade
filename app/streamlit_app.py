@@ -153,6 +153,7 @@ b, strong {font-weight: 600;}
 .trust-num {font-size: 3rem; font-weight: 600; line-height: 1; margin: .4rem 0 .5rem;
             font-variant-numeric: tabular-nums; color: #1F5AA6;}
 .site-foot {margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #E3E8EE; font-size: .82rem;
+            line-height: 1.5;
             color: #667085;}
 .site-foot a {color: #667085;}
 [data-baseweb="tab-list"] {gap: 1.4rem;}
@@ -207,7 +208,6 @@ def choose(key: str, label: str, options: list[str], default: str | None = None)
 
 def md(s: str) -> str:
     """**bold** / *italic* to HTML for use inside custom blocks."""
-    import re
     s = html.escape(s)
     s = re.sub(r"!!(.+?)!!", r'<b class="bad">\1</b>', s)
     s = re.sub(r"\+\+(.+?)\+\+", r'<b class="good">\1</b>', s)
@@ -325,7 +325,7 @@ def section_trust(n: dict, mode: str) -> None:
     chart_title("An adjusted launch rating gets there much sooner")
     bars = logic.adjusted_vs_raw(loaders.table("q4_adjusted_predictor"), cfg["rule_tolerance"])
     show(charts.fig_adjusted(bars, cfg["rule_tolerance"], compact=compact()))
-    small(text.adjusted_caption(n, cfg) + " Share of test games within "
+    small(text.adjusted_caption(n, cfg) + " Bars show the share of test games within "
           f"±{cfg['rule_tolerance']} of their 3-year rating.")
 
 
@@ -410,7 +410,7 @@ def _verdict(n: dict, row: pd.Series, k: int, change: float, rank_better: bool,
     if change < 0:
         p = logic.share_fallen_further(change, dist)
         msg = (f"By month {k} its rating fell **{fmt(abs(change), '.2f')}**, more than "
-               f"**{fmt(100 * (1 - p), '.0f')}%** of games launched in {year}.")
+               f"**{fmt(min(100 * p, 99), '.0f')}%** of games launched in {year}.")
         if rank_better:
             msg += (f" Its rank still improved, as it did for "
                     f"{fmt(100 * logic.kn(n, 'share_rank_improved_36'), '.0f')}% of games.")
@@ -522,7 +522,7 @@ def section_lookup(n: dict) -> None:
     tr = cfg["train_entry_years"]
     if tr[0] <= int(row["entry_year"]) <= tr[1]:
         small(f"The expected rating for {tr[0]}–{tr[1]} launches comes from a model fitted on "
-              "those same games, so it flatters the model slightly.")
+              "those same games, so it is slightly optimistic about the model's accuracy.")
     st.markdown("&nbsp;", unsafe_allow_html=True)
     query = st.text_input("Looking for an established game?", placeholder="e.g. Gloomhaven",
                           help="Games already ranked in October 2016 or published long before "
@@ -546,7 +546,8 @@ def section_method(n: dict) -> None:
         "average is kept only when its rounding error is small.\n\n"
         "**Models.** A game fixed-effects event study, robust cross-sectional regressions, "
         "game-level bootstrap intervals, an eight-variant robustness grid and an out-of-sample "
-        "predictive check.")
+        "predictive check. The Kickstarter comparison uses the \"Board Game Database from "
+        "BoardGameGeek\" (threnjen, Kaggle, CC BY-SA 3.0); only its group averages are shown.")
     qc = loaders.table("qc_results")["status"].value_counts()
     total = int(qc.get("PASS", 0) + qc.get("WARN", 0) + qc.get("FAIL", 0))
     st.markdown(f"**Quality checks.** {int(qc.get('PASS', 0))} of {total} automated checks pass.")
