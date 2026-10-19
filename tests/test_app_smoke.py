@@ -18,7 +18,7 @@ needs_data = pytest.mark.skipif(not (DATA / "key_numbers.json").exists(),
 
 
 def _run(mode: str, monkeypatch) -> AppTest:
-    monkeypatch.setenv("APP_MODE", mode)
+    monkeypatch.setenv("BGG_APP_MODE", mode)
     at = AppTest.from_file(SCRIPT, default_timeout=180)
     at.run()
     return at
@@ -103,7 +103,7 @@ def test_aggregates_mode_works_without_game_level_files(monkeypatch, tmp_path):
     for f in ("key_numbers.json", "app_config.json"):
         shutil.copyfile(DATA / f, public / f)
     monkeypatch.setenv("BGG_APP_DATA", str(public))
-    monkeypatch.setenv("APP_MODE", "full")  # must fall back to aggregates by itself
+    monkeypatch.setenv("BGG_APP_MODE", "full")  # must fall back to aggregates by itself
     import importlib
 
     from lib import loaders

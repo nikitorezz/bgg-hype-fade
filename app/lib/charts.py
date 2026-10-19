@@ -5,7 +5,8 @@ Design rules (kept deliberately few):
 - confidence bands only on single-series charts; multi-series charts show CIs on hover
 - lines are labelled at their right end instead of a legend wherever possible
 - ordered groups (launch year, hype quartile, decile) use one blue ramp, light to dark;
-  two-group splits use blue vs amber; "new raters" is plum; context lines are dashed grey
+  Kickstarter games use Kickstarter's green; "new raters" and falls are red, rises green;
+  context lines are dashed grey; text uses two colours only (ink and muted)
 Palette validated with the dataviz skill's validator (colour-blind separation and contrast).
 """
 
@@ -17,18 +18,21 @@ import plotly.graph_objects as go
 from lib.fmt import fmt
 
 # --- tokens ------------------------------------------------------------------------------------
-INK, INK_2, INK_3 = "#1D2533", "#4A5466", "#6B7585"
-GRID, BASELINE = "#E9EDF2", "#1D2533"
-BLUE, PLUM, AMBER, GREY = "#2167B0", "#B23F68", "#B3770A", "#7A8494"
-RAMP_LIGHT, RAMP_DARK = "#93B8E0", "#0D3462"
+# Two text colours (ink, muted); blue for data and structure; red = worse, green = better;
+# Kickstarter's own green marks Kickstarter games; amber is a rare second series.
+INK, INK_2, INK_3 = "#1B2430", "#667085", "#667085"
+GRID, BASELINE = "#E9EDF2", "#1B2430"
+BLUE, RED, GREEN, AMBER, GREY = "#1F5AA6", "#C62F2F", "#1E8A4C", "#C27803", "#8B95A5"
+KICKSTARTER = "#05CE78"
+RAMP_LIGHT, RAMP_DARK = "#A9C4E8", "#123A6B"
 FONT_FAMILY = "IBM Plex Sans, Segoe UI, Helvetica Neue, Arial, sans-serif"
 MILESTONES = (12, 24, 36)
 X_TITLE = "Months since entering the ranking"
 
 # kept for backwards compatibility with older imports
-RED, GREEN, SKY = PLUM, "#2E8B57", RAMP_LIGHT
-SEQ4 = ["#93B8E0", "#5A8FCB", "#2E66A8", "#0D3462"]
-CYCLE = [BLUE, AMBER, PLUM, GREY]
+SKY = RAMP_LIGHT
+SEQ4 = ["#A9C4E8", "#7796BE", "#446895", "#123A6B"]
+CYCLE = [BLUE, KICKSTARTER, RED, GREY]
 
 
 def _rgba(hex_color: str, alpha: float) -> str:
@@ -121,9 +125,9 @@ def _group_colors(groups: list[str], group_type: str) -> dict[str, str]:
     if group_type in ("hype_quartile", "start_decile", "launch_year"):
         return dict(zip(groups, ramp(len(groups)), strict=True))
     if group_type == "popularity":
-        return {g: (BLUE if "Top" in g else AMBER) for g in groups}
+        return {g: (BLUE if "Top" in g else GREY) for g in groups}
     if group_type == "kickstarted":
-        return {g: (AMBER if g == "Kickstarted" else BLUE) for g in groups}
+        return {g: (KICKSTARTER if g == "Kickstarted" else BLUE) for g in groups}
     return {g: BLUE for g in groups}
 
 
@@ -214,10 +218,10 @@ def fig_gap(gap: pd.DataFrame) -> go.Figure:
     fig.add_trace(go.Scatter(x=g["k"], y=g["ci_high"], mode="lines", line=dict(width=0),
                              hoverinfo="skip", showlegend=False))
     fig.add_trace(go.Scatter(x=g["k"], y=g["ci_low"], mode="lines", line=dict(width=0),
-                             fill="tonexty", fillcolor=_rgba(PLUM, 0.14), hoverinfo="skip",
+                             fill="tonexty", fillcolor=_rgba(RED, 0.14), hoverinfo="skip",
                              showlegend=False))
     fig.add_trace(go.Scatter(
-        x=g["k"], y=g["mean"], mode="lines", line=dict(color=PLUM, width=2.4),
+        x=g["k"], y=g["mean"], mode="lines", line=dict(color=RED, width=2.4),
         customdata=np.stack([g["ci_low"], g["ci_high"], 100 * g["share_usable"]], axis=1),
         hovertemplate="New raters vs displayed: %{y:+.2f}"
                       f"<span style='color:{INK_3}'> [%{{customdata[0]:+.2f}}, "
@@ -228,7 +232,7 @@ def fig_gap(gap: pd.DataFrame) -> go.Figure:
         if not row.empty:
             v = float(row["mean"].iloc[0])
             fig.add_trace(go.Scatter(x=[k], y=[v], mode="markers+text", hoverinfo="skip",
-                                     marker=dict(color=PLUM, size=8,
+                                     marker=dict(color=RED, size=8,
                                                  line=dict(color="white", width=2)),
                                      text=[fmt(v, "+.2f", minus=True)],
                                      textposition="bottom center",
@@ -283,10 +287,10 @@ def fig_specs(numbers: dict[str, dict]) -> go.Figure:
     fig = go.Figure()
     span = max(abs(v) for v in [x + h for x, h in zip(xs, hi, strict=True)]
                + [x - low for x, low in zip(xs, lo, strict=True)]) * 1.25
-    fig.add_vrect(x0=-span, x1=0, fillcolor=PLUM, opacity=0.05, line_width=0, layer="below")
+    fig.add_vrect(x0=-span, x1=0, fillcolor=RED, opacity=0.05, line_width=0, layer="below")
     fig.add_annotation(x=-span, y=1.0, yref="paper", xanchor="left", yanchor="bottom",
                        showarrow=False, text="Hyped games fade more",
-                       font=dict(color=PLUM, size=11))
+                       font=dict(color=RED, size=11))
     fig.add_annotation(x=span, y=1.0, yref="paper", xanchor="right", yanchor="bottom",
                        showarrow=False, text="Hyped games fade less",
                        font=dict(color=INK_3, size=11))
@@ -307,7 +311,7 @@ def fig_kickstarter(bands: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
     labels = []
     for flag, color, name, off in ((0, BLUE, "Not Kickstarted", -0.025),
-                                   (1, AMBER, "Kickstarted", 0.025)):
+                                   (1, KICKSTARTER, "Kickstarted", 0.025)):
         d = bands[bands["kickstarted"] == flag].sort_values("band_mid")
         fig.add_trace(go.Scatter(
             x=d["band_mid"] + off, y=d["mean"], mode="lines+markers", name=name,
@@ -409,7 +413,7 @@ def fig_lookup(name: str, traj: pd.DataFrame, avg_m0: float, cohort_curve: pd.Da
         if not ok.empty:
             fig.add_trace(go.Scatter(
                 x=ok["k"], y=ok[new_col], mode="markers", name="New raters",
-                marker=dict(color=PLUM, size=7, line=dict(color="white", width=1)),
+                marker=dict(color=RED, size=7, line=dict(color="white", width=1)),
                 hovertemplate="New raters: %{y:.2f}<extra></extra>"))
             ys += list(ok[new_col])
     for nm, t, color in series:

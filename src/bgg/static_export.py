@@ -30,8 +30,8 @@ FONT_LINK = ('<link rel="preconnect" href="https://fonts.googleapis.com">'
              '0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">')
 
 CSS = """
-:root{--ink:#1D2533;--ink-2:#4A5466;--ink-3:#6B7585;--rule:#E3E8EE;--panel:#F4F6F9;
---blue:#2167B0;--plum:#B23F68;--paper:#FFFFFF}
+:root{--ink:#1B2430;--ink-2:#667085;--ink-3:#667085;--rule:#E3E8EE;--panel:#F4F6F9;
+--blue:#1F5AA6;--red:#C62F2F;--paper:#FFFFFF}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 "IBM Plex Sans","Segoe UI",
@@ -45,11 +45,12 @@ header.top .brand{font-weight:600;color:var(--ink)}
 header.top nav a{color:var(--ink-2);margin-left:22px;font-size:.95rem}
 h1{font-size:3rem;line-height:1.08;letter-spacing:-.02em;margin:3rem 0 .8rem;font-weight:700}
 .deck{font-size:1.15rem;color:var(--ink-2);max-width:44rem;margin:0}
+b{font-weight:600;color:var(--blue,#1F5AA6)}b.bad{color:#C62F2F}b.good{color:#1E8A4C}
 .lede{font-size:1.2rem;line-height:1.55;max-width:46rem;margin:1.6rem 0 0}
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:2.2rem 0 0;
 border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
-.stat{--c:#6B7585;padding:.9rem 0 .5rem;border-top:3px solid var(--c)}.stats{gap:0 1.2rem}
-.stat.fall{--c:#B23F68}.stat.time{--c:#2167B0}.stat.trust{--c:#B3770A}
+.stat{--c:#667085;padding:.9rem 0 .5rem;border-top:3px solid var(--c)}.stats{gap:0 1.2rem}
+.stat.fall{--c:#C62F2F}.stat.time{--c:#1F5AA6}.stat.trust{--c:#C27803}
 .stat .v{font-size:2.1rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--c)}
 .stat .l{font-size:.9rem;color:var(--ink-3);margin-top:.2rem}
 .hero-chart{margin:2.2rem 0 0}
@@ -59,7 +60,7 @@ border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 .btn{display:inline-block;padding:.7rem 1.15rem;border-radius:6px;border:1px solid var(--rule);
 color:var(--ink);font-weight:500}.btn:hover{text-decoration:none;border-color:var(--ink-3)}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
-.btn.primary:hover{background:#1A5590}
+.btn.primary:hover{background:#174A8C}
 .findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;margin:3.6rem 0 0;
 padding:2.2rem 0 0;border-top:1px solid var(--rule)}
 .findings h3{font-size:1.05rem;margin:0 0 .4rem;line-height:1.35}
@@ -102,6 +103,8 @@ def _import_app_lib(cfg: Config):
 def _md(s: str) -> str:
     """Tiny markdown subset: **bold**, *italic* and `code`."""
     s = html.escape(s)
+    s = re.sub(r"!!(.+?)!!", r'<b class="bad">\1</b>', s)
+    s = re.sub(r"\+\+(.+?)\+\+", r'<b class="good">\1</b>', s)
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     s = re.sub(r"\*(.+?)\*", r"<i>\1</i>", s)
     return re.sub(r"`(.+?)`", r"<code>\1</code>", s)
@@ -127,22 +130,22 @@ def fade_svg(curve: pd.DataFrame, fmt) -> str:
     band = "M" + " L".join(upper + lower[::-1]) + " Z"
     grid = ""
     for v in (0.0, -0.1, -0.2, -0.3, -0.4):
-        stroke = "#1D2533" if v == 0 else "#E9EDF2"
+        stroke = "#1B2430" if v == 0 else "#E9EDF2"
         grid += (f'<line x1="{left}" x2="{w - right}" y1="{y(v):.1f}" y2="{y(v):.1f}" '
                  f'stroke="{stroke}" stroke-width="1" opacity="{0.6 if v == 0 else 1}"/>'
                  f'<text class="t" x="{left - 10}" y="{y(v) + 4:.1f}" text-anchor="end" font-size="13" '
-                 f'fill="#6B7585">{fmt(v, ".1f", minus=True) if v else "0"}</text>')
+                 f'fill="#667085">{fmt(v, ".1f", minus=True) if v else "0"}</text>')
     ticks = "".join(f'<text class="t" x="{x(k):.1f}" y="{h - bottom + 22}" text-anchor="middle" '
-                    f'font-size="13" fill="#6B7585">{k}</text>' for k in (0, 6, 12, 18, 24, 30, 36))
+                    f'font-size="13" fill="#667085">{k}</text>' for k in (0, 6, 12, 18, 24, 30, 36))
     marks = ""
     for k in (12, 24, 36):
         v = float(c.loc[c["k"] == k, "mean"].iloc[0])
-        marks += (f'<circle cx="{x(k):.1f}" cy="{y(v):.1f}" r="5" fill="#2167B0" stroke="#fff" '
+        marks += (f'<circle cx="{x(k):.1f}" cy="{y(v):.1f}" r="5" fill="#1F5AA6" stroke="#fff" '
                   f'stroke-width="2"/><text class="m" x="{x(k):.1f}" y="{y(v) + 30:.1f}" text-anchor="middle"'
-                  f' font-size="15" font-weight="600" fill="#1D2533">'
+                  f' font-size="15" font-weight="600" fill="#1B2430">'
                   f'{fmt(v, "+.2f", minus=True)}</text>')
     axis = (f'<text class="t" x="{(left + w - right) / 2:.0f}" y="{h - 4}" text-anchor="middle" '
-            f'font-size="13" fill="#6B7585">Months since a game entered the ranking</text>')
+            f'font-size="13" fill="#667085">Months since a game entered the ranking</text>')
     return (f'<svg viewBox="0 0 {w} {h}" role="img" aria-labelledby="fade-t fade-d" '
             f'font-family="IBM Plex Sans, Segoe UI, Arial, sans-serif">'
             f'<title id="fade-t">Mean change in a new game\'s displayed rating</title>'
@@ -150,7 +153,7 @@ def fade_svg(curve: pd.DataFrame, fmt) -> str:
             f'{fmt(float(c.loc[c["k"] == 12, "mean"].iloc[0]), "+.2f")} by month 12, '
             f'{fmt(float(c.loc[c["k"] == 36, "mean"].iloc[0]), "+.2f")} by month 36.</desc>'
             f'{grid}{ticks}{axis}<path d="{band}" fill="rgba(33,103,176,0.13)"/>'
-            f'<path class="fade" d="{line}" fill="none" stroke="#2167B0" stroke-width="3" '
+            f'<path class="fade" d="{line}" fill="none" stroke="#1F5AA6" stroke-width="3" '
             f'stroke-linejoin="round" stroke-linecap="round"/>{marks}</svg>')
 
 

@@ -1,7 +1,7 @@
 """Does the Hype Fade? Interactive dashboard (Streamlit).
 
 Run:  uv run streamlit run app/streamlit_app.py
-Mode: APP_MODE=full (default) or APP_MODE=aggregates (hides the game lookup).
+Mode: BGG_APP_MODE=full (default) or BGG_APP_MODE=aggregates (hides the game lookup).
 Every number on this page comes from app/data/key_numbers.json or app/data/tables/*.csv.
 """
 
@@ -28,14 +28,14 @@ WRITEUP_URL = os.environ.get(
     "BGG_WRITEUP_URL", "https://github.com/nikitorezz/bgg-hype-fade/blob/main/reports/writeup.md")
 PAGES_URL = os.environ.get("BGG_PAGES_URL", "https://nikitorezz.github.io/bgg-hype-fade/")
 AUTHOR = os.environ.get("BGG_AUTHOR", "Nikita Reznichenko")
-BLUE_C, PLUM_C = "#2167B0", "#B23F68"
+GOOD_C, BAD_C = "#1E8A4C", "#C62F2F"
 PLOT_CONFIG = {"displayModeBar": False, "responsive": True, "scrollZoom": False}
 COMPARE = {"All new games": "none", "By hype (growth in raters, months 0–6)": "hype_quartile",
            "By popularity": "popularity", "By Kickstarter status": "kickstarted"}
 SEGMENT_TYPES = {"Launch year": "launch_year", "Hype quartile": "hype_quartile",
                  "Starting rating (deciles)": "start_decile", "Popularity": "popularity",
                  "Kickstarter": "kickstarted"}
-TONES = ["fall", "time", "fall", "trust"]   # accent of each headline number
+TONES = ["fall", "time", "fall", "time"]   # accent of each headline number
 REASONS = {
     "left_censored": "was already ranked when the data starts (Oct 2016), so its launch "
                      "was not observed",
@@ -50,53 +50,57 @@ CSS = """
 [data-testid="stDecoration"], #MainMenu, footer {display: none !important;}
 h1, h2, h3, h4 {letter-spacing: -0.01em;}
 .hero h1 {font-size: 2.7rem; line-height: 1.1; margin: 0 0 .5rem 0; padding: 0; font-weight: 700;}
-.hero .deck {font-size: 1.08rem; color: #4A5466; max-width: 46rem; margin: 0;}
+.hero .deck {font-size: 1.08rem; color: #667085; max-width: 46rem; margin: 0;}
 .stats {display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 1.2rem;
         margin: 1.8rem 0 .6rem;}
-.stat {--c: #6B7585; padding: .85rem 0 .4rem; border-top: 3px solid var(--c);}
+.stat {--c: #667085; padding: .85rem 0 .4rem; border-top: 3px solid var(--c);}
 .stat .v {font-size: 2rem; font-weight: 600; line-height: 1.15; font-variant-numeric: tabular-nums;
           color: var(--c);}
-.stat .l {font-size: .88rem; color: #4A5466; margin-top: .2rem;}
-.stat.fall {--c: #B23F68;} .stat.time {--c: #2167B0;} .stat.trust {--c: #B3770A;}
-.stats.sm .v {font-size: 1.5rem; color: #1D2533;}
-.stats.sm .stat.fall .v {color: #B23F68;} .stats.sm .stat.rise .v {color: #2167B0;}
-.stat.rise {--c: #2167B0;} .stat.amber {--c: #B3770A;} .stat.amber .v {color: #8A5A00;}
+.stat .l {font-size: .88rem; color: #667085; margin-top: .2rem;}
+.stat.fall {--c: #C62F2F;} .stat.time {--c: #1F5AA6;}
+.stats.sm .v {font-size: 1.5rem; color: #1B2430;}
+.stats.sm .stat.fall .v {color: #C62F2F;} .stats.sm .stat.rise .v {color: #1E8A4C;}
+.stat.rise {--c: #1E8A4C;} .stat.amber {--c: #C27803;} .stat.amber .v {color: #8A5A00;}
 @media (max-width: 700px) {
   .hero h1 {font-size: 2.1rem;}
   .stats {grid-template-columns: repeat(2, minmax(0, 1fr));}
   .stat {margin-bottom: .6rem;}
 }
 .delta {font-weight: 600; white-space: nowrap;}
-.delta.up {color: #2167B0;} .delta.down {color: #B23F68;}
+.delta.up {color: #1E8A4C;} .delta.down {color: #C62F2F;}
 .game-name {font-size: 1.7rem; font-weight: 600; line-height: 1.2; margin: 1rem 0 .35rem;}
 .chips {display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .9rem;}
 .chip {display: inline-block; padding: .12rem .65rem; border-radius: 999px; font-size: .8rem;
-       font-weight: 500; background: #EEF1F5; color: #4A5466;}
-.chip.blue {background: #E7F0FA; color: #174E88;} .chip.amber {background: #FBF0D8; color: #7A4F00;}
-.chip.plum {background: #F8E7ED; color: #8E2F51;}
+       font-weight: 500; background: #EEF1F5; color: #667085;}
+.chip.blue {background: #E6EEF9; color: #14407A;} .chip.amber {background: #FBF0D8; color: #7A4F00;}
+.chip.red {background: #FBE9E9; color: #9B2424;} .chip.green {background: #E3F4EA; color: #14693A;}
 .lede {font-size: 1.15rem; line-height: 1.55; max-width: 48rem; margin: .4rem 0 1.2rem;}
 .section-title {font-size: 1.45rem; font-weight: 600; margin: .6rem 0 .3rem; line-height: 1.25;}
 .section-title::before {content: ""; display: inline-block; width: 5px; height: 1em;
-                         background: #2167B0; border-radius: 2px; margin-right: .6rem;
+                         background: #1F5AA6; border-radius: 2px; margin-right: .6rem;
                          vertical-align: -.1em;}
-.section-sub {color: #4A5466; max-width: 48rem; margin: 0 0 .8rem;}
+.section-sub {color: #667085; max-width: 48rem; margin: 0 0 .8rem;}
 .chart-title {font-size: 1.05rem; font-weight: 600; margin: 1.6rem 0 .1rem;}
-.note {border-left: 3px solid #2167B0; background: #EEF4FB; padding: .85rem 1.1rem;
-       border-radius: 0 6px 6px 0; color: #1D2533; max-width: 52rem; margin: .4rem 0 1rem;}
-.note.fall {border-color: #B23F68; background: #FBEFF3;}
-.note.amber {border-color: #B3770A; background: #FBF5E6;}
-.small {font-size: .85rem; color: #6B7585; max-width: 52rem;}
+.note {border-left: 3px solid #1F5AA6; background: #EEF4FB; padding: .85rem 1.1rem;
+       border-radius: 0 6px 6px 0; color: #1B2430; max-width: 52rem; margin: .4rem 0 1rem;}
+.note.fall {border-color: #C62F2F; background: #FDEEEE;}
+.note.rise {border-color: #1E8A4C; background: #EAF6EF;}
+.note.amber {border-color: #C27803; background: #FBF5E6;}
+b, strong {font-weight: 600;}
+.lede b, .section-sub b, .note b, .small b {color: #1F5AA6;}
+.note.fall b, b.bad {color: #C62F2F;} .note.rise b, b.good {color: #1E8A4C;}
+.small {font-size: .85rem; color: #667085; max-width: 52rem;}
 .trust-num {font-size: 3rem; font-weight: 600; line-height: 1; margin: .4rem 0 .5rem;
-            font-variant-numeric: tabular-nums; color: #2167B0;}
+            font-variant-numeric: tabular-nums; color: #1F5AA6;}
 .site-foot {margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #E3E8EE; font-size: .82rem;
-            color: #6B7585;}
-.site-foot a {color: #4A5466;}
+            color: #667085;}
+.site-foot a {color: #667085;}
 [data-baseweb="tab-list"] {gap: 1.4rem;}
 table.wf {border-collapse: collapse; width: 100%; max-width: 34rem; margin: .3rem 0 1.4rem;
           font-variant-numeric: tabular-nums; border: none;}
 table.wf td {border: none; border-bottom: 1px solid #E3E8EE; padding: .45rem .2rem;}
 table.wf td:last-child {text-align: right; font-weight: 500;}
-table.wf tr:last-child td {font-weight: 600; border-bottom: 2px solid #1D2533;}
+table.wf tr:last-child td {font-weight: 600; border-bottom: 2px solid #1B2430;}
 [data-baseweb="tab"] p {font-size: .98rem; font-weight: 500;}
 </style>
 """
@@ -113,6 +117,8 @@ def md(s: str) -> str:
     """**bold** / *italic* to HTML for use inside custom blocks."""
     import re
     s = html.escape(s)
+    s = re.sub(r"!!(.+?)!!", r'<b class="bad">\1</b>', s)
+    s = re.sub(r"\+\+(.+?)\+\+", r'<b class="good">\1</b>', s)
     s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
     return re.sub(r"\*(.+?)\*", r"<i>\1</i>", s)
 
@@ -262,8 +268,8 @@ def section_explore(n: dict) -> None:
                          "Change by month 12": cell("change_12"),
                          "Change by month 36": cell("change_36")})
     def tone(v: str) -> str:
-        return f"color: {PLUM_C}; font-weight: 500" if str(v).startswith("−") else \
-            f"color: {BLUE_C}; font-weight: 500"
+        return f"color: {BAD_C}; font-weight: 500" if str(v).startswith("−") else \
+            f"color: {GOOD_C}; font-weight: 500"
 
     st.dataframe(view.style.map(tone, subset=["Change by month 12", "Change by month 36"]),
                  hide_index=True, width="stretch")
@@ -315,7 +321,7 @@ def _verdict(n: dict, row: pd.Series, k: int, change: float, rank_better: bool,
         return msg, "fall"
     share = float((dist >= 0).mean())
     return (f"By month {k} its rating held or rose ({text.signed(change)}), which only "
-            f"**{fmt(100 * share, '.0f')}%** of games launched in {year} managed."), ""
+            f"**{fmt(100 * share, '.0f')}%** of games launched in {year} managed."), "rise"
 
 
 def _pick_random(labels: list[str]) -> None:
@@ -406,7 +412,7 @@ def section_lookup(n: dict) -> None:
                            expected if expected == expected else None,
                            f"Typical {int(row['entry_year'])} launch"))
     captions = {
-        "rating": "Blue: the rating shown on BoardGameGeek. Plum dots: the average of ratings "
+        "rating": "Blue: the rating shown on BoardGameGeek. Red dots: the average of ratings "
                   "added in the previous three months. Grey dashes: the average path of games "
                   f"launched in {int(row['entry_year'])}, from this game's starting rating. "
                   "Amber diamond: the rating a model expects at month 36 from launch-month data.",

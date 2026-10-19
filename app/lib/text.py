@@ -17,7 +17,7 @@ def signed(x: float, digits: int = 2) -> str:
 
 def headline(n: dict) -> str:
     return (f"**Launch ratings oversell.** The typical new game on BoardGameGeek loses "
-            f"**{fmt(abs(kn(n, 'change_36')), '.2f')} rating points** in its first three years, "
+            f"!!{fmt(abs(kn(n, 'change_36')), '.2f')} rating points!! in its first three years, "
             "most of it in year one, and the newest raters still rate it lower than the number "
             "on the page. Hype doesn't decide how far a game falls; it decides how fast.")
 
@@ -31,8 +31,8 @@ def deck(n: dict) -> str:
 def gap_text(n: dict) -> str:
     return (f"The displayed rating is a running average, so it keeps the launch crowd's "
             f"enthusiasm for years. Ratings added in the last three months come in "
-            f"**{fmt(abs(kn(n, 'gap_k3')), '.2f')} below** the displayed number at month 3, and "
-            f"still **{fmt(abs(kn(n, 'gap_k36')), '.2f')} below** at month 36. The decline isn't "
+            f"!!{fmt(abs(kn(n, 'gap_k3')), '.2f')} below!! the displayed number at month 3, and "
+            f"still !!{fmt(abs(kn(n, 'gap_k36')), '.2f')} below!! at month 36. The decline isn't "
             "finished.")
 
 
@@ -46,12 +46,12 @@ def hype_takeaway(speed: pd.DataFrame, months: tuple[int, int]) -> str:
     return (
         f"By month {first} the most-hyped quarter of games has already lost "
         f"{a(q4[f'change_{first}'])} points, the least-hyped only {a(q1[f'change_{first}'])}. "
-        f"By month {last} they have nearly converged ({a(q4[f'change_{last}'])} vs "
+        f"By month {last} they have **nearly converged** ({a(q4[f'change_{last}'])} vs "
         f"{a(q1[f'change_{last}'])}). A hyped game typically gains "
         f"{fmt(q4['growth_median'], '.0f')}× its launch raters within {first} months, which "
         "dilutes the launch enthusiasts quickly. For a quiet release the launch crowd is still "
         f"{fmt(100 * q1['entry_share_median'], '.0f')}% of raters at month {last}, and new raters "
-        f"score it {a(q1[f'gap_k{last}'])} below the displayed number: it hasn't finished fading.")
+        f"score it {a(q1[f'gap_k{last}'])} below the displayed number: !!it hasn't finished fading!!.")
 
 
 def specs_caption(n: dict) -> str:
@@ -64,7 +64,7 @@ def specs_caption(n: dict) -> str:
 def kickstarter_caption(n: dict) -> str:
     return (f"Kickstarted games start higher ({fmt(kn(n, 'ks_avg_m0'), '.2f')} vs "
             f"{fmt(kn(n, 'nonks_avg_m0'), '.2f')}) and, from the same starting rating, still fall "
-            f"{fmt(abs(kn(n, 'ks_gap_within_bands')), '.2f')} more. Descriptive only: the flag "
+            f"!!{fmt(abs(kn(n, 'ks_gap_within_bands')), '.2f')} more!!. Descriptive only: the flag "
             "comes from a 2022 metadata snapshot and is probably broader than \"launched on "
             "Kickstarter\".")
 

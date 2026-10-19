@@ -71,7 +71,7 @@ def _end_labels(ax, items: list[tuple[str, float, float, str]], min_gap: float) 
     for (label, x, _, color), y in zip(items, ys, strict=True):
         ax.plot([x], [y], "o", ms=5, color=color, clip_on=False, zorder=4)
         ax.annotate(label, (x, y), xytext=(7, 0), textcoords="offset points", va="center",
-                    fontsize=9, color="#4A5466", annotation_clip=False)
+                    fontsize=9, color="#667085", annotation_clip=False)
 
 
 def _milestones(ax, curve: pd.DataFrame, color: str, ks=(12, 24, 36), size: float = 9.5) -> None:
@@ -101,11 +101,11 @@ def fig02_gap(gap: pd.DataFrame) -> Figure:
     """New raters' average minus the displayed average, by month (usable rows only)."""
     fig, ax = plt.subplots(figsize=(9, 5.0))
     g = gap.sort_values("k")
-    _band(ax, g, "k", PALETTE["plum"])
+    _band(ax, g, "k", PALETTE["red"])
     _baseline(ax)
     ax.text(36, 0.008, "Displayed average", ha="right", va="bottom", fontsize=9, color=INK_3)
     for k in (3, 36):
-        _milestones(ax, g, PALETTE["plum"], ks=(k,))
+        _milestones(ax, g, PALETTE["red"], ks=(k,))
     _months_axis(ax)
     ax.set_xlim(1.5, 36.8)
     ax.set_ylim(min(-0.3, float(g["ci_low"].min()) - 0.03), 0.04)
@@ -276,7 +276,7 @@ def fig10_kickstarter(bands: pd.DataFrame, raw: dict[str, float]) -> Figure:
     fig, ax = plt.subplots(figsize=(9, 5.0))
     labels = []
     for flag, color, label, off in ((0, PALETTE["blue"], "Not Kickstarted", -0.025),
-                                    (1, PALETTE["amber"], "Kickstarted", 0.025)):
+                                    (1, PALETTE["ks"], "Kickstarted", 0.025)):
         d = bands[bands["kickstarted"] == flag].sort_values("band_mid")
         ax.errorbar(d["band_mid"] + off, d["mean"], yerr=[d["mean"] - d["ci_low"],
                                                            d["ci_high"] - d["mean"]],

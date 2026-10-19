@@ -35,7 +35,7 @@ def main() -> None:
     ap.add_argument("--mobile", action="store_true")
     args = ap.parse_args()
     port = free_port()
-    env = {**os.environ, "APP_MODE": args.mode}
+    env = {**os.environ, "BGG_APP_MODE": args.mode}
     server = subprocess.Popen(
         [sys.executable, "-m", "streamlit", "run", str(ROOT / "app" / "streamlit_app.py"),
          "--server.port", str(port), "--server.headless", "true"], cwd=ROOT, env=env,

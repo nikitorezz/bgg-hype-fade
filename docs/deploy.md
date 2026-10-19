@@ -14,7 +14,7 @@ The results are published in three places:
 
 The static project page and static dashboard on GitHub Pages are aggregate-only and have no game lookup.
 
-The dashboard decides its mode by itself: without `app/data/games.parquet` it runs in aggregates mode and hides the lookup (`APP_MODE=aggregates` forces this).
+The dashboard decides its mode by itself: without `app/data/games.parquet` it runs in aggregates mode and hides the lookup (`BGG_APP_MODE=aggregates` forces this).
 
 ## Updating after a change
 
@@ -35,7 +35,7 @@ uv run python scripts/publish_pages.py --push # rebuild and publish the GitHub P
 | Main file | `app/streamlit_app.py` |
 | Dependencies | `app/requirements.txt` (pinned) |
 | Theme | `.streamlit/config.toml` |
-| Environment (optional) | `APP_MODE = "aggregates"` hides the lookup; `BGG_REPO_URL`, `BGG_WRITEUP_URL`, `BGG_PAGES_URL` override the default links |
+| Environment (optional) | `BGG_APP_MODE = "aggregates"` hides the lookup (leave it unset to show it); `BGG_REPO_URL`, `BGG_WRITEUP_URL`, `BGG_PAGES_URL` override the default links |
 
 No secrets are needed.
 

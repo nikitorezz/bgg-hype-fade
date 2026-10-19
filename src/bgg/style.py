@@ -1,7 +1,7 @@
 """One shared matplotlib style, matching the dashboard (same palette, quiet axes, light grid).
 
-Palette checked with a colour-blind validator: blue, plum and amber are separable under all
-common colour-vision deficiencies; ordered groups use one blue ramp, light to dark.
+Blue for data, red for worse and green for better (always paired with a sign or label),
+Kickstarter's own green for Kickstarter games; ordered groups use one blue ramp.
 """
 
 from __future__ import annotations
@@ -12,17 +12,19 @@ from matplotlib import font_manager
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
-INK, INK_2, INK_3 = "#1D2533", "#4A5466", "#6B7585"
+# two text colours: ink and muted
+INK, INK_2, INK_3 = "#1B2430", "#667085", "#667085"
 GRID = "#E9EDF2"
 PALETTE = {
-    "blue": "#2167B0", "plum": "#B23F68", "amber": "#B3770A", "grey": "#7A8494",
+    "blue": "#1F5AA6", "plum": "#C62F2F", "amber": "#C27803", "grey": "#8B95A5",
+    "ks": "#05CE78",  # Kickstarter's own green
     # legacy names used by older figure code
-    "red": "#B23F68", "orange": "#B3770A", "green": "#2E8B57", "sky": "#93B8E0",
-    "purple": "#6B5FB5", "yellow": "#B3770A",
+    "red": "#C62F2F", "orange": "#C27803", "green": "#1E8A4C", "sky": "#A9C4E8",
+    "purple": "#6B5FB5", "yellow": "#C27803",
 }
-CYCLE = [PALETTE[c] for c in ("blue", "amber", "plum", "grey")]
+CYCLE = [PALETTE[c] for c in ("blue", "ks", "red", "grey")]
 # Ordered quartiles (1 = least hyped .. 4 = most hyped): one hue, light to dark.
-SEQ4 = ["#93B8E0", "#5A8FCB", "#2E66A8", "#0D3462"]
+SEQ4 = ["#A9C4E8", "#7796BE", "#446895", "#123A6B"]
 
 
 def ramp(n: int) -> list[str]:

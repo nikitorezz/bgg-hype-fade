@@ -20,7 +20,7 @@ Complete and published (Streamlit dashboard, GitHub Pages project page, GitHub r
 - **Numbers:** every number in docs, figures, the app and the static site comes from `reports/results/key_numbers.json` or a `reports/tables/*.csv`. The README is rendered from `README.template.md` (`scripts/render_readme.py`; CI fails if it is stale). Format numbers with `fmt()` (half-up rounding).
 - **Research definitions are decisions:** entry month, left-censoring, the new-release rule, the main-sample window, the raw average as outcome, the new-rater usability rule, equal weight per game, model specifications A–D. Don't change them silently, and never pick a specification because its result looks better.
 - **Config, not constants:** thresholds and dates live in `config.yaml`; SQL lives in numbered files under `sql/`.
-- **Design:** charts follow `app/lib/charts.py` (quiet axes, horizontal grid only, end labels instead of legends, bands only on single-series charts, blue ramp for ordered groups, palette blue `#2167B0` / plum `#B23F68` / amber `#B3770A`). Matplotlib figures use the same palette via `src/bgg/style.py`.
+- **Design:** charts follow `app/lib/charts.py` (quiet axes, horizontal grid only, end labels instead of legends, bands only on single-series charts, blue ramp for ordered groups, palette blue `#1F5AA6`, red `#C62F2F` for worse, green `#1E8A4C` for better, Kickstarter green `#05CE78` for Kickstarter games; only two text colours, ink and muted). Matplotlib figures use the same palette via `src/bgg/style.py`.
 
 ## Environment
 

@@ -16,10 +16,10 @@ DATA = Path(os.environ.get("BGG_APP_DATA", Path(__file__).resolve().parents[1] /
 def app_mode() -> str:
     """'full' (game lookup + live trust sliders) or 'aggregates' (curve/segment tables only).
 
-    Chosen by the APP_MODE environment variable; falls back to aggregates when the game-level
+    Chosen by the BGG_APP_MODE environment variable; falls back to aggregates when the game-level
     files are not shipped.
     """
-    mode = os.environ.get("APP_MODE", "full").strip().lower()
+    mode = os.environ.get("BGG_APP_MODE", "full").strip().lower()
     if mode == "full" and not (DATA / "games.parquet").exists():
         return "aggregates"
     return "aggregates" if mode == "aggregates" else "full"
