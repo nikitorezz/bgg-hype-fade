@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="The typical new board game on BoardGameGeek loses 0.40 rating points in three years, 61% of it in year one. A data analysis of how launch ratings fade."><meta name="author" content="Nikita Reznichenko"><meta property="og:type" content="website"><meta property="og:title" content="Does the hype fade? Board-game ratings after launch"><meta property="og:description" content="The typical new board game on BoardGameGeek loses 0.40 rating points in three years, 61% of it in year one. A data analysis of how launch ratings fade."><meta property="og:image" content="https://nikitorezz.github.io/bgg-hype-fade/social_card.png"><meta property="og:url" content="https://nikitorezz.github.io/bgg-hype-fade"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://nikitorezz.github.io/bgg-hype-fade/social_card.png"><meta name="theme-color" content="#FFFFFF"><title>Does the hype fade? Board-game ratings after launch</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"><style>
+:root{--ink:#1B2430;--ink-2:#667085;--ink-3:#667085;--rule:#E3E8EE;--panel:#F4F6F9;
+--blue:#1F5AA6;--red:#C62F2F;--paper:#FFFFFF}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 "IBM Plex Sans","Segoe UI",
+"Helvetica Neue",Arial,sans-serif;font-feature-settings:"tnum" 0}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+a:focus-visible,button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+header.top{border-bottom:1px solid var(--rule)}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;height:56px}
+header.top .brand{font-weight:600;color:var(--ink)}
+header.top nav a{color:var(--ink-2);margin-left:22px;font-size:.95rem}
+h1{font-size:3rem;line-height:1.08;letter-spacing:-.02em;margin:3rem 0 .8rem;font-weight:700}
+.deck{font-size:1.15rem;color:var(--ink-2);max-width:44rem;margin:0}
+b{font-weight:600;color:var(--blue,#1F5AA6)}b.bad{color:#C62F2F}b.good{color:#1E8A4C}
+.lede{font-size:1.2rem;line-height:1.55;max-width:46rem;margin:1.6rem 0 0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:2.2rem 0 0}
+.stat{--c:#667085;padding:.9rem 0 .5rem;border-top:3px solid var(--c)}.stats{gap:0 1.2rem}
+.stat.fall{--c:#C62F2F}.stat.time{--c:#1F5AA6}.stat.trust{--c:#C27803}
+.stat .v{font-size:2.1rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--c)}
+.stat .l{font-size:.9rem;color:var(--ink-3);margin-top:.2rem}
+.hero-chart{margin:2.2rem 0 0}
+.hero-chart svg{width:100%;height:auto;display:block}
+.cap{font-size:.86rem;color:var(--ink-3);max-width:50rem;margin:.4rem 0 0}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin:2.2rem 0 0}
+.btn{display:inline-block;padding:.7rem 1.15rem;border-radius:6px;border:1px solid var(--rule);
+color:var(--ink);font-weight:500}.btn:hover{text-decoration:none;border-color:var(--ink-3)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#174A8C}
+.findings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;margin:3.6rem 0 0;
+padding:2.2rem 0 0;border-top:1px solid var(--rule)}
+.findings h3{font-size:1.05rem;margin:0 0 .4rem;line-height:1.35}
+.findings p{margin:0;color:var(--ink-2);font-size:.97rem}
+section{padding:3rem 0 0}
+section h2{font-size:1.6rem;line-height:1.25;letter-spacing:-.01em;margin:0 0 .5rem}
+section .sub{color:var(--ink-2);max-width:48rem;margin:0 0 1rem}
+h3.chart{font-size:1.05rem;margin:2rem 0 .2rem}
+.note{border-left:3px solid var(--blue);background:var(--panel);padding:.9rem 1.15rem;
+border-radius:0 6px 6px 0;max-width:52rem;margin:.6rem 0 0}
+.two{display:grid;grid-template-columns:1fr 3fr;gap:28px;align-items:start}
+.big{font-size:3rem;font-weight:600;line-height:1;margin:.6rem 0 .6rem}
+table.wf{border-collapse:collapse;width:100%;max-width:34rem;margin:.6rem 0 0;
+font-variant-numeric:tabular-nums}
+table.wf td{border-bottom:1px solid var(--rule);padding:.45rem .2rem}
+table.wf td:last-child{text-align:right;font-weight:500}
+table.wf tr:last-child td{font-weight:600;border-bottom:2px solid var(--ink)}
+ul.lim{padding-left:1.1rem;max-width:52rem;color:var(--ink-2)}ul.lim li{margin:.25rem 0}
+footer{margin:4rem 0 0;border-top:1px solid var(--rule);padding:1.2rem 0 2.4rem;font-size:.84rem;
+color:var(--ink-3)}footer a{color:var(--ink-2)}
+@media (max-width:760px){
+h1{font-size:2.2rem;margin-top:2rem}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stat{margin-bottom:.6rem}
+.findings{grid-template-columns:1fr;gap:24px}.two{grid-template-columns:1fr}
+header.top nav a{margin-left:14px;font-size:.9rem}header.top .brand{display:none}
+.hero-chart svg text.t{font-size:28px}.hero-chart svg text.m{font-size:34px}}
+@media (prefers-reduced-motion:no-preference){.hero-chart path.fade{stroke-dasharray:1400;
+stroke-dashoffset:1400;animation:draw 1.6s ease-out .2s forwards}}
+@keyframes draw{to{stroke-dashoffset:0}}
+header.top nav a{display:inline-block;padding:.75rem .5rem;margin-left:10px}
+.js-plotly-plot,.js-plotly-plot *{touch-action:pan-y}
+.only-mobile{display:none}
+nav.jump{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);
+border-bottom:1px solid var(--rule);backdrop-filter:blur(6px)}
+nav.jump .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:6px;padding-bottom:6px;
+scrollbar-width:none;-webkit-overflow-scrolling:touch}
+nav.jump .wrap::-webkit-scrollbar{display:none}
+nav.jump a{flex:0 0 auto;display:inline-block;padding:.6rem .95rem;border-radius:999px;
+color:var(--ink-2);font-weight:500;font-size:.95rem;white-space:nowrap}
+nav.jump a:hover{text-decoration:none;background:var(--panel)}
+nav.jump a.on{background:var(--blue);color:#fff}
+section{scroll-margin-top:64px}
+footer a{display:inline-block;padding:.35rem 0}
+@media (max-width:700px){
+.only-desktop{display:none}.only-mobile{display:block}
+.wrap{padding:0 16px}
+.deck{font-size:1.02rem}.lede{font-size:1.05rem}
+.stat .v{font-size:1.7rem}.stat .l{font-size:.82rem}
+.big{font-size:2.4rem}
+section{padding-top:2rem}section h2{font-size:1.3rem}
+.actions .btn{flex:1 1 100%;text-align:center}
+header.top .wrap{height:auto;min-height:52px}
+.note{padding:.75rem .9rem;font-size:.97rem}
+.cap{font-size:.84rem}}
+</style></head><body><header class="top"><div class="wrap"><a class="brand" href="index.html">Does the hype fade?</a><nav><a href="https://bgg-hype-fade.streamlit.app/">Interactive app</a><a href="https://github.com/nikitorezz/bgg-hype-fade/blob/main/reports/writeup.md">Write-up</a><a href="https://github.com/nikitorezz/bgg-hype-fade">Code</a></nav></div></header><main class="wrap">
+<h1>Does the hype fade?</h1>
+<p class="deck">How board-game ratings change after launch: 6,927 new releases on BoardGameGeek, each followed for three years, from ten years of daily ranking snapshots.</p>
+<p class="lede"><b>Launch ratings oversell.</b> The typical new game on BoardGameGeek loses <b class="bad">0.40 rating points</b> in its first three years, most of it in year one, and the newest raters still rate it lower than the number on the page. Hype doesn&#x27;t decide how far a game falls; it decides how fast.</p>
+<figure class="hero-chart" style="margin-left:0;margin-right:0">
+<svg viewBox="0 0 960 340" role="img" aria-labelledby="fade-t fade-d" font-family="IBM Plex Sans, Segoe UI, Arial, sans-serif"><title id="fade-t">Mean change in a new game's displayed rating</title><desc id="fade-d">The average rating falls steadily over 36 months after launch: -0.24 by month 12, -0.40 by month 36.</desc><line x1="56" x2="890" y1="18.0" y2="18.0" stroke="#1B2430" stroke-width="1" opacity="0.6"/><text class="t" x="46" y="22.0" text-anchor="end" font-size="13" fill="#667085">0</text><line x1="56" x2="890" y1="79.3" y2="79.3" stroke="#E9EDF2" stroke-width="1" opacity="1"/><text class="t" x="46" y="83.3" text-anchor="end" font-size="13" fill="#667085">−0.1</text><line x1="56" x2="890" y1="140.7" y2="140.7" stroke="#E9EDF2" stroke-width="1" opacity="1"/><text class="t" x="46" y="144.7" text-anchor="end" font-size="13" fill="#667085">−0.2</text><line x1="56" x2="890" y1="202.0" y2="202.0" stroke="#E9EDF2" stroke-width="1" opacity="1"/><text class="t" x="46" y="206.0" text-anchor="end" font-size="13" fill="#667085">−0.3</text><line x1="56" x2="890" y1="263.3" y2="263.3" stroke="#E9EDF2" stroke-width="1" opacity="1"/><text class="t" x="46" y="267.3" text-anchor="end" font-size="13" fill="#667085">−0.4</text><text class="t" x="56.0" y="316" text-anchor="middle" font-size="13" fill="#667085">0</text><text class="t" x="195.0" y="316" text-anchor="middle" font-size="13" fill="#667085">6</text><text class="t" x="334.0" y="316" text-anchor="middle" font-size="13" fill="#667085">12</text><text class="t" x="473.0" y="316" text-anchor="middle" font-size="13" fill="#667085">18</text><text class="t" x="612.0" y="316" text-anchor="middle" font-size="13" fill="#667085">24</text><text class="t" x="751.0" y="316" text-anchor="middle" font-size="13" fill="#667085">30</text><text class="t" x="890.0" y="316" text-anchor="middle" font-size="13" fill="#667085">36</text><text class="t" x="473" y="336" text-anchor="middle" font-size="13" fill="#667085">Months since a game entered the ranking</text><path d="M56.0,18.0 L79.2,44.8 L102.3,64.5 L125.5,79.4 L148.7,92.8 L171.8,104.7 L195.0,114.7 L218.2,124.4 L241.3,133.2 L264.5,141.5 L287.7,148.8 L310.8,156.1 L334.0,162.9 L357.2,169.5 L380.3,174.9 L403.5,181.2 L426.7,186.2 L449.8,190.9 L473.0,195.6 L496.2,200.4 L519.3,204.8 L542.5,208.9 L565.7,212.9 L588.8,217.0 L612.0,220.9 L635.2,224.5 L658.3,228.4 L681.5,232.1 L704.7,235.2 L727.8,238.3 L751.0,241.2 L774.2,244.1 L797.3,247.1 L820.5,249.7 L843.7,252.6 L866.8,255.0 L890.0,257.7 L890.0,270.5 L866.8,267.8 L843.7,265.3 L820.5,262.3 L797.3,259.7 L774.2,256.7 L751.0,253.8 L727.8,250.8 L704.7,247.7 L681.5,244.5 L658.3,240.7 L635.2,236.7 L612.0,233.0 L588.8,229.0 L565.7,224.9 L542.5,220.7 L519.3,216.4 L496.2,211.9 L473.0,206.9 L449.8,202.1 L426.7,197.2 L403.5,191.9 L380.3,185.4 L357.2,179.6 L334.0,173.0 L310.8,165.9 L287.7,158.5 L264.5,150.9 L241.3,142.2 L218.2,133.2 L195.0,122.9 L171.8,112.6 L148.7,100.3 L125.5,86.4 L102.3,70.7 L79.2,49.6 L56.0,18.0 Z" fill="rgba(31,90,166,0.13)"/><path class="fade" d="M56.0,18.0 L79.2,47.2 L102.3,67.6 L125.5,82.9 L148.7,96.5 L171.8,108.7 L195.0,118.8 L218.2,128.8 L241.3,137.7 L264.5,146.2 L287.7,153.6 L310.8,161.0 L334.0,168.0 L357.2,174.6 L380.3,180.2 L403.5,186.5 L426.7,191.7 L449.8,196.5 L473.0,201.3 L496.2,206.1 L519.3,210.6 L542.5,214.8 L565.7,218.9 L588.8,223.0 L612.0,226.9 L635.2,230.6 L658.3,234.5 L681.5,238.3 L704.7,241.5 L727.8,244.6 L751.0,247.5 L774.2,250.4 L797.3,253.4 L820.5,256.0 L843.7,259.0 L866.8,261.4 L890.0,264.1" fill="none" stroke="#1F5AA6" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><circle cx="334.0" cy="168.0" r="5" fill="#1F5AA6" stroke="#fff" stroke-width="2"/><text class="m" x="334.0" y="198.0" text-anchor="middle" font-size="15" font-weight="600" fill="#1B2430">−0.24</text><circle cx="612.0" cy="226.9" r="5" fill="#1F5AA6" stroke="#fff" stroke-width="2"/><text class="m" x="612.0" y="256.9" text-anchor="middle" font-size="15" font-weight="600" fill="#1B2430">−0.34</text><circle cx="890.0" cy="264.1" r="5" fill="#1F5AA6" stroke="#fff" stroke-width="2"/><text class="m" x="890.0" y="294.1" text-anchor="middle" font-size="15" font-weight="600" fill="#1B2430">−0.40</text></svg>
+<figcaption class="cap">Mean change in the displayed rating of 6,927
+games launched 2017–2023, measured from the month each entered the ranking. The band is the
+95% confidence interval.</figcaption></figure>
+<div class="stats"><div class="stat fall"><div class="v">−0.40</div><div class="l">rating points lost in three years</div></div><div class="stat time"><div class="v">61%</div><div class="l">of that drop in year one</div></div><div class="stat fall"><div class="v">87%</div><div class="l">of games end lower than they start</div></div><div class="stat time"><div class="v">Month 13</div><div class="l">before a rating can be trusted</div></div></div>
+<div class="actions"><a class="btn primary" href="https://bgg-hype-fade.streamlit.app/">Explore the interactive dashboard</a><a class="btn" href="dashboard.html">Static dashboard</a><a class="btn" href="https://github.com/nikitorezz/bgg-hype-fade/blob/main/reports/writeup.md">Read the write-up</a><a class="btn" href="https://github.com/nikitorezz/bgg-hype-fade">Code on GitHub</a></div>
+<div class="findings"><div><h3>The decline isn&#x27;t finished at three years</h3><p>Ratings added recently still come in 0.23 below the displayed number at month 36. The running average carries the launch crowd&#x27;s enthusiasm for years.</p></div><div><h3>Hype changes the speed, not the size</h3><p>The most-hyped games lose 0.19 points by month 6, quiet ones 0.10. By month 36 they end up in nearly the same place.</p></div><div><h3>Trust a rating after about 13 months</h3><p>Only 32% of games launch within ±0.25 of their 3-year rating. A simple adjusted launch rating gets 55% there on day one.</p></div></div>
+</main><footer><div class="wrap">Data: daily BoardGameGeek ranking snapshots from <a href="https://github.com/beefsack/bgg-ranking-historicals">bgg-ranking-historicals</a>. Data © BoardGameGeek; this project is not affiliated with BoardGameGeek. Metadata: “Board Game Database from BoardGameGeek” (threnjen, Kaggle, CC BY-SA 3.0). Analysis and code by Nikita Reznichenko (<a href="https://github.com/nikitorezz/bgg-hype-fade">GitHub</a>).</div></footer></body></html>
