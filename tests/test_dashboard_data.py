@@ -13,6 +13,8 @@ pytestmark = pytest.mark.skipif(not (DATA / "games.parquet").exists(),
                                 reason="run `bgg dashboard-data` first")
 
 
+@pytest.mark.skipif(not (CFG.path("processed_dir") / "game_summary.parquet").exists(),
+                    reason="needs the local pipeline output (data/processed is not published)")
 def test_row_counts_and_main_sample_complete():
     g = pd.read_parquet(DATA / "games.parquet")
     summary = pd.read_parquet(CFG.path("processed_dir") / "game_summary.parquet")
