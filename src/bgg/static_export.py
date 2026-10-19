@@ -47,8 +47,7 @@ h1{font-size:3rem;line-height:1.08;letter-spacing:-.02em;margin:3rem 0 .8rem;fon
 .deck{font-size:1.15rem;color:var(--ink-2);max-width:44rem;margin:0}
 b{font-weight:600;color:var(--blue,#1F5AA6)}b.bad{color:#C62F2F}b.good{color:#1E8A4C}
 .lede{font-size:1.2rem;line-height:1.55;max-width:46rem;margin:1.6rem 0 0}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:2.2rem 0 0;
-border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:2.2rem 0 0}
 .stat{--c:#667085;padding:.9rem 0 .5rem;border-top:3px solid var(--c)}.stats{gap:0 1.2rem}
 .stat.fall{--c:#C62F2F}.stat.time{--c:#1F5AA6}.stat.trust{--c:#C27803}
 .stat .v{font-size:2.1rem;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--c)}
@@ -152,7 +151,7 @@ def fade_svg(curve: pd.DataFrame, fmt) -> str:
             f'<desc id="fade-d">The average rating falls steadily over 36 months after launch: '
             f'{fmt(float(c.loc[c["k"] == 12, "mean"].iloc[0]), "+.2f")} by month 12, '
             f'{fmt(float(c.loc[c["k"] == 36, "mean"].iloc[0]), "+.2f")} by month 36.</desc>'
-            f'{grid}{ticks}{axis}<path d="{band}" fill="rgba(33,103,176,0.13)"/>'
+            f'{grid}{ticks}{axis}<path d="{band}" fill="rgba(31,90,166,0.13)"/>'
             f'<path class="fade" d="{line}" fill="none" stroke="#1F5AA6" stroke-width="3" '
             f'stroke-linejoin="round" stroke-linecap="round"/>{marks}</svg>')
 
@@ -208,7 +207,7 @@ def run_export_static(cfg: Config) -> Path:
     def curve(gt: str) -> pd.DataFrame:
         return curves[(curves["group_type"] == gt) & (curves["adjusted"] == 0)]
 
-    tones = ["fall", "time", "fall", "trust"]
+    tones = ["fall", "time", "fall", "time"]
     stats = "".join(f'<div class="stat {t}"><div class="v">{html.escape(v)}</div>'
                     f'<div class="l">{html.escape(lab)}</div></div>'
                     for (v, lab), t in zip(text.kpis(n, acfg), tones, strict=True))
