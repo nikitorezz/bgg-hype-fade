@@ -8,6 +8,7 @@ Every number on this page comes from app/data/key_numbers.json or app/data/table
 from __future__ import annotations
 
 import html
+import importlib
 import os
 import random
 import re
@@ -19,6 +20,25 @@ import pandas as pd
 import streamlit as st
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+
+def _reload_stale_lib() -> None:
+    """Reload ``lib`` modules edited since this process imported them.
+
+    Streamlit Cloud pulls a new commit into the *running* process: the script is re-executed but
+    already-imported helper modules can stay cached, so new app code meets old library code
+    (for example ``AttributeError: module 'lib.charts' has no attribute 'PLOT_CONFIG'``).
+    """
+    lib = Path(__file__).resolve().parent / "lib"
+    stamp = max(f.stat().st_mtime_ns for f in lib.glob("*.py"))
+    if getattr(sys, "_bgg_lib_stamp", stamp) != stamp:
+        for name in ("lib.fmt", "lib.logic", "lib.text", "lib.charts", "lib.loaders"):
+            if name in sys.modules:
+                importlib.reload(sys.modules[name])
+    sys._bgg_lib_stamp = stamp
+
+
+_reload_stale_lib()
 
 from lib import charts, loaders, logic, text  # noqa: E402
 from lib.fmt import fmt  # noqa: E402
