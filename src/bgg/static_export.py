@@ -89,6 +89,31 @@ header.top nav a{margin-left:14px;font-size:.9rem}header.top .brand{display:none
 @media (prefers-reduced-motion:no-preference){.hero-chart path.fade{stroke-dasharray:1400;
 stroke-dashoffset:1400;animation:draw 1.6s ease-out .2s forwards}}
 @keyframes draw{to{stroke-dashoffset:0}}
+header.top nav a{display:inline-block;padding:.75rem .5rem;margin-left:10px}
+.js-plotly-plot,.js-plotly-plot *{touch-action:pan-y}
+.only-mobile{display:none}
+nav.jump{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);
+border-bottom:1px solid var(--rule);backdrop-filter:blur(6px)}
+nav.jump .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:6px;padding-bottom:6px;
+scrollbar-width:none;-webkit-overflow-scrolling:touch}
+nav.jump .wrap::-webkit-scrollbar{display:none}
+nav.jump a{flex:0 0 auto;display:inline-block;padding:.6rem .95rem;border-radius:999px;
+color:var(--ink-2);font-weight:500;font-size:.95rem;white-space:nowrap}
+nav.jump a:hover{text-decoration:none;background:var(--panel)}
+nav.jump a.on{background:var(--blue);color:#fff}
+section{scroll-margin-top:64px}
+footer a{display:inline-block;padding:.35rem 0}
+@media (max-width:700px){
+.only-desktop{display:none}.only-mobile{display:block}
+.wrap{padding:0 16px}
+.deck{font-size:1.02rem}.lede{font-size:1.05rem}
+.stat .v{font-size:1.7rem}.stat .l{font-size:.82rem}
+.big{font-size:2.4rem}
+section{padding-top:2rem}section h2{font-size:1.3rem}
+.actions .btn{flex:1 1 100%;text-align:center}
+header.top .wrap{height:auto;min-height:52px}
+.note{padding:.75rem .9rem;font-size:.97rem}
+.cap{font-size:.84rem}}
 """
 
 
@@ -156,7 +181,19 @@ def fade_svg(curve: pd.DataFrame, fmt) -> str:
             f'stroke-linejoin="round" stroke-linecap="round"/>{marks}</svg>')
 
 
-def _page(title: str, meta: str, body: str, pub: dict) -> str:
+JUMP_JS = ("<script>(function(){var links=[].slice.call(document.querySelectorAll('nav.jump a'));"
+           "if(!links.length||!('IntersectionObserver' in window))return;"
+           "var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a});"
+           "var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){"
+           "links.forEach(function(a){a.classList.remove('on')});var a=map[e.target.id];"
+           "if(a){a.classList.add('on');a.scrollIntoView({block:'nearest',inline:'center'})}}})},"
+           "{rootMargin:'-20% 0px -70% 0px'});"
+           "Object.keys(map).forEach(function(id){var el=document.getElementById(id);"
+           "if(el)io.observe(el)})})();</script>")
+
+
+def _page(title: str, meta: str, body: str, pub: dict, jump: list[tuple[str, str]] | None = None
+          ) -> str:
     repo = f"https://github.com/{pub['github_repo']}" if pub.get("github_repo") else ""
     nav = []
     if pub.get("dashboard_url"):
@@ -166,6 +203,11 @@ def _page(title: str, meta: str, body: str, pub: dict) -> str:
                 f'<a href="{repo}">Code</a>']
     header = (f'<header class="top"><div class="wrap"><a class="brand" href="index.html">Does the '
               f'hype fade?</a><nav>{"".join(nav)}</nav></div></header>')
+    if jump:
+        header += ('<nav class="jump" aria-label="Sections"><div class="wrap">'
+                   + "".join(f'<a href="#{i}"{" class=on" if n == 0 else ""}>{html.escape(t)}</a>'
+                     for n, (i, t) in enumerate(jump))
+                   + "</div></nav>")
     author = html.escape(pub.get("author") or "")
     foot = ('<footer><div class="wrap">Data: daily BoardGameGeek ranking snapshots from '
             '<a href="https://github.com/beefsack/bgg-ranking-historicals">bgg-ranking-historicals'
@@ -176,7 +218,7 @@ def _page(title: str, meta: str, body: str, pub: dict) -> str:
             + '</div></footer>')
     return (f'<!DOCTYPE html><html lang="en"><head>{meta}<title>{html.escape(title)}</title>'
             f'{FONT_LINK}<style>{CSS}</style></head><body>{header}<main class="wrap">{body}'
-            f'</main>{foot}</body></html>')
+            f'</main>{foot}{JUMP_JS if jump else ""}</body></html>')
 
 
 def run_export_static(cfg: Config) -> Path:
@@ -196,11 +238,16 @@ def run_export_static(cfg: Config) -> Path:
 
     first_chart = [True]
 
-    def plot(fig) -> str:
+    def html_of(fig) -> str:
         inline = first_chart[0]
         first_chart[0] = False
         return fig.to_html(full_html=False, include_plotlyjs=True if inline else False,
-                           config={"displayModeBar": False, "responsive": True})
+                           config=charts.PLOT_CONFIG)
+
+    def plot(build) -> str:
+        """``build(compact)`` returns a figure; emit the wide and the phone layout, CSS shows one."""
+        return (f'<div class="only-desktop">{html_of(build(False))}</div>'
+                f'<div class="only-mobile">{html_of(build(True))}</div>')
 
     curves = table("curve_by_segment")
 
@@ -306,9 +353,9 @@ games launched {start}–{end}, measured from the month each entered the ranking
 <section id="fade">
 <h2>Launch ratings oversell</h2>
 <p class="sub">{_md(text.headline(n))}</p>
-{plot(charts.fig_overview(curve("none"), "none"))}
+{plot(lambda c: charts.fig_overview(curve("none"), "none", compact=c))}
 <h3 class="chart">Big games fade less than niche ones</h3>
-{plot(charts.fig_overview(curve("popularity"), "popularity"))}
+{plot(lambda c: charts.fig_overview(curve("popularity"), "popularity", compact=c))}
 <p class="cap">Mean change in the displayed rating since entry; {int(n["n_main_sample"]["value"]):,}
 games launched {start}–{end}. The interactive app adds more splits and a site-drift adjustment.</p>
 </section>
@@ -316,20 +363,20 @@ games launched {start}–{end}. The interactive app adds more splits and a site-
 <section id="gap">
 <h2>New raters still rate below the number on the page</h2>
 <p class="sub">{_md(text.gap_text(n))}</p>
-{plot(charts.fig_gap(table("gap_new_vs_displayed")))}
+{plot(lambda c: charts.fig_gap(table("gap_new_vs_displayed"), compact=c))}
 <p class="cap">The new-rater average is backed out from two running averages three months apart
 and kept only when at least 10 ratings were added and its rounding error is at most 0.5 points.</p>
 </section>
 
 <section id="hype">
 <h2>Hype changes how fast ratings fall, not how far</h2>
-{plot(charts.fig_speed(speed, (first, last)))}
+{plot(lambda c: charts.fig_speed(speed, (first, last), compact=c))}
 <div class="note">{_md(text.hype_takeaway(speed, (first, last)))}</div>
 <h3 class="chart">No model finds that hyped games fall further</h3>
-{plot(charts.fig_specs(n))}
+{plot(lambda c: charts.fig_specs(n, compact=c))}
 <p class="cap">{_md(text.specs_caption(n))}</p>
 <h3 class="chart">Kickstarter games fall further, even from the same start</h3>
-{plot(charts.fig_kickstarter(table("kickstarter_by_band")))}
+{plot(lambda c: charts.fig_kickstarter(table("kickstarter_by_band"), compact=c))}
 <p class="cap">{_md(text.kickstarter_caption(n))}</p>
 </section>
 
@@ -339,10 +386,10 @@ and kept only when at least 10 ratings were added and its rounding error is at m
 <p class="cap">First month when {fmt(100 * acfg["rule_share"], '.0f')}% of games are within
 ±{acfg["rule_tolerance"]} of their 3-year rating (95% CI: months
 {fmt(n["q4_rule_month"]["ci_low"], '.0f')}–{fmt(n["q4_rule_month"]["ci_high"], '.0f')}).</p></div>
-<div>{plot(charts.fig_trust(trust_curve, acfg["rule_tolerance"], acfg["rule_share"], rule_k))}</div>
+<div>{plot(lambda c: charts.fig_trust(trust_curve, acfg["rule_tolerance"], acfg["rule_share"], rule_k, compact=c))}</div>
 </div>
 <h3 class="chart">An adjusted launch rating gets there much sooner</h3>
-{plot(charts.fig_adjusted(bars, acfg["rule_tolerance"]))}
+{plot(lambda c: charts.fig_adjusted(bars, acfg["rule_tolerance"], compact=c))}
 <p class="cap">{_md(text.adjusted_caption(n, acfg))}</p>
 </section>
 
@@ -364,8 +411,10 @@ platform; monthly snapshots.</li></ul>
 </section>
 """
     out = site / "dashboard.html"
+    jump = [("fade", "The fade"), ("gap", "New vs displayed"), ("hype", "Hype"),
+            ("trust", "When to trust"), ("method", "Method")]
     out.write_text(_page("Does the hype fade? Static dashboard",
-                         meta(f"{pages_url}/dashboard.html" if pages_url else ""), body, pub),
+                         meta(f"{pages_url}/dashboard.html" if pages_url else ""), body, pub, jump),
                    encoding="utf-8")
     card = cfg.root / "reports" / "figures" / "social_card.png"
     if card.exists():  # next to index.html, so the og:image link works once hosted

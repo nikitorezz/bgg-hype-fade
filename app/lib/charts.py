@@ -29,6 +29,12 @@ FONT_FAMILY = "IBM Plex Sans, Segoe UI, Helvetica Neue, Arial, sans-serif"
 MILESTONES = (12, 24, 36)
 X_TITLE = "Months since entering the ranking"
 
+# Plotly config for every chart. Phones: a finger on a chart must scroll the page, not zoom or
+# pan the chart, so zoom/pan is switched off (axes are fixed, no drag mode, no scroll zoom);
+# taps still show the hover tooltip.
+PLOT_CONFIG = {"displayModeBar": False, "responsive": True, "scrollZoom": False,
+               "doubleClick": False, "displaylogo": False}
+
 # kept for backwards compatibility with older imports
 SKY = RAMP_LIGHT
 SEQ4 = ["#A9C4E8", "#7796BE", "#446895", "#123A6B"]
@@ -68,6 +74,9 @@ def base_layout(fig: go.Figure, height: int = 400, legend: bool = False,
         legend=dict(orientation="h", x=0, y=1.02, yanchor="bottom", title=None,
                     font=dict(size=12, color=INK_2), itemclick=False, itemdoubleclick=False),
     )
+    fig.update_layout(dragmode=False)
+    fig.update_xaxes(fixedrange=True)
+    fig.update_yaxes(fixedrange=True)
     fig.update_xaxes(showgrid=False, zeroline=False, showline=False, ticks="",
                      tickfont=dict(color=INK_3, size=12), title_font=dict(color=INK_3, size=12),
                      automargin=True)
@@ -141,14 +150,17 @@ def _label_for(g: str, group_type: str) -> str:
     return str(g)
 
 
-def _x_axis(fig: go.Figure, k_max: int = 36) -> None:
-    fig.update_xaxes(title=X_TITLE, tickvals=[0, 6, 12, 18, 24, 30, 36],
-                     range=[-0.5, k_max + 0.5])
+def _x_axis(fig: go.Figure, k_max: int = 36, compact: bool = False) -> None:
+    ticks = [0, 12, 24, 36] if compact else [0, 6, 12, 18, 24, 30, 36]
+    fig.update_xaxes(title=X_TITLE, tickvals=ticks, range=[-0.5, k_max + 0.5])
 
 
 def fig_overview(curves: pd.DataFrame, group_type: str, height: int = 400,
-                 highlight: str | None = None) -> go.Figure:
+                 highlight: str | None = None, compact: bool = False) -> go.Figure:
     """The fade: mean change by months since entry.
+
+    ``compact`` (phones): a legend above the plot instead of right-hand end labels, so the lines
+    keep the full width.
 
     Up to four groups are drawn in colour with end labels. With more groups (launch years,
     deciles) every group is a thin grey context line and only ``highlight`` is drawn in colour.
@@ -166,7 +178,7 @@ def fig_overview(curves: pd.DataFrame, group_type: str, height: int = 400,
                 continue
             d = curves[curves["group_value"] == g].sort_values("k")
             fig.add_trace(go.Scatter(x=d["k"], y=d["mean"], mode="lines", name=str(g),
-                                     line=dict(color="#CDD4DE", width=1.3),
+                                     showlegend=False, line=dict(color="#CDD4DE", width=1.3),
                                      hovertemplate=f"{_label_for(g, group_type)}: %{{y:+.2f}}"
                                                    "<extra></extra>"))
         d = curves[curves["group_value"] == highlight].sort_values("k")
@@ -190,20 +202,24 @@ def fig_overview(curves: pd.DataFrame, group_type: str, height: int = 400,
             text=[fmt(v, "+.2f", minus=True) for v in d["mean"]],
             textposition="bottom center", textfont=dict(color=INK, size=13), cliponaxis=False))
     _baseline(fig)
-    _x_axis(fig)
+    _x_axis(fig, compact=compact)
     fig.update_yaxes(title="Change in displayed rating", tickformat=".1f", dtick=0.1)
+    if compact:
+        return base_layout(fig, height=min(height, 330), legend=not single, right_margin=14)
     _end_labels(fig, labels, min_gap=0.024)
     return base_layout(fig, height=height, right_margin=44 if single else 130)
 
 
 def fig_explore(seg: pd.DataFrame, overall: pd.DataFrame, group_type: str,
-                highlight: str | None = None) -> go.Figure:
+                highlight: str | None = None, compact: bool = False) -> go.Figure:
     """Segment curves against the overall curve (dashed grey)."""
-    fig = fig_overview(seg, group_type, height=440, highlight=highlight)
+    fig = fig_overview(seg, group_type, height=440, highlight=highlight, compact=compact)
     o = overall.sort_values("k")
     fig.add_trace(go.Scatter(x=o["k"], y=o["mean"], mode="lines", name="All new games",
                              line=dict(color=GREY, dash="dash", width=1.8),
                              hovertemplate="All new games: %{y:+.2f}<extra></extra>"))
+    if compact:
+        return fig
     last = o.iloc[-1]
     fig.add_annotation(x=float(last["k"]), y=float(last["mean"]), xanchor="left", xshift=8,
                        yshift=-14, showarrow=False, text="All games (dashed)",
@@ -211,7 +227,7 @@ def fig_explore(seg: pd.DataFrame, overall: pd.DataFrame, group_type: str,
     return fig
 
 
-def fig_gap(gap: pd.DataFrame) -> go.Figure:
+def fig_gap(gap: pd.DataFrame, compact: bool = False) -> go.Figure:
     """New raters' average minus the displayed average, by month (usable share in the hover)."""
     fig = go.Figure()
     g = gap.sort_values("k")
@@ -239,21 +255,23 @@ def fig_gap(gap: pd.DataFrame) -> go.Figure:
                                      textfont=dict(color=INK, size=13), showlegend=False,
                                      cliponaxis=False))
     _baseline(fig)
-    _x_axis(fig)
-    fig.update_xaxes(range=[1.5, 36.8], tickvals=[3, 6, 12, 18, 24, 30, 36])
+    _x_axis(fig, compact=compact)
+    fig.update_xaxes(range=[1.5, 36.8],
+                     tickvals=[3, 12, 24, 36] if compact else [3, 6, 12, 18, 24, 30, 36])
     lo = min(-0.3, float(g["ci_low"].min()) - 0.03)
     fig.update_yaxes(title="New-rater average minus displayed", range=[lo, 0.03],
                      tickformat=".1f", dtick=0.1)
     fig.add_annotation(x=36, y=0, yshift=10, xanchor="right", showarrow=False,
                        text="Displayed average", font=dict(size=12, color=INK_3))
-    return base_layout(fig, height=380, right_margin=44)
+    return base_layout(fig, height=330 if compact else 380, right_margin=18 if compact else 44)
 
 
-def fig_speed(speed: pd.DataFrame, months: tuple[int, int]) -> go.Figure:
+def fig_speed(speed: pd.DataFrame, months: tuple[int, int], compact: bool = False) -> go.Figure:
     """Dumbbell per hype quartile: mean change at month `first` and at month `last`."""
     first, last = months
     fig = go.Figure()
-    labels = [f"Q{int(q)}" + (" least hyped" if q == 1 else " most hyped" if q == 4 else "")
+    sep = "<br>" if compact else " "
+    labels = [f"Q{int(q)}" + (f"{sep}least hyped" if q == 1 else f"{sep}most hyped" if q == 4 else "")
               for q in speed["hype_quartile"]]
     for lab, a, b in zip(labels, speed[f"change_{first}"], speed[f"change_{last}"], strict=True):
         fig.add_shape(type="line", x0=a, x1=b, y0=lab, y1=lab, layer="below",
@@ -270,13 +288,16 @@ def fig_speed(speed: pd.DataFrame, months: tuple[int, int]) -> go.Figure:
     fig.update_xaxes(title="Mean change in displayed rating since entry", tickformat=".1f",
                      dtick=0.1, showgrid=True, gridcolor=GRID)
     fig.update_yaxes(autorange="reversed", showgrid=False)
-    return base_layout(fig, height=300, legend=True, unified=False)
+    return base_layout(fig, height=320 if compact else 300, legend=True, unified=False,
+                       right_margin=14 if compact else 24)
 
 
-def fig_specs(numbers: dict[str, dict]) -> go.Figure:
+def fig_specs(numbers: dict[str, dict], compact: bool = False) -> go.Figure:
     """Hype coefficient for the four model specifications with 95% CI."""
-    labels = {"a": "With controls", "b": "Change after month 6",
-              "c": "Reach instead of growth", "d": "No controls"}
+    labels = ({"a": "With<br>controls", "b": "After<br>month 6", "c": "Reach, not<br>growth",
+               "d": "No<br>controls"} if compact else
+              {"a": "With controls", "b": "Change after month 6",
+               "c": "Reach instead of growth", "d": "No controls"})
     xs, lo, hi, ys = [], [], [], []
     for s, lab in labels.items():
         e = numbers[f"spec_{s}_hype"]
@@ -289,10 +310,10 @@ def fig_specs(numbers: dict[str, dict]) -> go.Figure:
                + [x - low for x, low in zip(xs, lo, strict=True)]) * 1.25
     fig.add_vrect(x0=-span, x1=0, fillcolor=RED, opacity=0.05, line_width=0, layer="below")
     fig.add_annotation(x=-span, y=1.0, yref="paper", xanchor="left", yanchor="bottom",
-                       showarrow=False, text="Hyped games fade more",
+                       showarrow=False, text="← fade more" if compact else "Hyped games fade more",
                        font=dict(color=RED, size=11))
     fig.add_annotation(x=span, y=1.0, yref="paper", xanchor="right", yanchor="bottom",
-                       showarrow=False, text="Hyped games fade less",
+                       showarrow=False, text="fade less →" if compact else "Hyped games fade less",
                        font=dict(color=INK_3, size=11))
     fig.add_trace(go.Scatter(x=xs, y=ys, mode="markers",
                              marker=dict(color=BLUE, size=11, line=dict(color="white", width=2)),
@@ -301,12 +322,13 @@ def fig_specs(numbers: dict[str, dict]) -> go.Figure:
                              hovertemplate="%{y}: %{x:+.3f}<extra></extra>"))
     _baseline(fig, horizontal=False)
     fig.update_xaxes(title="Effect of hype on the 3-year change (95% CI)", range=[-span, span],
-                     showgrid=True, gridcolor=GRID, tickformat="+.2f")
+                     showgrid=True, gridcolor=GRID, tickformat="+.2f", nticks=5 if compact else None)
     fig.update_yaxes(autorange="reversed", showgrid=False)
-    return base_layout(fig, height=290, unified=False, top=30)
+    return base_layout(fig, height=300 if compact else 290, unified=False, top=30,
+                       right_margin=14 if compact else 24)
 
 
-def fig_kickstarter(bands: pd.DataFrame) -> go.Figure:
+def fig_kickstarter(bands: pd.DataFrame, compact: bool = False) -> go.Figure:
     """Change to month 36 by starting-rating band, Kickstarted vs not, with CIs."""
     fig = go.Figure()
     labels = []
@@ -328,11 +350,14 @@ def fig_kickstarter(bands: pd.DataFrame) -> go.Figure:
     _baseline(fig)
     fig.update_xaxes(title="Average rating at entry", dtick=0.5)
     fig.update_yaxes(title="Change to month 36", tickformat=".1f", dtick=0.2)
+    if compact:
+        return base_layout(fig, height=330, unified=False, legend=True, right_margin=14)
     _end_labels(fig, labels, min_gap=0.06)
     return base_layout(fig, height=360, unified=False, right_margin=130)
 
 
-def fig_trust(curve: pd.DataFrame, tolerance: float, target: float, rule_k: float) -> go.Figure:
+def fig_trust(curve: pd.DataFrame, tolerance: float, target: float, rule_k: float,
+              compact: bool = False) -> go.Figure:
     """Share of games within the tolerance of their 3-year rating, by month."""
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -351,13 +376,15 @@ def fig_trust(curve: pd.DataFrame, tolerance: float, target: float, rule_k: floa
         fig.add_annotation(x=rule_k, y=y, ax=40, ay=40, showarrow=True, arrowhead=0,
                            arrowcolor=INK_3, arrowwidth=1, text=f"<b>Month {int(rule_k)}</b>",
                            font=dict(size=13, color=INK), xanchor="left")
-    fig.update_xaxes(title=X_TITLE, tickvals=[0, 6, 12, 18, 24, 30])
+    fig.update_xaxes(title=X_TITLE,
+                     tickvals=[0, 10, 20, 30] if compact else [0, 6, 12, 18, 24, 30])
     fig.update_yaxes(title=f"Games within ±{tolerance:.2f} of final rating", range=[0, 102],
                      ticksuffix="%", dtick=20)
-    return base_layout(fig, height=360, unified=False)
+    return base_layout(fig, height=320 if compact else 360, unified=False,
+                       right_margin=14 if compact else 24)
 
 
-def fig_adjusted(bars: pd.DataFrame, tol: float) -> go.Figure:
+def fig_adjusted(bars: pd.DataFrame, tol: float, compact: bool = False) -> go.Figure:
     """Share within tolerance at each age: displayed rating vs adjusted launch rating."""
     fig = go.Figure()
     for pred, color in (("Displayed rating", "#B8C2CF"), ("Adjusted launch rating", BLUE)):
@@ -366,14 +393,16 @@ def fig_adjusted(bars: pd.DataFrame, tol: float) -> go.Figure:
             x=[f"Month {k}" for k in d["k"]], y=100 * d["share_within"], name=pred,
             marker=dict(color=color, line=dict(width=0), cornerradius=4),
             text=[f"{fmt(100 * v, '.0f')}%" for v in d["share_within"]],
-            textposition="outside", textfont=dict(color=INK_2, size=12), cliponaxis=False,
+            textposition="outside", textfont=dict(color=INK_2, size=11 if compact else 12),
+            cliponaxis=False,
             customdata=np.stack([d["mae"], d["n"]], axis=1),
             hovertemplate=pred + ": %{y:.0f}% within ±" + f"{tol}"
                           " (mean error %{customdata[0]:.2f})<extra></extra>"))
     fig.update_layout(barmode="group", bargap=0.35, bargroupgap=0.08)
     fig.update_yaxes(range=[0, 108], showticklabels=False, showgrid=False)
     fig.update_xaxes(title=None)
-    return base_layout(fig, height=320, legend=True, unified=False)
+    return base_layout(fig, height=300 if compact else 320, legend=True, unified=False,
+                       right_margin=10 if compact else 24)
 
 
 def _short(name: str, n: int = 26) -> str:
@@ -385,7 +414,8 @@ RANK_TICKS = [1, 3, 10, 30, 100, 300, 1000, 3000, 10000, 30000]
 
 def fig_lookup(name: str, traj: pd.DataFrame, avg_m0: float, cohort_curve: pd.DataFrame | None,
                new_col: str, metric: str = "rating", other: tuple[str, pd.DataFrame] | None = None,
-               expected: float | None = None, cohort_label: str = "Typical launch") -> go.Figure:
+               expected: float | None = None, cohort_label: str = "Typical launch",
+               compact: bool = False) -> go.Figure:
     """One game's path (rating, rank or raters), optionally against a second game.
 
     Rating view: displayed average, new-rater dots, the typical path of its launch year and the
@@ -434,22 +464,25 @@ def fig_lookup(name: str, traj: pd.DataFrame, avg_m0: float, cohort_curve: pd.Da
         labels.append(("Expected at 36", 36.0, float(expected), AMBER))
         ys.append(float(expected))
     kmax = int(max(36, max(t["k"].max() for _, t, _ in series)))
-    _x_axis(fig, kmax)
+    _x_axis(fig, kmax, compact=compact)
     if metric == "rating":
         span = max(ys) - min(ys) if ys else 1.0
         fig.update_yaxes(title="Average rating", tickformat=".1f")
-        _end_labels(fig, labels, min_gap=max(span, 0.3) * 0.075)
+        if not compact:
+            _end_labels(fig, labels, min_gap=max(span, 0.3) * 0.075)
     elif metric == "rank":
         fig.update_yaxes(type="log", autorange="reversed", title="Rank (1 = best)",
                          tickvals=RANK_TICKS, ticktext=[f"{v:,}" for v in RANK_TICKS])
-        for lab, x, y, color in labels:
+        for lab, x, y, color in ([] if compact else labels):
             fig.add_annotation(x=x, y=np.log10(y), xanchor="left", yanchor="middle", xshift=8,
                                showarrow=False, text=f"<span style='color:{color}'>●</span> "
                                f"{lab}", font=dict(size=12, color=INK_2))
     else:
         fig.update_yaxes(type="log", title="Raters (log scale)")
-        for lab, x, y, color in labels:
+        for lab, x, y, color in ([] if compact else labels):
             fig.add_annotation(x=x, y=np.log10(y), xanchor="left", yanchor="middle", xshift=8,
                                showarrow=False, text=f"<span style='color:{color}'>●</span> "
                                f"{lab}", font=dict(size=12, color=INK_2))
+    if compact:
+        return base_layout(fig, height=380, legend=True, right_margin=14)
     return base_layout(fig, height=420, right_margin=150)

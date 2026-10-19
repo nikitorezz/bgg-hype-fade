@@ -1,4 +1,5 @@
 import json
+import re
 
 import pandas as pd
 import pytest
@@ -16,12 +17,35 @@ needs_games = pytest.mark.skipif(not (DATA / "games.parquet").exists(),
 needs_data = pytest.mark.skipif(not (DATA / "key_numbers.json").exists(),
                                 reason="run `bgg dashboard-data` first")
 
+ORDER_FULL = ["The fade", "Look up a game", "New vs displayed", "Hype", "When to trust", "Explore",
+              "Method"]
+ORDER_AGGREGATES = [s for s in ORDER_FULL if s != "Look up a game"]
+
 
 def _run(mode: str, monkeypatch) -> AppTest:
     monkeypatch.setenv("BGG_APP_MODE", mode)
     at = AppTest.from_file(SCRIPT, default_timeout=180)
     at.run()
     return at
+
+
+def _group(at: AppTest, label: str):
+    """A pill group by its label (the section menu is labelled 'Section')."""
+    return next(g for g in at.get("button_group") if g.label == label)
+
+
+def _goto(at: AppTest, section: str) -> AppTest:
+    _group(at, "Section").set_value(section).run()
+    return at
+
+
+def _page_text(at: AppTest) -> str:
+    return " ".join(m.value for m in at.markdown)
+
+
+def _trust_month(at: AppTest) -> str:
+    m = re.search(r'class="trust-num">([^<]+)<', _page_text(at))
+    return m.group(1) if m else ""
 
 
 @needs_data
@@ -31,20 +55,21 @@ def test_every_section_renders_in_both_modes(mode, monkeypatch):
         pytest.skip("game-level extract not built")
     at = _run(mode, monkeypatch)
     assert not at.exception, [e.value for e in at.exception]
-    labels = [t.label for t in at.tabs]
-    assert ("Look up a game" in labels) == (mode == "full")
-    assert labels[0] == "The fade" and labels[-1] == "Method"
+    options = list(_group(at, "Section").options)
+    assert options == (ORDER_FULL if mode == "full" else ORDER_AGGREGATES)
+    for section in options:                      # only the chosen section is rendered
+        _goto(at, section)
+        assert not at.exception, (section, [e.value for e in at.exception])
 
 
-def _page_text(at: AppTest) -> str:
-    return " ".join(m.value for m in at.markdown)
-
-
-def _trust_month(at: AppTest) -> str:
-    import re
-
-    m = re.search(r'class="trust-num">([^<]+)<', _page_text(at))
-    return m.group(1) if m else ""
+@needs_data
+def test_deep_link_opens_the_requested_section(monkeypatch):
+    monkeypatch.setenv("BGG_APP_MODE", "aggregates")
+    at = AppTest.from_file(SCRIPT, default_timeout=180)
+    at.query_params["s"] = "hype"
+    at.run()
+    assert _group(at, "Section").value == "Hype"
+    assert at.query_params["s"] == ["hype"] or at.query_params["s"] == "hype"
 
 
 @needs_data
@@ -78,7 +103,7 @@ def test_lookup_works_for_every_spot_check_game(monkeypatch):
     games = pd.read_parquet(DATA / "games.parquet")
     labels = games["latest_name"] + " (" + games["entry_year"].astype(str) + ")"
     by_id = dict(zip(games["game_id"], labels, strict=True))
-    at = _run("full", monkeypatch)
+    at = _goto(_run("full", monkeypatch), "Look up a game")
     for s in CFG.section("qc")["spot_checks"]:
         if not s["in_cohort"]:
             continue
@@ -111,13 +136,13 @@ def test_aggregates_mode_works_without_game_level_files(monkeypatch, tmp_path):
     at = AppTest.from_file(SCRIPT, default_timeout=180)
     at.run()
     assert not at.exception, [e.value for e in at.exception]
-    assert "Look up a game" not in [t.label for t in at.tabs]
+    assert "Look up a game" not in list(_group(at, "Section").options)
     importlib.reload(loaders)
 
 
 @needs_data
 def test_trust_sliders_work_in_aggregates_mode(monkeypatch):
-    at = _run("aggregates", monkeypatch)
+    at = _goto(_run("aggregates", monkeypatch), "When to trust")
     nums = json.loads((DATA / "key_numbers.json").read_text(encoding="utf-8"))["numbers"]
     assert _trust_month(at) == f"Month {nums['q4_rule_month']['value']:.0f}"  # +-0.25 / 80%
     tol = next(s for s in at.select_slider if s.label.startswith("Close means"))
@@ -131,12 +156,30 @@ def test_trust_sliders_work_in_aggregates_mode(monkeypatch):
 
 @needs_data
 def test_explore_segments_renders_for_every_split(monkeypatch):
-    at = _run("aggregates", monkeypatch)
-    box = next(b for b in at.selectbox if b.label == "Split by")
-    for label in list(box.options):
-        box.set_value(label).run()
+    at = _goto(_run("aggregates", monkeypatch), "Explore")
+    for label in list(_group(at, "Split by").options):
+        _group(at, "Split by").set_value(label).run()
         assert not at.exception, (label, [e.value for e in at.exception])
-        box = next(b for b in at.selectbox if b.label == "Split by")
     # no per-game content anywhere on the page
     page = _page_text(at)
     assert "Ark Nova" not in page and "Wingspan" not in page
+
+
+@needs_data
+def test_compare_pills_switch_the_chart_without_errors(monkeypatch):
+    at = _run("aggregates", monkeypatch)
+    for label in list(_group(at, "Compare").options):
+        _group(at, "Compare").set_value(label).run()
+        assert not at.exception, (label, [e.value for e in at.exception])
+
+
+@needs_data
+def test_phone_layout_renders_everywhere(monkeypatch):
+    """?compact=1 (also chosen automatically for phone user agents) must work in every section."""
+    monkeypatch.setenv("BGG_APP_MODE", "aggregates")
+    at = AppTest.from_file(SCRIPT, default_timeout=180)
+    at.query_params["compact"] = "1"
+    at.run()
+    for section in list(_group(at, "Section").options):
+        _goto(at, section)
+        assert not at.exception, (section, [e.value for e in at.exception])

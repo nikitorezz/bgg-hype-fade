@@ -10,6 +10,7 @@ from __future__ import annotations
 import html
 import os
 import random
+import re
 import sys
 from pathlib import Path
 
@@ -29,12 +30,14 @@ WRITEUP_URL = os.environ.get(
 PAGES_URL = os.environ.get("BGG_PAGES_URL", "https://nikitorezz.github.io/bgg-hype-fade/")
 AUTHOR = os.environ.get("BGG_AUTHOR", "Nikita Reznichenko")
 GOOD_C, BAD_C = "#1E8A4C", "#C62F2F"
-PLOT_CONFIG = {"displayModeBar": False, "responsive": True, "scrollZoom": False}
-COMPARE = {"All new games": "none", "By hype (growth in raters, months 0–6)": "hype_quartile",
-           "By popularity": "popularity", "By Kickstarter status": "kickstarted"}
-SEGMENT_TYPES = {"Launch year": "launch_year", "Hype quartile": "hype_quartile",
-                 "Starting rating (deciles)": "start_decile", "Popularity": "popularity",
+PLOT_CONFIG = charts.PLOT_CONFIG   # no zoom/pan: a finger on a chart scrolls the page
+COMPARE = {"All new games": "none", "By hype": "hype_quartile", "By popularity": "popularity",
+           "By Kickstarter": "kickstarted"}
+SEGMENT_TYPES = {"Launch year": "launch_year", "Hype": "hype_quartile",
+                 "Starting rating": "start_decile", "Popularity": "popularity",
                  "Kickstarter": "kickstarted"}
+HYPE_NOTE = "Hype = how much a game's number of raters grew during months 0–6."
+MOBILE_UA = re.compile(r"Mobi|Android|iPhone|iPod", re.I)
 TONES = ["fall", "time", "fall", "time"]   # accent of each headline number
 REASONS = {
     "left_censored": "was already ranked when the data starts (Oct 2016), so its launch "
@@ -62,10 +65,47 @@ h1, h2, h3, h4 {letter-spacing: -0.01em;}
 .stats.sm .stat.fall .v {color: #C62F2F;} .stats.sm .stat.rise .v {color: #1E8A4C;}
 .stat.rise {--c: #1E8A4C;} .stat.amber {--c: #C27803;} .stat.amber .v {color: #8A5A00;}
 @media (max-width: 700px) {
-  .hero h1 {font-size: 2.1rem;}
-  .stats {grid-template-columns: repeat(2, minmax(0, 1fr));}
-  .stat {margin-bottom: .6rem;}
+  .block-container {padding: 1.4rem .95rem 2.4rem;}
+  .hero h1 {font-size: 1.95rem;}
+  .hero .deck {font-size: .98rem;}
+  .stats {grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 .9rem; margin: 1.1rem 0 .3rem;}
+  .stat {margin-bottom: .35rem; padding: .6rem 0 .25rem;}
+  .stat .v {font-size: 1.6rem;}
+  .stat .l {font-size: .8rem;}
+  .stats.sm .v {font-size: 1.25rem;}
+  .lede {font-size: 1.02rem; line-height: 1.5;}
+  .section-title {font-size: 1.25rem;}
+  .chart-title {font-size: 1rem; margin-top: 1.3rem;}
+  .game-name {font-size: 1.4rem;}
+  .trust-num {font-size: 2.3rem;}
+  .note {padding: .7rem .85rem; font-size: .95rem;}
+  .site-foot {margin-top: 2rem;}
 }
+/* heading anchor icons are tiny tap targets and useless here */
+[data-testid="stHeaderActionElements"] {display: none !important;}
+/* the page, not the chart, owns vertical touch scrolling */
+.js-plotly-plot, .js-plotly-plot * {touch-action: pan-y;}
+/* navigation: wrapped pills instead of a sideways-scrolling tab strip */
+[data-testid="stButtonGroup"] {margin: .2rem 0 .8rem;}
+[data-testid="stButtonGroup"] button {min-height: 2.5rem;}
+/* the section menu is filled blue so it reads as navigation, not as a chart filter */
+.st-key-nav button {font-weight: 500;}
+.st-key-nav button[aria-checked="true"] {background: #1F5AA6 !important;
+                                       border-color: #1F5AA6 !important;}
+.st-key-nav button[aria-checked="true"] * {color: #FFFFFF !important;}
+.site-foot a {display: inline-block; padding: .35rem 0;}
+[aria-label^="Help for"] {min-width: 2rem; min-height: 2rem; display: inline-flex;
+                          align-items: center; justify-content: center;}
+.seg-wrap {overflow-x: auto; margin: .3rem 0 .8rem;}
+table.seg {border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums;
+           border: none; font-size: .93rem;}
+table.seg th {text-align: left; font-weight: 500; color: #667085; font-size: .8rem; border: none;
+              border-bottom: 1px solid #E3E8EE; padding: .4rem .35rem; white-space: nowrap;}
+table.seg td {border: none; border-bottom: 1px solid #E3E8EE; padding: .5rem .35rem;
+              vertical-align: top;}
+table.seg td.n {color: #667085; text-align: right;} table.seg th.n {text-align: right;}
+table.seg .ci {display: block; color: #667085; font-size: .75rem;}
+table.seg .down {color: #C62F2F; font-weight: 500;} table.seg .up {color: #1E8A4C; font-weight: 500;}
 .delta {font-weight: 600; white-space: nowrap;}
 .delta.up {color: #1E8A4C;} .delta.down {color: #C62F2F;}
 .game-name {font-size: 1.7rem; font-weight: 600; line-height: 1.2; margin: 1rem 0 .35rem;}
@@ -113,6 +153,38 @@ def show(fig) -> None:
     st.plotly_chart(fig, width="stretch", config=PLOT_CONFIG)
 
 
+def compact() -> bool:
+    """True on phones (user agent) or with ?compact=1: charts use the narrow layout."""
+    flag = st.query_params.get("compact")
+    if flag is not None:
+        return flag not in ("0", "false")
+    try:
+        return bool(MOBILE_UA.search(st.context.headers.get("User-Agent", "")))
+    except Exception:  # headers are unavailable outside a browser session (e.g. in tests)
+        return False
+
+
+def choose(key: str, label: str, options: list[str], default: str | None = None) -> str:
+    """Wrapping pill selector that always has a value (tapping the chosen pill again keeps it).
+
+    Pills replace dropdowns for short lists: one tap, no on-screen keyboard, nothing scrolls
+    sideways.
+    """
+    default = default or options[0]
+    last = f"_{key}_last"
+    st.session_state.setdefault(last, default)
+    st.session_state.setdefault(key, default)
+
+    def keep() -> None:
+        if st.session_state.get(key) is None:
+            st.session_state[key] = st.session_state[last]
+        else:
+            st.session_state[last] = st.session_state[key]
+
+    st.pills(label, options, key=key, on_change=keep, label_visibility="collapsed")
+    return st.session_state.get(key) or st.session_state[last]
+
+
 def md(s: str) -> str:
     """**bold** / *italic* to HTML for use inside custom blocks."""
     import re
@@ -152,27 +224,28 @@ def hero(n: dict) -> None:
 def section_fade(n: dict) -> None:
     cfg = loaders.app_config()
     st.markdown(f'<p class="lede">{md(text.headline(n))}</p>', unsafe_allow_html=True)
-    c1, c2 = st.columns([3, 2], vertical_alignment="bottom")
-    label = c1.selectbox("Compare", list(COMPARE), label_visibility="collapsed")
-    adjust = c2.toggle("Remove site-wide drift", value=False,
+    label = choose("cmp", "Compare", list(COMPARE))
+    adjust = st.toggle("Remove site-wide drift", value=False,
                        help=f"Subtracts the change of {int(logic.kn(n, 'n_control_games')):,} "
                             "established games over the same calendar months.")
     gt = COMPARE[label]
     curves = loaders.table("curve_by_segment")
     df = curves[(curves["group_type"] == gt) & (curves["adjusted"] == int(adjust))]
-    show(charts.fig_overview(df, gt))
+    show(charts.fig_overview(df, gt, compact=compact()))
     note = (f"Mean change in the displayed rating since a game entered the ranking. "
             f"{int(logic.kn(n, 'n_main_sample')):,} games launched {cfg['main_entry_start'][:4]}–"
             f"{cfg['main_entry_end'][:4]}; the band is the 95% confidence interval.")
     if gt == "kickstarted":
         yrs = cfg["kickstarter_years"]
         note += f" Kickstarter flag available for {yrs[0]}–{yrs[-1]} launches only."
+    if gt == "hype_quartile":
+        note += f" {HYPE_NOTE}"
     small(note)
 
 
 def section_gap(n: dict) -> None:
     section_title("New raters still rate below the number on the page", text.gap_text(n))
-    show(charts.fig_gap(loaders.table("gap_new_vs_displayed")))
+    show(charts.fig_gap(loaders.table("gap_new_vs_displayed"), compact=compact()))
     with st.expander("How the new-rater average is calculated"):
         st.latex(r"\text{new-rater avg} = \frac{avg_t\,n_t - avg_{t-3}\,n_{t-3}}{n_t - n_{t-3}}")
         st.markdown(
@@ -188,14 +261,14 @@ def section_hype(n: dict) -> None:
     first, last = cfg["speed_months"]
     speed = loaders.table("speed_not_size")
     section_title("Hype changes how fast ratings fall, not how far")
-    show(charts.fig_speed(speed, (first, last)))
+    show(charts.fig_speed(speed, (first, last), compact=compact()))
     st.markdown(f'<div class="note">{md(text.hype_takeaway(speed, (first, last)))}</div>',
                 unsafe_allow_html=True)
     chart_title("No model finds that hyped games fall further")
-    show(charts.fig_specs(n))
+    show(charts.fig_specs(n, compact=compact()))
     small(text.specs_caption(n))
     chart_title("Kickstarter games fall further, even from the same start")
-    show(charts.fig_kickstarter(loaders.table("kickstarter_by_band")))
+    show(charts.fig_kickstarter(loaders.table("kickstarter_by_band"), compact=compact()))
     small(text.kickstarter_caption(n))
 
 
@@ -228,10 +301,10 @@ def section_trust(n: dict, mode: str) -> None:
               + (f" 95% CI: months {fmt(n['q4_rule_month']['ci_low'], '.0f')}–"
                  f"{fmt(n['q4_rule_month']['ci_high'], '.0f')}." if default else ""))
     with right:
-        show(charts.fig_trust(curve, tol, target, k_rule))
+        show(charts.fig_trust(curve, tol, target, k_rule, compact=compact()))
     chart_title("An adjusted launch rating gets there much sooner")
     bars = logic.adjusted_vs_raw(loaders.table("q4_adjusted_predictor"), cfg["rule_tolerance"])
-    show(charts.fig_adjusted(bars, cfg["rule_tolerance"]))
+    show(charts.fig_adjusted(bars, cfg["rule_tolerance"], compact=compact()))
     small(text.adjusted_caption(n, cfg) + " Share of test games within "
           f"±{cfg['rule_tolerance']} of their 3-year rating.")
 
@@ -239,9 +312,8 @@ def section_trust(n: dict, mode: str) -> None:
 def section_explore(n: dict) -> None:
     section_title("Explore the groups",
                   "Split the new releases and compare each group's path with the overall one.")
-    c1, c2 = st.columns([3, 2], vertical_alignment="bottom")
-    label = c1.selectbox("Split by", list(SEGMENT_TYPES))
-    adjust = c2.toggle("Remove site-wide drift", value=False, key="explore_adjust")
+    label = choose("split", "Split by", list(SEGMENT_TYPES))
+    adjust = st.toggle("Remove site-wide drift", value=False, key="explore_adjust")
     gt = SEGMENT_TYPES[label]
     curves = loaders.table("curve_by_segment")
     adj = int(adjust)
@@ -251,29 +323,33 @@ def section_explore(n: dict) -> None:
     highlight = None
     if len(groups) > 4:
         pretty = {g: charts._label_for(g, gt) for g in groups}
-        highlight = st.segmented_control("Highlight", groups, default=groups[-1],
-                                         format_func=lambda g: pretty[g], key=f"hl_{gt}")
-    show(charts.fig_explore(seg, overall, gt, highlight))
+        st.markdown('<p class="small" style="margin:.2rem 0 .1rem">Highlight a group:</p>',
+                    unsafe_allow_html=True)
+        highlight = choose(f"hl_{gt}", "Highlight", [pretty[g] for g in groups],
+                           default=pretty[groups[-1]])
+        highlight = next(g for g in groups if pretty[g] == highlight)
+    show(charts.fig_explore(seg, overall, gt, highlight, compact=compact()))
     table = loaders.table("segment_change")
     t = table[table["group_type"] == gt].pivot_table(
         index="group_value", columns="metric", values=["mean", "ci_low", "ci_high", "n"])
 
-    def cell(metric: str) -> list[str]:
-        return [f"{fmt(m, '+.2f', minus=True)}  ({fmt(lo, '+.2f', minus=True)} to "
-                f"{fmt(hi, '+.2f', minus=True)})" for m, lo, hi in zip(
-                    t[("mean", metric)], t[("ci_low", metric)], t[("ci_high", metric)],
-                    strict=True)]
+    def cell(group, metric: str) -> str:
+        m, lo, hi = (t.loc[group, (k, metric)] for k in ("mean", "ci_low", "ci_high"))
+        tone = "down" if m < 0 else "up"
+        return (f'<span class="{tone}">{fmt(m, "+.2f", minus=True)}</span>'
+                f'<span class="ci">{fmt(lo, "+.2f", minus=True)} to {fmt(hi, "+.2f", minus=True)}'
+                f'</span>')
 
-    view = pd.DataFrame({"Group": t.index, "Games": [f"{int(v):,}" for v in t[("n", "change_36")]],
-                         "Change by month 12": cell("change_12"),
-                         "Change by month 36": cell("change_36")})
-    def tone(v: str) -> str:
-        return f"color: {BAD_C}; font-weight: 500" if str(v).startswith("−") else \
-            f"color: {GOOD_C}; font-weight: 500"
-
-    st.dataframe(view.style.map(tone, subset=["Change by month 12", "Change by month 36"]),
-                 hide_index=True, width="stretch")
+    rows = "".join(
+        f'<tr><td>{html.escape(charts._label_for(g, gt))}</td>'
+        f'<td class="n">{int(t.loc[g, ("n", "change_36")]):,}</td>'
+        f'<td>{cell(g, "change_12")}</td><td>{cell(g, "change_36")}</td></tr>' for g in t.index)
+    st.markdown(
+        '<div class="seg-wrap"><table class="seg"><thead><tr><th>Group</th><th class="n">Games</th>'
+        f'<th>By month 12</th><th>By month 36</th></tr></thead><tbody>{rows}</tbody></table></div>',
+        unsafe_allow_html=True)
     small("Mean change in the displayed rating since entry, with 95% confidence intervals."
+          + (f" {HYPE_NOTE}" if gt == "hype_quartile" else "")
           + (" Part of the larger fall for high starters is regression to the mean."
              if gt == "start_decile" else ""))
 
@@ -410,7 +486,7 @@ def section_lookup(n: dict) -> None:
         other = (orow["latest_name"], traj[traj["game_id"] == orow["game_id"]])
     show(charts.fig_lookup(row["latest_name"], tj, start, cohort, "new_avg_3", metric, other,
                            expected if expected == expected else None,
-                           f"Typical {int(row['entry_year'])} launch"))
+                           f"Typical {int(row['entry_year'])} launch", compact=compact()))
     captions = {
         "rating": "Blue: the rating shown on BoardGameGeek. Red dots: the average of ratings "
                   "added in the previous three months. Grey dashes: the average path of games "
@@ -485,17 +561,23 @@ def main() -> None:
     mode = loaders.app_mode()
     n = loaders.numbers()
     hero(n)
-    names = ["The fade", "New vs displayed", "Hype", "When to trust", "Explore"]
-    sections = [lambda: section_fade(n), lambda: section_gap(n), lambda: section_hype(n),
-                lambda: section_trust(n, mode), lambda: section_explore(n)]
+    sections = [("fade", "The fade", lambda: section_fade(n))]
     if mode == "full":
-        names.append("Look up a game")
-        sections.append(lambda: section_lookup(n))
-    names.append("Method")
-    sections.append(lambda: section_method(n))
-    for tab, fn in zip(st.tabs(names), sections, strict=True):
-        with tab:
-            fn()
+        sections.append(("lookup", "Look up a game", lambda: section_lookup(n)))
+    sections += [("gap", "New vs displayed", lambda: section_gap(n)),
+                 ("hype", "Hype", lambda: section_hype(n)),
+                 ("trust", "When to trust", lambda: section_trust(n, mode)),
+                 ("explore", "Explore", lambda: section_explore(n)),
+                 ("method", "Method", lambda: section_method(n))]
+    names = [label for _, label, _ in sections]
+    by_key = {key: label for key, label, _ in sections}
+    wanted = by_key.get(st.query_params.get("s", ""), names[0])  # deep link: ?s=hype
+    if "nav" not in st.session_state:
+        st.session_state["nav"] = wanted
+    current = choose("nav", "Section", names, default=wanted)
+    key, _, render = next(sec for sec in sections if sec[1] == current)
+    st.query_params["s"] = key
+    render()
     st.markdown(
         f'<div class="site-foot">Data: daily BoardGameGeek ranking snapshots from '
         f'<a href="https://github.com/beefsack/bgg-ranking-historicals">bgg-ranking-historicals'

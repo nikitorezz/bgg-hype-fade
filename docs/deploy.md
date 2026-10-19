@@ -54,3 +54,7 @@ No secrets are needed.
 uv run python scripts/app_screenshots.py            # desktop, reports/figures/app_*.png
 uv run python scripts/app_screenshots.py --mobile   # 400 px wide, app_*_mobile.png
 ```
+
+## Phone check
+
+Most visitors arrive from LinkedIn on a phone. `uv run python scripts/mobile_check.py` loads the app and both static pages in an emulated iPhone (390 px, touch) and fails on horizontal overflow, text under 11 px, small tap targets, and charts that would capture touch scrolling. It saves full-height screenshots to `data/interim/mobile_check/`. The app switches to a compact chart layout automatically for phone user agents (or with `?compact=1`); the static page ships both layouts and shows one by screen width.
